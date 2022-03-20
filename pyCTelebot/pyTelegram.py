@@ -6,7 +6,7 @@ from telegram import Update
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
-from config.auth import TOKEN_TELEGRAM
+from pyCTelebot.config.auth import TOKEN_TELEGRAM
 
 
 import gettext
