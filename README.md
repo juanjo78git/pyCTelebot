@@ -24,6 +24,7 @@ $cat pyCTelebot/config/auth.py
 #Token bot telegram 
 TOKEN_TELEGRAM = 'Your Token'
 ```
+or use environment variable TOKEN_TELEGRAM.
 
 For developers:
 ```shell
