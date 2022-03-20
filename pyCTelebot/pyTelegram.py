@@ -7,7 +7,8 @@ from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.auth import TOKEN_TELEGRAM
-
+import os
+PORT = int(os.environ.get('PORT', 5000))
 
 import gettext
 _ = gettext.gettext
@@ -44,9 +45,16 @@ def run():
     dispatcher.add_handler(unknown_handler)
     # Controlador de errores
     # dispatcher.add_error_handler(error_callback)
+
     # Comienza el bot
     print('Hello Bot!')
-    updater.start_polling()
+    # O se arranca con polling
+    # updater.start_polling()
+
+    # O se arranca con webhook
+    updater.start_webhook(listen="0.0.0.0", port=int(PORT), url_path=TOKEN_TELEGRAM)
+    updater.bot.setWebhook('https://pyctelebot.herokuapp.com/' + TOKEN_TELEGRAM)
+
     # Lo deja a la escucha. Evita que se detenga.
     updater.idle()
 
