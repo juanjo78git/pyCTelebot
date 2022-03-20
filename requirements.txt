@@ -1,0 +1,4 @@
+coverage
+coveralls
+codacy-coverage
+python-telegram-bot
