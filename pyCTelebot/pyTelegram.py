@@ -52,8 +52,7 @@ def run():
     # updater.start_polling()
 
     # O se arranca con webhook
-    updater.start_webhook(listen="0.0.0.0", port=int(PORT), url_path=TOKEN_TELEGRAM)
-    updater.bot.setWebhook('https://pyctelebot.herokuapp.com/' + TOKEN_TELEGRAM)
+    updater.start_webhook(listen="0.0.0.0", port=int(PORT), url_path=TOKEN_TELEGRAM, webhook_url='https://pyctelebot.herokuapp.com/' + TOKEN_TELEGRAM)
 
     # Lo deja a la escucha. Evita que se detenga.
     updater.idle()
