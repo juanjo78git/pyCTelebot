@@ -82,7 +82,7 @@ def echo(update: Update, context: CallbackContext):
 def priceCoin(update: Update, context: CallbackContext):
     if len(update.effective_message.text.split(None, 1)) == 2:
         context.bot.send_message(chat_id=update.effective_chat.id, text=_("Coin: {0} Price: {1}").format(
-            update.effective_message.text.split(None, 1)[1], price(coin=update.effective_message.text.split(None, 1)[1])
+            update.effective_message.text.split(None, 1)[1], pyCrypto.price(coin=update.effective_message.text.split(None, 1)[1])
         ))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id, text=_("Error params"))
