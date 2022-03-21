@@ -21,5 +21,8 @@ def build_parser():
     parser.add_argument('-a', '--aboutus',
                         dest='aboutus', action='store_true', 
                         help='Show About Us')
-                        
+
+    parser.add_argument('-Tp', '--TelegramBotPolling',
+                        dest='telebot', action='store_true',
+                        help='Select Telegram bot run with polling (without it is Webhook)')
     return parser

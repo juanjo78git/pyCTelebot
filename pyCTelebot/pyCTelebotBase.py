@@ -34,8 +34,13 @@ def main():
         print(printaboutus())
         exit()
 
+    if options.telebot:
+        pyTelegram.run(how='p')
+    else:
+        pyTelegram.run(how='w')
+
     # TODO: Do something
-    pyTelegram.run()
+    # pyTelegram.run()
     exit()
 
 

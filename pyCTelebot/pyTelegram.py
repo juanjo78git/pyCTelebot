@@ -6,9 +6,7 @@ from telegram import Update
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
-from pyCTelebot.config.auth import TOKEN_TELEGRAM
-import os
-PORT = int(os.environ.get('PORT', 5000))
+from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT
 
 import gettext
 _ = gettext.gettext
@@ -24,7 +22,7 @@ def error_callback(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
-def run():
+def run(how):
 
     # Conexion
     updater = Updater(token=TOKEN_TELEGRAM, use_context=True)
@@ -48,11 +46,15 @@ def run():
 
     # Comienza el bot
     print('Hello Bot!')
-    # O se arranca con polling
-    # updater.start_polling()
 
-    # O se arranca con webhook
-    updater.start_webhook(listen="0.0.0.0", port=int(PORT), url_path=TOKEN_TELEGRAM, webhook_url='https://pyctelebot.herokuapp.com/' + TOKEN_TELEGRAM)
+    if how == 'w':
+        # O se arranca con webhook
+        logger.log(msg='Start with webhook', level=logging.INFO)
+        updater.start_webhook(listen="0.0.0.0", port=int(PORT), url_path=TOKEN_TELEGRAM, webhook_url=WEBHOOK_URL_TELEGRAM + TOKEN_TELEGRAM)
+    else:
+        # O se arranca con polling
+        logger.log(msg='Start with polling', level=logging.INFO)
+        updater.start_polling()
 
     # Lo deja a la escucha. Evita que se detenga.
     updater.idle()
