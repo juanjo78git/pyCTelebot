@@ -7,6 +7,7 @@ from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT
+from pyCrypto import *
 
 import gettext
 _ = gettext.gettext
@@ -37,6 +38,9 @@ def run(how):
 
     echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
     dispatcher.add_handler(echo_handler)
+
+    pricecoin_handler = CommandHandler('pricecoin', priceCoin)
+    dispatcher.add_handler(pricecoin_handler)
 
     # Ultimo evento para comandos desconocidos.
     unknown_handler = MessageHandler(Filters.command, unknown)
@@ -73,6 +77,15 @@ def stop(update: Update, context: CallbackContext):
 def echo(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id, text=(" {0} " + _("said:") + " {1}").format(
         update.effective_user.first_name, update.message.text))
+
+
+def priceCoin(update: Update, context: CallbackContext):
+    if len(update.effective_message.text.split(None, 1)) == 2:
+        context.bot.send_message(chat_id=update.effective_chat.id, text=_("Coin: {0} Price: {1}").format(
+            update.effective_message.text.split(None, 1)[1], price(coin=update.effective_message.text.split(None, 1)[1])
+        ))
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id, text=_("Error params"))
 
 
 def unknown(update: Update, context: CallbackContext):
