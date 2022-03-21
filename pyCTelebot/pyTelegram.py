@@ -7,7 +7,7 @@ from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT
-from pyCrypto import *
+from pyCTelebot import pyCrypto
 
 import gettext
 _ = gettext.gettext
