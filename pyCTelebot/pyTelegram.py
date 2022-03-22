@@ -90,6 +90,7 @@ def echo(update: Update, context: CallbackContext):
     #    update.effective_user.first_name, update.message.text))
     return 1
 
+
 def price(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='price'):
         return 1
@@ -97,7 +98,7 @@ def price(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Coin: {0} Price: {1}").format(
                                      update.effective_message.text.split(' ', 1)[1],
-                                     pyCrypto.price(coin=update.effective_message.text.split(' ', 1)[1])
+                                     pyCrypto.price(symbol=update.effective_message.text.split(' ', 1)[1])
         ))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
