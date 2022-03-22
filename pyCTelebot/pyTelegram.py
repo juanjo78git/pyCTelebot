@@ -67,30 +67,30 @@ def run(how):
 # https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions-%E2%80%93-Your-first-Bot
 def start(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='start'):
-        exit()
+        return 1
     context.bot.send_message(chat_id=update.effective_chat.id, text=_("I'm a great bot!!"))
 
 
 def stop(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='stop'):
-        exit()
+        return 1
     context.bot.send_message(chat_id=update.effective_chat.id, text=_("Bye!!"))
 
 
 # Eco de lo que digas
 def echo(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='echo'):
-        exit()
+        return 1
     context.bot.send_message(chat_id=update.effective_chat.id, text=_("{0} said: {1}").format(
         update.effective_user.first_name, update.message.text))
 
 
 def price(update: Update, context: CallbackContext):
-    if not authorization(update=update, context=context, action='priceCoin'):
-        exit()
+    if not authorization(update=update, context=context, action='price'):
+        return 1
     if len(update.effective_message.text.split(' ', 1)) == 2:
         context.bot.send_message(chat_id=update.effective_chat.id, text=_("Coin: {0} Price: {1}").format(
-            update.effective_message.text.split(' ', 1)[1], pyCrypto.price(coin=update.effective_message.text.split(None, 1)[1])
+            update.effective_message.text.split(' ', 1)[1], pyCrypto.price(coin=update.effective_message.text.split(' ', 1)[1])
         ))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id, text=_("Error params"))
@@ -102,7 +102,7 @@ def unknown(update: Update, context: CallbackContext):
 
 def authorization(update: Update, context: CallbackContext, action):
     logger.log(msg='User: {0} action: {1}'.format(update.effective_user.id, action), level=logging.INFO)
-    if update.effective_user.id == USER_ADMIN:
+    if update.effective_user.id == int(USER_ADMIN):
         return True
     else:
         context.bot.send_message(chat_id=update.effective_chat.id, text=_("You can't do it!"))
