@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-
+from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY, TOKEN_CRYPTO_SECRET
 import gettext
 _ = gettext.gettext
 
-from pyCTelebot.config.auth import TOKEN_CRYPTO
 
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -19,6 +18,6 @@ def error_callback(update, context):
 
 def price(coin):
     lastprice = 12.34
-    logger.log(msg='Search price coin {0} with token: {1}'.format(coin, TOKEN_CRYPTO), level=logging.INFO)
+    logger.log(msg='Search price coin {0} --> value: {1}'.format(coin, lastprice), level=logging.INFO)
     # Return
     return lastprice

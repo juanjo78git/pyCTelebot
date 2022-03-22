@@ -6,7 +6,7 @@ from telegram import Update
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
-from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT
+from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, USER_ADMIN
 from pyCTelebot import pyCrypto
 
 import gettext
@@ -39,8 +39,8 @@ def run(how):
     echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
     dispatcher.add_handler(echo_handler)
 
-    pricecoin_handler = CommandHandler('pricecoin', priceCoin)
-    dispatcher.add_handler(pricecoin_handler)
+    price_handler = CommandHandler('price', price)
+    dispatcher.add_handler(price_handler)
 
     # Ultimo evento para comandos desconocidos.
     unknown_handler = MessageHandler(Filters.command, unknown)
@@ -66,23 +66,31 @@ def run(how):
 
 # https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions-%E2%80%93-Your-first-Bot
 def start(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='start'):
+        exit()
     context.bot.send_message(chat_id=update.effective_chat.id, text=_("I'm a great bot!!"))
 
 
 def stop(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='stop'):
+        exit()
     context.bot.send_message(chat_id=update.effective_chat.id, text=_("Bye!!"))
 
 
 # Eco de lo que digas
 def echo(update: Update, context: CallbackContext):
-    context.bot.send_message(chat_id=update.effective_chat.id, text=(" {0} " + _("said:") + " {1}").format(
+    if not authorization(update=update, context=context, action='echo'):
+        exit()
+    context.bot.send_message(chat_id=update.effective_chat.id, text=_("{0} said: {1}").format(
         update.effective_user.first_name, update.message.text))
 
 
-def priceCoin(update: Update, context: CallbackContext):
-    if len(update.effective_message.text.split(None, 1)) == 2:
+def price(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='priceCoin'):
+        exit()
+    if len(update.effective_message.text.split(' ', 1)) == 2:
         context.bot.send_message(chat_id=update.effective_chat.id, text=_("Coin: {0} Price: {1}").format(
-            update.effective_message.text.split(None, 1)[1], pyCrypto.price(coin=update.effective_message.text.split(None, 1)[1])
+            update.effective_message.text.split(' ', 1)[1], pyCrypto.price(coin=update.effective_message.text.split(None, 1)[1])
         ))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id, text=_("Error params"))
@@ -91,3 +99,11 @@ def priceCoin(update: Update, context: CallbackContext):
 def unknown(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id, text=_("Sorry, I didn't understand that command."))
 
+
+def authorization(update: Update, context: CallbackContext, action):
+    logger.log(msg='User: {0} action: {1}'.format(update.effective_user.id, action), level=logging.INFO)
+    if update.effective_user.id == USER_ADMIN:
+        return True
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id, text=_("You can't do it!"))
+        return False

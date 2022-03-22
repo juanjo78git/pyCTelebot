@@ -28,8 +28,8 @@ msgid "Bye!!"
 msgstr "Bye!!"
 
 #: pyTelegram.py:62
-msgid "said:"
-msgstr "said:"
+msgid "{0} said: {1}"
+msgstr "{0} said: {1}"
 
 #: pyTelegram.py:67
 msgid "Sorry, I didn't understand that command."

@@ -9,6 +9,9 @@ TOKEN_TELEGRAM = os.environ["TOKEN_TELEGRAM"]
 WEBHOOK_URL_TELEGRAM = 'https://pyctelebot.herokuapp.com/'
 PORT = int(os.environ.get('PORT', 5000))
 
-# Token crypto info
-# TOKEN_CRYPTO = 'Your Token'
-TOKEN_CRYPTO = os.environ["TOKEN_CRYPTO"]
+# API crypto info
+TOKEN_CRYPTO_KEY = os.environ["TOKEN_CRYPTO_KEY"]
+TOKEN_CRYPTO_SECRET = os.environ["TOKEN_CRYPTO_SECRET"]
+
+# USER_ADMIN = 'USER_ID_TELEGRAM'
+USER_ADMIN = os.environ["USER_ADMIN"]
