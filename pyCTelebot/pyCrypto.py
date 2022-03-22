@@ -26,7 +26,7 @@ def price(symbol):
         'secret': TOKEN_CRYPTO_SECRET
     })
     symbol = symbol + '/USDT'
-    lastprice = json.loads(exchange.fetch_ticker(symbol=symbol))["last"]
-    logger.log(msg='Search price coin {0} --> value: {1}'.format(symbol, lastprice), level=logging.INFO)
+    lastprice = exchange.fetch_ticker(symbol=symbol).get('last')
+    logger.log(msg='Search price {0} --> value: {1}'.format(symbol, lastprice), level=logging.INFO)
     # Return
     return lastprice
