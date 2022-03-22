@@ -5,6 +5,7 @@ import gettext
 _ = gettext.gettext
 # https://github.com/ccxt/ccxt
 import ccxt
+import json
 
 
 
@@ -24,9 +25,8 @@ def price(symbol):
         'apiKey': TOKEN_CRYPTO_KEY,
         'secret': TOKEN_CRYPTO_SECRET
     })
-    symbol = 'ETH/USDT'
-    logger.log(msg='Search price coin {0} {1}'.format(symbol, exchange), level=logging.INFO)
-    lastprice = exchange.fetch_ticker(symbol=symbol)
+    symbol = symbol + '/USDT'
+    lastprice = json.loads(exchange.fetch_ticker(symbol=symbol))["last"]
     logger.log(msg='Search price coin {0} --> value: {1}'.format(symbol, lastprice), level=logging.INFO)
     # Return
     return lastprice
