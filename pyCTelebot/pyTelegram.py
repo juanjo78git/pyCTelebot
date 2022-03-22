@@ -54,7 +54,10 @@ def run(how):
     if how == 'w':
         # O se arranca con webhook
         logger.log(msg='Start with webhook', level=logging.INFO)
-        updater.start_webhook(listen="0.0.0.0", port=int(PORT), url_path=TOKEN_TELEGRAM, webhook_url=WEBHOOK_URL_TELEGRAM + TOKEN_TELEGRAM)
+        updater.start_webhook(listen="0.0.0.0",
+                              port=PORT,
+                              url_path=TOKEN_TELEGRAM,
+                              webhook_url=WEBHOOK_URL_TELEGRAM + TOKEN_TELEGRAM)
     else:
         # O se arranca con polling
         logger.log(msg='Start with polling', level=logging.INFO)
@@ -68,36 +71,42 @@ def run(how):
 def start(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='start'):
         return 1
-    context.bot.send_message(chat_id=update.effective_chat.id, text=_("I'm a great bot!!"))
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=_("I'm a great bot!!"))
 
 
 def stop(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='stop'):
         return 1
-    context.bot.send_message(chat_id=update.effective_chat.id, text=_("Bye!!"))
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=_("Bye!!"))
 
 
 # Eco de lo que digas
 def echo(update: Update, context: CallbackContext):
-    if not authorization(update=update, context=context, action='echo'):
-        return 1
-    context.bot.send_message(chat_id=update.effective_chat.id, text=_("{0} said: {1}").format(
-        update.effective_user.first_name, update.message.text))
-
+    # if not authorization(update=update, context=context, action='echo'):
+    #    return 1
+    # context.bot.send_message(chat_id=update.effective_chat.id, text=_("{0} said: {1}").format(
+    #    update.effective_user.first_name, update.message.text))
+    return 1
 
 def price(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='price'):
         return 1
     if len(update.effective_message.text.split(' ', 1)) == 2:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=_("Coin: {0} Price: {1}").format(
-            update.effective_message.text.split(' ', 1)[1], pyCrypto.price(coin=update.effective_message.text.split(' ', 1)[1])
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Coin: {0} Price: {1}").format(
+                                     update.effective_message.text.split(' ', 1)[1],
+                                     pyCrypto.price(coin=update.effective_message.text.split(' ', 1)[1])
         ))
     else:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=_("Error params"))
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error params"))
 
 
 def unknown(update: Update, context: CallbackContext):
-    context.bot.send_message(chat_id=update.effective_chat.id, text=_("Sorry, I didn't understand that command."))
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=_("Sorry, I didn't understand that command."))
 
 
 def authorization(update: Update, context: CallbackContext, action):
@@ -105,5 +114,6 @@ def authorization(update: Update, context: CallbackContext, action):
     if update.effective_user.id == int(USER_ADMIN):
         return True
     else:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=_("You can't do it!"))
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return False
