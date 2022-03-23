@@ -101,8 +101,8 @@ def price(update: Update, context: CallbackContext):
             symbol= symbol + '/USDT'
         lastprice = pyCrypto.price(symbol=symbol)
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Coin: {0} Price: {1}").format(
-                                     update.effective_message.text.split(' ', 1)[1],
+                                 text=_("Coin: {0} Last price: {1}").format(
+                                     symbol,
                                      lastprice))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
