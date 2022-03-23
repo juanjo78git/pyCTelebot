@@ -46,7 +46,7 @@ def run(how):
     unknown_handler = MessageHandler(Filters.command, unknown)
     dispatcher.add_handler(unknown_handler)
     # Controlador de errores
-    # dispatcher.add_error_handler(error_callback)
+    dispatcher.add_error_handler(error_callback)
 
     # Comienza el bot
     print('Hello Bot!')
@@ -95,11 +95,16 @@ def price(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='price'):
         return 1
     if len(update.effective_message.text.split(' ', 1)) == 2:
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Coin: {0} Price: {1}").format(
-                                     update.effective_message.text.split(' ', 1)[1],
-                                     pyCrypto.price(symbol=update.effective_message.text.split(' ', 1)[1].upper())
-        ))
+        lastprice = str(pyCrypto.price(symbol=update.effective_message.text.split(' ', 1)[1].upper()))
+        if lastprice.isnumeric():
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text=_("Coin: {0} Price: {1}").format(
+                                         update.effective_message.text.split(' ', 1)[1],
+                                         lastprice))
+        else:
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text=_("ERROR: {0}").format(
+                                         lastprice))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error params"))

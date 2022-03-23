@@ -5,8 +5,6 @@ import gettext
 _ = gettext.gettext
 # https://github.com/ccxt/ccxt
 import ccxt
-import json
-
 
 
 import logging
