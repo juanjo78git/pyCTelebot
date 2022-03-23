@@ -23,7 +23,6 @@ def price(symbol):
         'apiKey': TOKEN_CRYPTO_KEY,
         'secret': TOKEN_CRYPTO_SECRET
     })
-    symbol = symbol + '/USDT'
     lastprice = exchange.fetch_ticker(symbol=symbol).get('last')
     logger.log(msg='Search price {0} --> value: {1}'.format(symbol, lastprice), level=logging.INFO)
     # Return

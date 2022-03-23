@@ -95,16 +95,15 @@ def price(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='price'):
         return 1
     if len(update.effective_message.text.split(' ', 1)) == 2:
-        lastprice = str(pyCrypto.price(symbol=update.effective_message.text.split(' ', 1)[1].upper()))
-        if lastprice.isnumeric():
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Coin: {0} Price: {1}").format(
-                                         update.effective_message.text.split(' ', 1)[1],
-                                         lastprice))
-        else:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("ERROR: {0}").format(
-                                         lastprice))
+
+        symbol = update.effective_message.text.split(' ', 1)[1].upper()
+        if not '/' in symbol:
+            symbol= symbol + '/USDT'
+        lastprice = pyCrypto.price(symbol=symbol)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Coin: {0} Price: {1}").format(
+                                     update.effective_message.text.split(' ', 1)[1],
+                                     lastprice))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error params"))
