@@ -43,6 +43,9 @@ def run(how):
     price_handler = CommandHandler('price', price)
     dispatcher.add_handler(price_handler)
 
+    openorders_handler = CommandHandler('orders', openorders)
+    dispatcher.add_handler(openorders_handler)
+
     # Ultimo evento para comandos desconocidos.
     unknown_handler = MessageHandler(Filters.command, unknown)
     dispatcher.add_handler(unknown_handler)
@@ -113,6 +116,28 @@ def price(update: Update, context: CallbackContext):
                                  text=_("Coin: {0} Last price: {1}").format(
                                      symbol,
                                      lastprice))
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error params"))
+
+
+def openorders(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='openorders'):
+        return 1
+    if len(update.effective_message.text.split(' ', 1)) == 2:
+        symbol = update.effective_message.text.split(' ', 1)[1].upper()
+        if not '/' in symbol:
+            symbol = symbol + '/USDT'
+    elif len(update.effective_message.text.split(' ', 1)) == 1 and "symbol" in context.user_data:
+        symbol = context.user_data["symbol"]
+
+    if 'symbol' in locals():
+        logger.log(msg='/openorders symbol used: {0}'.format(symbol), level=logging.INFO)
+        orders = pyCrypto.openorders(symbol=symbol)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Coin: {0} orderns: {1}").format(
+                                     symbol,
+                                     orders))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error params"))
