@@ -10,9 +10,11 @@ from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, U
 from pyCTelebot import pyCrypto
 
 import gettext
+
 _ = gettext.gettext
 
 import logging
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,7 +26,6 @@ def error_callback(update, context):
 
 
 def run(how):
-
     # Conexion
     updater = Updater(token=TOKEN_TELEGRAM, use_context=True)
     dispatcher = updater.dispatcher
@@ -70,6 +71,11 @@ def run(how):
 def start(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='start'):
         return 1
+    if len(update.effective_message.text.split(' ', 1)) == 2:
+        symbol = update.effective_message.text.split(' ', 1)[1].upper()
+        if not '/' in symbol:
+            symbol = symbol + '/USDT'
+        context.user_data["symbol"] = symbol
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=_("I'm a great bot!!"))
 
@@ -94,10 +100,14 @@ def price(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='price'):
         return 1
     if len(update.effective_message.text.split(' ', 1)) == 2:
-
         symbol = update.effective_message.text.split(' ', 1)[1].upper()
         if not '/' in symbol:
-            symbol= symbol + '/USDT'
+            symbol = symbol + '/USDT'
+    elif len(update.effective_message.text.split(' ', 1)) == 1 and "symbol" in context.user_data:
+        symbol = context.user_data["symbol"]
+
+    if 'symbol' in locals():
+        logger.log(msg='/price symbol used: {0}'.format(symbol), level=logging.INFO)
         lastprice = pyCrypto.price(symbol=symbol)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Coin: {0} Last price: {1}").format(
