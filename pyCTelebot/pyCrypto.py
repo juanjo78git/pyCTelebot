@@ -30,6 +30,6 @@ def price(symbol):
 
 def openorders(symbol):
     orders = exchange.fetch_open_orders(symbol=symbol)
-    logger.log(msg='Buy: symbol {0} - price {1}'.format(symbol, price), level=logging.INFO)
+    logger.log(msg='Open orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.INFO)
     # Return
     return orders

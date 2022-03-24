@@ -37,6 +37,9 @@ def run(how):
     stop_handler = CommandHandler('stop', stop)
     dispatcher.add_handler(stop_handler)
 
+    help_handler = CommandHandler('help', help)
+    dispatcher.add_handler(help_handler)
+
     echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
     dispatcher.add_handler(echo_handler)
 
@@ -76,16 +79,20 @@ def start(update: Update, context: CallbackContext):
         return 1
     if len(update.effective_message.text.split(' ', 1)) == 2:
         symbol = update.effective_message.text.split(' ', 1)[1].upper()
-        if not '/' in symbol:
+        if '/' not in symbol:
             symbol = symbol + '/USDT'
         context.user_data["symbol"] = symbol
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=_("I'm a great bot!!"))
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                text=_("Selected trading pair: {0}").format(symbol))
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error params"))
 
 
 def stop(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='stop'):
         return 1
+    context.user_data.clear()
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=_("Bye!!"))
 
@@ -99,12 +106,22 @@ def echo(update: Update, context: CallbackContext):
     return 1
 
 
+def help(update: Update, context: CallbackContext):
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=_("You can control me by sending these commands: \n"
+                                    "/start [SYMBOL] - Select a trading pair to work \n"
+                                    "/stop - Clean all \n"
+                                    "/price [SYMBOL] - Current trading pair price \n"
+                                    "/orders [SYMBOL] - Show all open orders for the trading pair \n"
+                                    "/help  - This help"))
+
+
 def price(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='price'):
         return 1
     if len(update.effective_message.text.split(' ', 1)) == 2:
         symbol = update.effective_message.text.split(' ', 1)[1].upper()
-        if not '/' in symbol:
+        if '/' not in symbol:
             symbol = symbol + '/USDT'
     elif len(update.effective_message.text.split(' ', 1)) == 1 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
@@ -113,7 +130,7 @@ def price(update: Update, context: CallbackContext):
         logger.log(msg='/price symbol used: {0}'.format(symbol), level=logging.INFO)
         lastprice = pyCrypto.price(symbol=symbol)
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Coin: {0} Last price: {1}").format(
+                                 text=_("Trading pair: {0} Last price: {1}").format(
                                      symbol,
                                      lastprice))
     else:
@@ -126,7 +143,7 @@ def openorders(update: Update, context: CallbackContext):
         return 1
     if len(update.effective_message.text.split(' ', 1)) == 2:
         symbol = update.effective_message.text.split(' ', 1)[1].upper()
-        if not '/' in symbol:
+        if '/' not in symbol:
             symbol = symbol + '/USDT'
     elif len(update.effective_message.text.split(' ', 1)) == 1 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
@@ -135,7 +152,7 @@ def openorders(update: Update, context: CallbackContext):
         logger.log(msg='/openorders symbol used: {0}'.format(symbol), level=logging.INFO)
         orders = pyCrypto.openorders(symbol=symbol)
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Coin: {0} orderns: {1}").format(
+                                 text=_("Trading pair: {0} orderns: {1}").format(
                                      symbol,
                                      orders))
     else:
