@@ -3,7 +3,7 @@
 from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY, TOKEN_CRYPTO_SECRET
 import gettext
 _ = gettext.gettext
-# https://github.com/ccxt/ccxt
+
 import ccxt
 
 

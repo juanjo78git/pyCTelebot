@@ -67,7 +67,6 @@ def run(how):
     updater.idle()
 
 
-# https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions-%E2%80%93-Your-first-Bot
 def start(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='start'):
         return 1
