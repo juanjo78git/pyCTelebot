@@ -51,8 +51,9 @@ $ python -m pyCTelebot.pyCTelebotBase  # Or run without install
 
 
 ## Info
-- 
+
 - https://planetachatbot.com/telegram-bot-webhook-heroku/
+- https://planetachatbot.com/crea-e-implementa-bot-telegram-memoria-corto-largo-plazo/
 
 ## License
 
