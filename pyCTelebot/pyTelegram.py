@@ -8,13 +8,12 @@ from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, USER_ADMIN
 from pyCTelebot import pyCrypto
-
 import gettext
-
-_ = gettext.gettext
-
 import logging
 
+# i18n
+_ = gettext.gettext
+# Logs
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)

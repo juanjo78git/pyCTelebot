@@ -8,8 +8,13 @@ import json
 import logging
 from pyCTelebot import pyTelegram
 
+# i18n
 _ = gettext.gettext
-
+# Logs
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 def main():
     # Get Args
@@ -28,7 +33,7 @@ def main():
     gettext.bindtextdomain('pyCTelebot', './pyCTelebot/locale')
 
     clearscr()
-    print('Locale: ' + os.environ['LANG'])
+    logger.log(msg='Locale: {0}'.format(os.environ['LANG']), level=logging.INFO)
 
     if options.aboutus:
         print(printaboutus())
