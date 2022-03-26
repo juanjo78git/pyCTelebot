@@ -85,7 +85,7 @@ def start(update: Update, context: CallbackContext):
                                 text=_("Selected trading pair: {0}").format(symbol))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Error params"))
+                                 text=_("Hello!"))
 
 
 def stop(update: Update, context: CallbackContext):
@@ -134,7 +134,7 @@ def price(update: Update, context: CallbackContext):
                                      lastprice))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Error params"))
+                                 text=_("Error: invalid parameters"))
 
 
 def openorders(update: Update, context: CallbackContext):
@@ -156,7 +156,7 @@ def openorders(update: Update, context: CallbackContext):
                                      orders))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Error params"))
+                                 text=_("Error: invalid parameters"))
 
 
 def unknown(update: Update, context: CallbackContext):
