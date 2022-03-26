@@ -166,7 +166,7 @@ def unknown(update: Update, context: CallbackContext):
 
 def authorization(update: Update, context: CallbackContext, action):
     logger.log(msg='User: {0} action: {1}'.format(update.effective_user.id, action), level=logging.INFO)
-    if update.effective_user.id == int(USER_ADMIN):
+    if str(update.effective_user.id) in USER_ADMIN:
         return True
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,

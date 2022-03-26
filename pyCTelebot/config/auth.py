@@ -14,4 +14,4 @@ TOKEN_CRYPTO_KEY = os.environ.get('TOKEN_CRYPTO_KEY', 'NOT_FOUND')
 TOKEN_CRYPTO_SECRET = os.environ.get('TOKEN_CRYPTO_SECRET', 'NOT_FOUND')
 
 # USER_ADMIN = 'USER_ID_TELEGRAM'
-USER_ADMIN = os.environ.get('USER_ADMIN', '0')
+USER_ADMIN = os.environ.get('USER_ADMIN', '[0]')
