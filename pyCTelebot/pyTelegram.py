@@ -48,6 +48,15 @@ def run(how):
     openorders_handler = CommandHandler('orders', openorders)
     dispatcher.add_handler(openorders_handler)
 
+    buy_handler = CommandHandler('buy', buy)
+    dispatcher.add_handler(buy_handler)
+
+    sell_handler = CommandHandler('sell', sell)
+    dispatcher.add_handler(sell_handler)
+
+    cancelorder_handler = CommandHandler('cancel', cancel)
+    dispatcher.add_handler(cancelorder_handler)
+
     # Ultimo evento para comandos desconocidos.
     unknown_handler = MessageHandler(Filters.command, unknown)
     dispatcher.add_handler(unknown_handler)
@@ -108,10 +117,14 @@ def echo(update: Update, context: CallbackContext):
 def help(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=_("You can control me by sending these commands: \n"
+                                    "\n"
                                     "/start [SYMBOL] - Select a trading pair to work \n"
                                     "/stop - Clean all \n"
                                     "/price [SYMBOL] - Current trading pair price \n"
                                     "/orders [SYMBOL] - Show all open orders for the trading pair \n"
+                                    "/buy [PARAMS] - Send a new purchase order \n"
+                                    "/sell [PARAMS] - Send a new sales order \n"
+                                    "/cancel [PARAMS] - Cancel open order \n"
                                     "/help  - This help"))
 
 
@@ -148,7 +161,7 @@ def openorders(update: Update, context: CallbackContext):
         symbol = context.user_data["symbol"]
 
     if 'symbol' in locals():
-        logger.log(msg='/openorders symbol used: {0}'.format(symbol), level=logging.INFO)
+        logger.log(msg='/orders symbol used: {0}'.format(symbol), level=logging.INFO)
         orders = pyCrypto.openorders(symbol=symbol)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} orderns: {1}").format(
@@ -157,6 +170,30 @@ def openorders(update: Update, context: CallbackContext):
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
+
+
+def buy(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='buy'):
+        return 1
+    logger.log(msg='/buy', level=logging.INFO)
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=_("Sorry, this isn't working now"))
+
+
+def sell(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='sell'):
+        return 1
+    logger.log(msg='/sell', level=logging.INFO)
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=_("Sorry, this isn't working now"))
+
+
+def cancel(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='cancel'):
+        return 1
+    logger.log(msg='/cancel', level=logging.INFO)
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=_("Sorry, this isn't working now"))
 
 
 def unknown(update: Update, context: CallbackContext):
