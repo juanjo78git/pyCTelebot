@@ -36,7 +36,7 @@ def run(how):
     stop_handler = CommandHandler('stop', stop)
     dispatcher.add_handler(stop_handler)
 
-    help_handler = CommandHandler('help', help)
+    help_handler = CommandHandler('help', helpcommand)
     dispatcher.add_handler(help_handler)
 
     echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
@@ -91,7 +91,7 @@ def start(update: Update, context: CallbackContext):
             symbol = symbol + '/USDT'
         context.user_data["symbol"] = symbol
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                text=_("Selected trading pair: {0}").format(symbol))
+                                 text=_("Selected trading pair: {0}").format(symbol))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Hello!"))
@@ -114,7 +114,7 @@ def echo(update: Update, context: CallbackContext):
     return 1
 
 
-def help(update: Update, context: CallbackContext):
+def helpcommand(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=_("You can control me by sending these commands: \n"
                                     "\n"
@@ -124,7 +124,7 @@ def help(update: Update, context: CallbackContext):
                                     "/orders [SYMBOL] - Show all open orders for the trading pair \n"
                                     "/buy [PARAMS] - Send a new purchase order \n"
                                     "/sell [PARAMS] - Send a new sales order \n"
-                                    "/cancel [PARAMS] - Cancel open order \n"
+                                    "/cancel [SYMBOL] [ORDER ID] - Cancel open order \n"
                                     "/help  - This help"))
 
 
@@ -164,7 +164,7 @@ def openorders(update: Update, context: CallbackContext):
         logger.log(msg='/orders symbol used: {0}'.format(symbol), level=logging.INFO)
         orders = pyCrypto.openorders(symbol=symbol)
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Trading pair: {0} orderns: {1}").format(
+                                 text=_("Trading pair: {0} orders: {1}").format(
                                      symbol,
                                      orders))
     else:
@@ -192,8 +192,25 @@ def cancel(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='cancel'):
         return 1
     logger.log(msg='/cancel', level=logging.INFO)
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=_("Sorry, this isn't working now"))
+    if len(update.effective_message.text.split(' ')) == 3:
+        symbol = update.effective_message.text.split(' ')[1].upper()
+        if '/' not in symbol:
+            symbol = symbol + '/USDT'
+        orderid = update.effective_message.text.split(' ')[2]
+    elif len(update.effective_message.text.split(' ')) == 2 and "symbol" in context.user_data:
+        symbol = context.user_data["symbol"]
+        orderid = update.effective_message.text.split(' ')[1]
+    if 'symbol' in locals() and 'orderid' in locals():
+        logger.log(msg='/cancel symbol: {0}, orderid: {1}'.format(symbol, orderid), level=logging.INFO)
+        status = pyCrypto.cancelorder(orderid=orderid, symbol=symbol)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Canceling order with symbol {0} and id {1} --> status {2}").format(
+                                     symbol,
+                                     orderid,
+                                     status))
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error: invalid parameters"))
 
 
 def unknown(update: Update, context: CallbackContext):

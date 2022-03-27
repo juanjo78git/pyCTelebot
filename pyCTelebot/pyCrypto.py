@@ -37,3 +37,15 @@ def openorders(symbol):
     logger.log(msg='Open orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.INFO)
     # Return
     return orders
+
+
+def cancelorder(orderid, symbol):
+    try:
+        exchange.cancel_order(id=orderid, symbol=symbol)
+        status = 'OK'
+    except BaseException as err :
+        status = str(err)
+    # OrderNotFound exception
+    logger.log(msg='Order {0} - {1}: status: {2}'.format(orderid, symbol, status), level=logging.INFO)
+    # Return
+    return status
