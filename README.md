@@ -13,7 +13,8 @@ Telegram bot to trade.
 
 ### Packages
 * [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) [(doc)](https://python-telegram-bot.readthedocs.io/en/stable/)
-* [ccxt](https://github.com/ccxt/ccxt) [(doc)](https://docs.ccxt.com/en/latest/manual.html)
+* [CCXT – CryptoCurrency eXchange Trading Library](https://github.com/ccxt/ccxt) [(doc)](https://docs.ccxt.com/en/latest/manual.html)
+* [APScheduler - Advanced Python Scheduler](https://github.com/agronholm/apscheduler) [(doc)](https://apscheduler.readthedocs.io/en/3.x/)
 ### APIs
 * [API Telegram](https://core.telegram.org/bots/api)
 

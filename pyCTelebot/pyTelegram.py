@@ -2,7 +2,7 @@
 
 
 from telegram.ext import Updater
-from telegram import Update
+from telegram import Update, Bot
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
@@ -323,6 +323,14 @@ def cancel(update: Update, context: CallbackContext):
 def unknown(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=_("Sorry, I didn't understand that command."))
+
+
+def private_message_admin(message):
+    for admins in USER_ADMIN:
+        # Conexion
+        #updater = Updater(token=TOKEN_TELEGRAM, use_context=True)
+        bot = Bot(token=TOKEN_TELEGRAM)
+        bot.send_message(chat_id=admins, text=message)
 
 
 def authorization(update: Update, context: CallbackContext, action):

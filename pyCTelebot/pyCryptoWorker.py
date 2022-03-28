@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY, TOKEN_CRYPTO_SECRET
-from pyCTelebot import pyCrypto
+from pyCTelebot import pyCrypto, pyTelegram
 import gettext
 import ccxt
 import logging
@@ -31,9 +31,9 @@ def run():
     logger.log(msg='CryptoWorker doing something!', level=logging.INFO)
     # wait in seconds
     symbol = 'ETH/USDT'
+    #
     last_price = pyCrypto.price(symbol=symbol)
-    logger.log(msg='Symbol: {0} price: {1}'.format(
-                    symbol,
-                    last_price), level=logging.INFO)
+    # Send results
+    pyTelegram.private_message_admin(message='Symbol: {0} --> value: {1}'.format(symbol, last_price))
     # wait in seconds
     time.sleep(60)
