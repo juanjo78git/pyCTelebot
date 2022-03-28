@@ -29,11 +29,11 @@ def error_callback(update, context):
 
 def run():
     logger.log(msg='CryptoWorker doing something!', level=logging.INFO)
-    # wait in seconds
     symbol = 'ETH/USDT'
-    #
+    # last_price = 0
     last_price = pyCrypto.price(symbol=symbol)
     # Send results
-    pyTelegram.private_message_admin(message='Symbol: {0} --> value: {1}'.format(symbol, last_price))
+    logger.log(msg='Worker - Symbol: {0} --> value: {1}'.format(symbol, last_price), level=logging.INFO)
+    # pyTelegram.private_message_admin(message='Symbol: {0} --> value: {1}'.format(symbol, last_price))
     # wait in seconds
     time.sleep(60)
