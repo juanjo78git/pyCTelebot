@@ -67,8 +67,6 @@ def run(how):
     dispatcher.add_error_handler(error_callback)
 
     # Comienza el bot
-    print('Hello Bot!')
-
     if how == 'w':
         # O se arranca con webhook
         logger.log(msg='Start with webhook', level=logging.INFO)
