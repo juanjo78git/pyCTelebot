@@ -26,26 +26,59 @@ def error_callback(update, context):
 
 
 def price(symbol):
-    lastprice = exchange.fetch_ticker(symbol=symbol).get('last')
-    logger.log(msg='Search price {0} --> value: {1}'.format(symbol, lastprice), level=logging.INFO)
+    last_price = exchange.fetch_ticker(symbol=symbol).get('last')
+    logger.log(msg='Search price {0} --> value: {1}'.format(symbol, last_price), level=logging.INFO)
     # Return
-    return lastprice
+    return last_price
 
 
-def openorders(symbol):
+def open_orders(symbol):
     orders = exchange.fetch_open_orders(symbol=symbol)
     logger.log(msg='Open orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.INFO)
     # Return
     return orders
 
 
-def cancelorder(orderid, symbol):
+def cancel_order(orderid, symbol):
     try:
         exchange.cancel_order(id=orderid, symbol=symbol)
         status = 'OK'
-    except BaseException as err :
+    except BaseException as err:
+        # Like OrderNotFound exception
         status = str(err)
-    # OrderNotFound exception
+
     logger.log(msg='Order {0} - {1}: status: {2}'.format(orderid, symbol, status), level=logging.INFO)
+    # Return
+    return status
+
+
+def buy_order(symbol, amount, type_order, price=0):
+    try:
+        if type_order == 'market':
+            status = exchange.create_market_buy_order(symbol=symbol, amount=amount)
+        elif type_order == 'limit':
+            status = exchange.create_limit_buy_order(symbol=symbol, amount=amount, price=price)
+        else:
+            status = 'ERROR: Type (market or limit)'
+    except BaseException as err:
+        status = str(err)
+    logger.log(msg='Order {0} - {1} - {2} ({3}): status: {4}'.format(type_order, symbol, amount, price, status),
+               level=logging.INFO)
+    # Return
+    return status
+
+
+def sell_order(symbol, amount, type_order, price=0):
+    try:
+        if type == 'market':
+            status = exchange.create_market_sell_order(symbol=symbol, amount=amount)
+        elif type == 'limit':
+            status = exchange.create_limit_sell_order(symbol=symbol, amount=amount, price=price)
+        else:
+            status = 'ERROR: Type (market or limit)'
+    except BaseException as err:
+        status = str(err)
+    logger.log(msg='Order {0} - {1} - {2} ({3}): status: {4}'.format(type_order, symbol, amount, price, status),
+               level=logging.INFO)
     # Return
     return status

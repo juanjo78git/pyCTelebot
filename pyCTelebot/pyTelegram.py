@@ -36,7 +36,7 @@ def run(how):
     stop_handler = CommandHandler('stop', stop)
     dispatcher.add_handler(stop_handler)
 
-    help_handler = CommandHandler('help', helpcommand)
+    help_handler = CommandHandler('help', help_command)
     dispatcher.add_handler(help_handler)
 
     echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
@@ -45,17 +45,20 @@ def run(how):
     price_handler = CommandHandler('price', price)
     dispatcher.add_handler(price_handler)
 
-    openorders_handler = CommandHandler('orders', openorders)
-    dispatcher.add_handler(openorders_handler)
+    open_orders_handler = CommandHandler('orders', open_orders)
+    dispatcher.add_handler(open_orders_handler)
 
     buy_handler = CommandHandler('buy', buy)
     dispatcher.add_handler(buy_handler)
 
+    buy_limit_handler = CommandHandler('buylimit', buy_limit)
+    dispatcher.add_handler(buy_limit_handler)
+
     sell_handler = CommandHandler('sell', sell)
     dispatcher.add_handler(sell_handler)
 
-    cancelorder_handler = CommandHandler('cancel', cancel)
-    dispatcher.add_handler(cancelorder_handler)
+    cancel_order_handler = CommandHandler('cancel', cancel)
+    dispatcher.add_handler(cancel_order_handler)
 
     # Ultimo evento para comandos desconocidos.
     unknown_handler = MessageHandler(Filters.command, unknown)
@@ -114,7 +117,20 @@ def echo(update: Update, context: CallbackContext):
     return 1
 
 
-def helpcommand(update: Update, context: CallbackContext):
+def help_command(update: Update, context: CallbackContext):
+    """
+    @BotFather /setcommands
+    start - Select a trading pair to work
+    stop - Clean all
+    price - Current trading pair price
+    orders - Show all open orders for the trading pair
+    buy - Send a new purchase order
+    buylimit - Send a new limit purchase order
+    sell - Send a new sales order
+    selllimit - Send a new limit sales order
+    cancel - Cancel open order
+    help - This help
+    """
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=_("You can control me by sending these commands: \n"
                                     "\n"
@@ -122,8 +138,10 @@ def helpcommand(update: Update, context: CallbackContext):
                                     "/stop - Clean all \n"
                                     "/price [SYMBOL] - Current trading pair price \n"
                                     "/orders [SYMBOL] - Show all open orders for the trading pair \n"
-                                    "/buy [PARAMS] - Send a new purchase order \n"
-                                    "/sell [PARAMS] - Send a new sales order \n"
+                                    "/buy [SYMBOL] [AMOUNT] - Send a new purchase order \n"
+                                    "/buylimit [SYMBOL] [AMOUNT] [PRICE] - Send a new limit purchase order \n"
+                                    "/sell [SYMBOL] [AMOUNT] - Send a new sales order \n"
+                                    "/selllimit [SYMBOL] [AMOUNT] [PRICE] - Send a new limit sales order \n"
                                     "/cancel [SYMBOL] [ORDER ID] - Cancel open order \n"
                                     "/help  - This help"))
 
@@ -140,18 +158,18 @@ def price(update: Update, context: CallbackContext):
 
     if 'symbol' in locals():
         logger.log(msg='/price symbol used: {0}'.format(symbol), level=logging.INFO)
-        lastprice = pyCrypto.price(symbol=symbol)
+        last_price = pyCrypto.price(symbol=symbol)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} Last price: {1}").format(
                                      symbol,
-                                     lastprice))
+                                     last_price))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
 
 
-def openorders(update: Update, context: CallbackContext):
-    if not authorization(update=update, context=context, action='openorders'):
+def open_orders(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='open_orders'):
         return 1
     if len(update.effective_message.text.split(' ', 1)) == 2:
         symbol = update.effective_message.text.split(' ', 1)[1].upper()
@@ -162,7 +180,7 @@ def openorders(update: Update, context: CallbackContext):
 
     if 'symbol' in locals():
         logger.log(msg='/orders symbol used: {0}'.format(symbol), level=logging.INFO)
-        orders = pyCrypto.openorders(symbol=symbol)
+        orders = pyCrypto.open_orders(symbol=symbol)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} orders: {1}").format(
                                      symbol,
@@ -176,16 +194,107 @@ def buy(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='buy'):
         return 1
     logger.log(msg='/buy', level=logging.INFO)
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=_("Sorry, this isn't working now"))
+    if len(update.effective_message.text.split(' ')) == 3:
+        symbol = update.effective_message.text.split(' ')[1].upper()
+        if '/' not in symbol:
+            symbol = symbol + '/USDT'
+        amount = update.effective_message.text.split(' ')[2]
+    elif len(update.effective_message.text.split(' ')) == 2 and "symbol" in context.user_data:
+        symbol = context.user_data["symbol"]
+        amount = update.effective_message.text.split(' ')[1]
+    if 'symbol' in locals() and 'amount' in locals():
+        logger.log(msg='/buy symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.INFO)
+        status = pyCrypto.buy_order(symbol=symbol, amount=amount, type_order='market')
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Buying order with symbol {0} and amount {1} --> status {2}").format(
+                                     symbol,
+                                     amount,
+                                     status))
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error: invalid parameters"))
+
+
+def buy_limit(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='buylimit'):
+        return 1
+    logger.log(msg='/buylimit', level=logging.INFO)
+    if len(update.effective_message.text.split(' ')) == 4:
+        symbol = update.effective_message.text.split(' ')[1].upper()
+        if '/' not in symbol:
+            symbol = symbol + '/USDT'
+        amount = update.effective_message.text.split(' ')[2]
+        price = update.effective_message.text.split(' ')[3]
+    elif len(update.effective_message.text.split(' ')) == 3 and "symbol" in context.user_data:
+        symbol = context.user_data["symbol"]
+        amount = update.effective_message.text.split(' ')[1]
+        price = update.effective_message.text.split(' ')[2]
+    if 'symbol' in locals() and 'amount' in locals() and 'price' in locals():
+        logger.log(msg='/buylimit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price), level=logging.INFO)
+        status = pyCrypto.buy_order(symbol=symbol, amount=amount, type_order='limit', price=price)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Create limit buy order with symbol {0}, amount {1} and  price {2}--> status {3}").format(
+                                     symbol,
+                                     amount,
+                                     price,
+                                     status))
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error: invalid parameters"))
 
 
 def sell(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='sell'):
         return 1
     logger.log(msg='/sell', level=logging.INFO)
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=_("Sorry, this isn't working now"))
+    if len(update.effective_message.text.split(' ')) == 3:
+        symbol = update.effective_message.text.split(' ')[1].upper()
+        if '/' not in symbol:
+            symbol = symbol + '/USDT'
+        amount = update.effective_message.text.split(' ')[2]
+    elif len(update.effective_message.text.split(' ')) == 2 and "symbol" in context.user_data:
+        symbol = context.user_data["symbol"]
+        amount = update.effective_message.text.split(' ')[1]
+    if 'symbol' in locals() and 'amount' in locals():
+        logger.log(msg='/sell symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.INFO)
+        status = pyCrypto.sell_order(symbol=symbol, amount=amount, type_order='market')
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Selling order with symbol {0} and amount {1} --> status {2}").format(
+                                     symbol,
+                                     amount,
+                                     status))
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error: invalid parameters"))
+
+
+def sell_limit(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='selllimit'):
+        return 1
+    logger.log(msg='/selllimit', level=logging.INFO)
+    if len(update.effective_message.text.split(' ')) == 4:
+        symbol = update.effective_message.text.split(' ')[1].upper()
+        if '/' not in symbol:
+            symbol = symbol + '/USDT'
+        amount = update.effective_message.text.split(' ')[2]
+        price = update.effective_message.text.split(' ')[3]
+    elif len(update.effective_message.text.split(' ')) == 3 and "symbol" in context.user_data:
+        symbol = context.user_data["symbol"]
+        amount = update.effective_message.text.split(' ')[1]
+        price = update.effective_message.text.split(' ')[2]
+    if 'symbol' in locals() and 'amount' in locals() and 'price' in locals():
+        logger.log(msg='/selllimit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price),
+                   level=logging.INFO)
+        status = pyCrypto.sell_order(symbol=symbol, amount=amount, type_order='limit', price=price)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Create limit sell order with symbol {0}, amount {1} and  price {2}--> status {3}").format(
+                                     symbol,
+                                     amount,
+                                     price,
+                                     status))
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error: invalid parameters"))
 
 
 def cancel(update: Update, context: CallbackContext):
@@ -202,7 +311,7 @@ def cancel(update: Update, context: CallbackContext):
         orderid = update.effective_message.text.split(' ')[1]
     if 'symbol' in locals() and 'orderid' in locals():
         logger.log(msg='/cancel symbol: {0}, orderid: {1}'.format(symbol, orderid), level=logging.INFO)
-        status = pyCrypto.cancelorder(orderid=orderid, symbol=symbol)
+        status = pyCrypto.cancel_order(orderid=orderid, symbol=symbol)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Canceling order with symbol {0} and id {1} --> status {2}").format(
                                      symbol,
