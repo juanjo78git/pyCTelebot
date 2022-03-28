@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY, TOKEN_CRYPTO_SECRET
+from pyCTelebot import pyCrypto
 import gettext
 import ccxt
 import logging
@@ -29,5 +30,10 @@ def error_callback(update, context):
 def run():
     logger.log(msg='CryptoWorker doing something!', level=logging.INFO)
     # wait in seconds
-    time.sleep(100)
-
+    symbol = 'ETH/USDT'
+    last_price = pyCrypto.price(symbol=symbol)
+    logger.log(msg='Symbol: {0} price: {1}'.format(
+                    symbol,
+                    last_price), level=logging.INFO)
+    # wait in seconds
+    time.sleep(60)
