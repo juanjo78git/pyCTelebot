@@ -4,6 +4,7 @@ from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY, TOKEN_CRYPTO_SECRET
 import gettext
 import ccxt
 import logging
+import time
 
 # i18n
 _ = gettext.gettext
@@ -26,4 +27,7 @@ def error_callback(update, context):
 
 
 def run():
-    logger.log(msg='CryptoWorker start!', level=logging.INFO)
+    logger.log(msg='CryptoWorker doing something!', level=logging.INFO)
+    # wait in seconds
+    time.sleep(100)
+
