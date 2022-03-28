@@ -25,4 +25,13 @@ def build_parser():
     parser.add_argument('-Tp', '--TelegramBotPolling',
                         dest='telebot', action='store_true',
                         help='Select Telegram bot run with polling (without it is Webhook)')
+
+    parser.add_argument('-c', '--cron',
+                        dest='cron', action='store_true',
+                        help='Run cron')
+
+    parser.add_argument('-w', '--worker',
+                        dest='worker', action='store_true',
+                        help='Run worker from cron')
+
     return parser

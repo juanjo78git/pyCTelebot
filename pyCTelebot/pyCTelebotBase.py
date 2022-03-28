@@ -6,7 +6,7 @@ import sys
 import gettext
 import json
 import logging
-from pyCTelebot import pyTelegram
+from pyCTelebot import pyTelegram, pyCryptoCron, pyCryptoWorker
 
 # i18n
 _ = gettext.gettext
@@ -32,11 +32,19 @@ def main():
     gettext.textdomain('pyCTelebot')
     gettext.bindtextdomain('pyCTelebot', './pyCTelebot/locale')
 
-    clearscr()
+    clear_screen()
     logger.log(msg='Locale: {0}'.format(os.environ['LANG']), level=logging.INFO)
 
     if options.aboutus:
-        print(printaboutus())
+        print(print_about_us())
+        exit()
+
+    if options.worker:
+        pyCryptoWorker.run()
+        exit()
+
+    if options.cron:
+        pyCryptoCron.run()
         exit()
 
     if options.telebot:
@@ -44,13 +52,11 @@ def main():
     else:
         pyTelegram.run(how='w')
 
-    # TODO: Do something
-    # pyTelegram.run()
     exit()
 
 
 # Clear screen function
-def clearscr():
+def clear_screen():
     osname = os.name
     if osname == 'posix':
         os.system('clear')
@@ -60,7 +66,7 @@ def clearscr():
         print('\n' * 30)
 
 
-def printaboutus():
+def print_about_us():
     # TODO: poedit to generate .pot, .po and .mo
     txt = _('text_aboutus')
     return txt
