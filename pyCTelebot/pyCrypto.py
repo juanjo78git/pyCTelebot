@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY, TOKEN_CRYPTO_SECRET
 import gettext
 import ccxt
@@ -49,8 +50,7 @@ def closed_orders(symbol):
 def balance(symbol):
     balances = exchange.fetch_balance()
     selected = {}
-    logger.log(msg='Balances: {0}'.format(balances), level=logging.INFO)
-    for b in str(balances).strip('[]').replace('{', '').split('}'):
+    for b in json.dumps(balances).strip('[]').replace('{', '').split('}'):
         logger.log(msg='Balance: {0}'.format(b), level=logging.INFO)
         if b.find(symbol) >= 0:
             selected = selected + b + '\n'
