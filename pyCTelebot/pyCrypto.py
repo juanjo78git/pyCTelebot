@@ -47,11 +47,12 @@ def closed_orders(symbol):
 
 
 def balance(symbol):
-    # TODO select a symbol
-    # balances = list(exchange.fetch_balance())
     balances = exchange.fetch_total_balance()
+    all_balances = dict()
     for key in balances:
-        logger.log(msg='Balance: Key {0} - Value: {1}'.format(key, balances[key]), level=logging.INFO)
+        if balances[key] != 0:
+            all_balances[key] = balances[key]
+    logger.log(msg='All balances:  {0}'.format(all_balances), level=logging.INFO)
     logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances[symbol]), level=logging.INFO)
     # Return
     return balances[symbol]
