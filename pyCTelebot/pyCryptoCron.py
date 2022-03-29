@@ -30,12 +30,11 @@ def error_callback(update, context):
 
 def run():
     logger.log(msg='CryptoCron start!', level=logging.INFO)
-    #logging.getLogger('apscheduler.executors.default').setLevel(logging.CRITICAL)
+    # Mute log
     logging.getLogger('apscheduler.scheduler').setLevel(logging.CRITICAL)
-    #logging.getLogger('apscheduler.executors.default').propagate = False
     logging.getLogger('apscheduler.scheduler').propagate = False
     # Create an instance of scheduler and add function.
     scheduler = BlockingScheduler()
-    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=2)
+    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=30)
 
     scheduler.start()

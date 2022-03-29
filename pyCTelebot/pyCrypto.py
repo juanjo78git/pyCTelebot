@@ -39,6 +39,22 @@ def open_orders(symbol):
     return orders
 
 
+def closed_orders(symbol):
+    orders = exchange.fetch_closed_orders(symbol=symbol)
+    logger.log(msg='Closed orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.INFO)
+    # Return
+    return orders
+
+
+def balance(symbol = 'ALL_SYMBOLS'):
+    balances = exchange.fetch_balance()
+    if symbol == 'ALL_SYMBOLS':
+        balances = balances.get('symbol')
+    logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances), level=logging.INFO)
+    # Return
+    return balances
+
+
 def cancel_order(orderid, symbol):
     try:
         exchange.cancel_order(id=orderid, symbol=symbol)

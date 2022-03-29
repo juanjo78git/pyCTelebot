@@ -2,6 +2,7 @@
 
 from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY, TOKEN_CRYPTO_SECRET
 from pyCTelebot import pyCrypto, pyTelegram
+from datetime import datetime
 import gettext
 import ccxt
 import logging
@@ -34,6 +35,6 @@ def run():
     last_price = pyCrypto.price(symbol=symbol)
     # Send results
     logger.log(msg='Worker - Symbol: {0} --> value: {1}'.format(symbol, last_price), level=logging.INFO)
-    # pyTelegram.private_message_admin(message='Symbol: {0} --> value: {1}'.format(symbol, last_price))
+    pyTelegram.private_message_admin(message='Worker {0} - Symbol: {1} --> value: {2}'.format(datetime.now(), symbol, last_price))
     # wait in seconds
-    time.sleep(60)
+    time.sleep(30)
