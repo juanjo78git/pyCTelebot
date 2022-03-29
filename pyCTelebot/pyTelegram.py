@@ -188,12 +188,14 @@ def balance(update: Update, context: CallbackContext):
         logger.log(msg='/balance symbol used: {0}'.format(symbol), level=logging.INFO)
         balances = pyCrypto.balance(symbol=symbol)
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                text=_("Symbol: {0} Balance: {1}").format(
-                                     symbol,
-                                     balances))
+                                 text=_("Symbol: {0} Balance: {1}").format(
+                                      symbol,
+                                      balances))
     else:
+        balances = pyCrypto.balance()
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Error: invalid parameters"))
+                                 text=_("All balances: {0}").format(
+                                     balances))
 
 
 def open_orders(update: Update, context: CallbackContext):
@@ -285,7 +287,8 @@ def buy_limit(update: Update, context: CallbackContext):
         status = pyCrypto.buy_order(symbol=symbol, amount=amount, type_order='limit', price=price)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_(
-                                     "Create limit buy order with symbol {0}, amount {1} and  price {2}--> status {3}").format(
+                                     "Create limit buy order with "
+                                     "symbol {0}, amount {1} and  price {2}--> status {3}").format(
                                      symbol,
                                      amount,
                                      price,
@@ -340,7 +343,8 @@ def sell_limit(update: Update, context: CallbackContext):
         status = pyCrypto.sell_order(symbol=symbol, amount=amount, type_order='limit', price=price)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_(
-                                     "Create limit sell order with symbol {0}, amount {1} and  price {2}--> status {3}").format(
+                                     "Create limit sell order with "
+                                     "symbol {0}, amount {1} and  price {2}--> status {3}").format(
                                      symbol,
                                      amount,
                                      price,

@@ -35,6 +35,8 @@ def run():
     last_price = pyCrypto.price(symbol=symbol)
     # Send results
     logger.log(msg='Worker - Symbol: {0} --> value: {1}'.format(symbol, last_price), level=logging.INFO)
-    pyTelegram.private_message_admin(message='Worker {0} - Symbol: {1} --> value: {2}'.format(datetime.now(), symbol, last_price))
+    pyTelegram.private_message_admin(message='Worker {0} - Symbol: {1} --> value: {2}'.format(datetime.now(),
+                                                                                              symbol,
+                                                                                              last_price))
     # wait in seconds
     time.sleep(30)
