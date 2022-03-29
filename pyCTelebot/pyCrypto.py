@@ -49,6 +49,7 @@ def closed_orders(symbol):
 def balance(symbol):
     balances = exchange.fetch_balance().get('balances')
     selected = {}
+    logger.log(msg='Balances: {0}'.format(balances), level=logging.INFO)
     for b in str(balances).strip('[]').replace('{', '').split('}'):
         logger.log(msg='Balance: {0}'.format(b), level=logging.INFO)
         if b.find(symbol) >= 0:
