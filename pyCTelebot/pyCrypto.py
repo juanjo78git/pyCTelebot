@@ -47,8 +47,7 @@ def closed_orders(symbol):
 
 
 def balance(symbol):
-    balances = exchange.fil
-    exchange.fetch_balance()
+    balances = exchange.fetch_balance()
     selected = {}
     for b in balances.get('balances').strip('[]').replace('{', '').split('}'):
         if symbol in b:
