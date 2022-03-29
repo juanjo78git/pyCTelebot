@@ -46,10 +46,12 @@ def closed_orders(symbol):
     return orders
 
 
-def balance(symbol = 'ALL_SYMBOLS'):
+def balance(symbol):
     balances = exchange.fetch_balance()
-    if symbol == 'ALL_SYMBOLS':
-        balances = balances.get('symbol')
+    selected = {}
+    for b in balances.get('balances'):
+        if b.get('asset') == symbol:
+            selected = selected + b
     logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances), level=logging.INFO)
     # Return
     return balances

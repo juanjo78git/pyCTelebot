@@ -192,11 +192,8 @@ def balance(update: Update, context: CallbackContext):
                                      symbol,
                                      balances))
     else:
-        balances = pyCrypto.balance()
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("All balance: {1}").format(
-                                     symbol,
-                                     balances))
+                                 text=_("Error: invalid parameters"))
 
 
 def open_orders(update: Update, context: CallbackContext):
