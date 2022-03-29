@@ -38,5 +38,3 @@ def run():
     pyTelegram.private_message_admin(message='Worker {0} - Symbol: {1} --> value: {2}'.format(datetime.now(),
                                                                                               symbol,
                                                                                               last_price))
-    # wait in seconds
-    time.sleep(30)
