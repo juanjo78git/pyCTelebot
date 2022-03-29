@@ -144,7 +144,7 @@ def help_command(update: Update, context: CallbackContext):
                                     "/start [SYMBOL] - Select a trading pair to work \n"
                                     "/stop - Clean all \n"
                                     "/price [SYMBOL] - Current trading pair price \n"
-                                    "/balance [SYMBOL] - Current balance \n"
+                                    "/balance [SYMBOL] - Current balance, without params show all balances \n"
                                     "/open_orders [SYMBOL] - Show all open orders for the trading pair \n"
                                     "/closed_orders [SYMBOL] - Show all closed orders for the trading pair \n"
                                     "/buy [SYMBOL] [AMOUNT] - Send a new purchase order \n"
