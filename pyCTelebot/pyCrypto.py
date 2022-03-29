@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
 from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY, TOKEN_CRYPTO_SECRET
 import gettext
 import ccxt
@@ -49,7 +48,8 @@ def closed_orders(symbol):
 
 def balance(symbol):
     # TODO select a symbol
-    balances = exchange.fetch_balance()
+    # balances = list(exchange.fetch_balance())
+    balances = exchange.fetch_total_balance()
     logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances), level=logging.INFO)
     # Return
     return balances
