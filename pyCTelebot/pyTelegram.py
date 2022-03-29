@@ -186,11 +186,14 @@ def balance(update: Update, context: CallbackContext):
         symbol = context.user_data["symbol"].split('/', 1)[0]
     if 'symbol' in locals():
         logger.log(msg='/balance symbol used: {0}'.format(symbol), level=logging.INFO)
-        balances = pyCrypto.balance(symbol=symbol)
+        # TODO not implemented
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Symbol: {0} Balance: {1}").format(
-                                     symbol,
-                                     balances))
+                                 text=_("NOT yet implemented"))
+        # balances = pyCrypto.balance(symbol=symbol)
+        # context.bot.send_message(chat_id=update.effective_chat.id,
+        #                         text=_("Symbol: {0} Balance: {1}").format(
+        #                             symbol,
+        #                             balances))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -284,7 +287,8 @@ def buy_limit(update: Update, context: CallbackContext):
                    level=logging.INFO)
         status = pyCrypto.buy_order(symbol=symbol, amount=amount, type_order='limit', price=price)
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Create limit buy order with symbol {0}, amount {1} and  price {2}--> status {3}").format(
+                                 text=_(
+                                     "Create limit buy order with symbol {0}, amount {1} and  price {2}--> status {3}").format(
                                      symbol,
                                      amount,
                                      price,
@@ -338,7 +342,8 @@ def sell_limit(update: Update, context: CallbackContext):
                    level=logging.INFO)
         status = pyCrypto.sell_order(symbol=symbol, amount=amount, type_order='limit', price=price)
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Create limit sell order with symbol {0}, amount {1} and  price {2}--> status {3}").format(
+                                 text=_(
+                                     "Create limit sell order with symbol {0}, amount {1} and  price {2}--> status {3}").format(
                                      symbol,
                                      amount,
                                      price,

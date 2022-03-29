@@ -48,15 +48,11 @@ def closed_orders(symbol):
 
 
 def balance(symbol):
+    # TODO select a symbol
     balances = exchange.fetch_balance()
-    selected = {}
-    for b in json.dumps(balances).strip('[]').replace('{', '').split('}'):
-        logger.log(msg='Balance: {0}'.format(b), level=logging.INFO)
-        if b.find(symbol) >= 0:
-            selected = selected + b + '\n'
-    logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, selected), level=logging.INFO)
+    logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances), level=logging.INFO)
     # Return
-    return selected
+    return balances
 
 
 def cancel_order(orderid, symbol):
