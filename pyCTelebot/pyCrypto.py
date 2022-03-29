@@ -48,7 +48,7 @@ def closed_orders(symbol):
 
 def balance(symbol):
     balances = exchange.fetch_total_balance()
-    all_balances = dict()
+    all_balances = {}
     for key in balances:
         if balances[key] != 0:
             all_balances[key] = balances[key]
