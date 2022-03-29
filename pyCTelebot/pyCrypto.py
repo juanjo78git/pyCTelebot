@@ -47,9 +47,9 @@ def closed_orders(symbol):
 
 
 def balance(symbol):
-    balances = exchange.fetch_balance()
+    balances = exchange.fetch_balance().get('balances')
     selected = {}
-    for b in str(balances.get('balances')).strip('[]').replace('{', '').split('}'):
+    for b in str(balances).strip('[]').replace('{', '').split('}'):
         if symbol in b:
             selected = selected + b + '\n'
     logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances), level=logging.INFO)
