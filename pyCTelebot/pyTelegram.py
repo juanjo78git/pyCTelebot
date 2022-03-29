@@ -186,14 +186,11 @@ def balance(update: Update, context: CallbackContext):
         symbol = context.user_data["symbol"].split('/', 1)[0]
     if 'symbol' in locals():
         logger.log(msg='/balance symbol used: {0}'.format(symbol), level=logging.INFO)
-        # TODO not implemented
+        balances = pyCrypto.balance(symbol=symbol)
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("NOT yet implemented"))
-        # balances = pyCrypto.balance(symbol=symbol)
-        # context.bot.send_message(chat_id=update.effective_chat.id,
-        #                         text=_("Symbol: {0} Balance: {1}").format(
-        #                             symbol,
-        #                             balances))
+                                text=_("Symbol: {0} Balance: {1}").format(
+                                     symbol,
+                                     balances))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
