@@ -50,11 +50,12 @@ def balance(symbol):
     balances = exchange.fetch_balance().get('balances')
     selected = {}
     for b in str(balances).strip('[]').replace('{', '').split('}'):
-        if symbol in b:
+        logger.log(msg='Balance: {0}'.format(b), level=logging.INFO)
+        if b.find(symbol) >= 0:
             selected = selected + b + '\n'
-    logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances), level=logging.INFO)
+    logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, selected), level=logging.INFO)
     # Return
-    return balances
+    return selected
 
 
 def cancel_order(orderid, symbol):
