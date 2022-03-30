@@ -6,6 +6,7 @@ from datetime import datetime
 import gettext
 import ccxt
 import logging
+import pytz
 
 # i18n
 _ = gettext.gettext
@@ -29,9 +30,10 @@ def error_callback(update, context):
 
 def run():
     logger.log(msg='CryptoWorker doing something!', level=logging.INFO)
-    #symbol = 'ETH/USDT'
-    # last_price = pyCrypto.price(symbol=symbol)
+    symbol = 'ETH/USDT'
+    last_price = pyCrypto.price(symbol=symbol)
     # Send results
     # logger.log(msg='Worker - Symbol: {0} --> value: {1}'.format(symbol, last_price), level=logging.INFO)
-
-    pyTelegram.private_message_admin(message='Worker: {0}'.format(datetime.now()))
+    pyTelegram.private_message_admin(message='Worker: {0} UTC: {1}'.format(
+        datetime.now(tz=pytz.timezone("Europe/Madrid")),
+        datetime.now()))
