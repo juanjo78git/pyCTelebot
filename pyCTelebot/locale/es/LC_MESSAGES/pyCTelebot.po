@@ -16,7 +16,7 @@ msgstr ""
 "X-Poedit-SearchPath-1: pyTelegram.py\n"
 
 #: pyCTelebotBase.py:55
-msgid "text_aboutus"
+msgid "text_about"
 msgstr "Este es mi primer poyecto"
 
 #: pyTelegram.py:53

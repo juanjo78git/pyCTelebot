@@ -18,8 +18,8 @@ def build_parser():
                         dest='lang', type=str, default='',
                         help='Select language (es, en)')
 
-    parser.add_argument('-a', '--aboutus',
-                        dest='aboutus', action='store_true', 
+    parser.add_argument('-a', '--about',
+                        dest='about', action='store_true',
                         help='Show About Us')
 
     parser.add_argument('-Tp', '--TelegramBotPolling',

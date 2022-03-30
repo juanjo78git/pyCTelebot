@@ -4,7 +4,6 @@ from pyCTelebot import buildparser
 import os
 import sys
 import gettext
-import json
 import logging
 from pyCTelebot import pyTelegram, pyCryptoCron, pyCryptoWorker
 
@@ -15,6 +14,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
 
 def main():
     # Get Args
@@ -35,7 +35,7 @@ def main():
     clear_screen()
     logger.log(msg='Locale: {0}'.format(os.environ['LANG']), level=logging.INFO)
 
-    if options.aboutus:
+    if options.about:
         print(print_about_us())
         exit()
 
@@ -68,7 +68,7 @@ def clear_screen():
 
 def print_about_us():
     # TODO: poedit to generate .pot, .po and .mo
-    txt = _('text_aboutus')
+    txt = _('text_about')
     return txt
 
 

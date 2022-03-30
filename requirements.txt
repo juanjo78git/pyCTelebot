@@ -2,5 +2,5 @@ coverage
 coveralls
 codacy-coverage
 python-telegram-bot
-ccxt
-apscheduler
+ccxt==1.77.49
+apscheduler==3.9.1

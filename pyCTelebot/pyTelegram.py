@@ -115,11 +115,10 @@ def stop(update: Update, context: CallbackContext):
 
 # Eco
 def echo(update: Update, context: CallbackContext):
-    # if not authorization(update=update, context=context, action='echo'):
-    #    return 1
+    if not authorization(update=update, context=context, action='echo'):
+        return 1
     # context.bot.send_message(chat_id=update.effective_chat.id, text=_("{0} said: {1}").format(
     #    update.effective_user.first_name, update.message.text))
-    return 1
 
 
 def help_command(update: Update, context: CallbackContext):
@@ -276,22 +275,22 @@ def buy_limit(update: Update, context: CallbackContext):
         if '/' not in symbol:
             symbol = symbol + '/USDT'
         amount = update.effective_message.text.split(' ')[2]
-        price = update.effective_message.text.split(' ')[3]
+        price_limit = update.effective_message.text.split(' ')[3]
     elif len(update.effective_message.text.split(' ')) == 3 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
         amount = update.effective_message.text.split(' ')[1]
-        price = update.effective_message.text.split(' ')[2]
-    if 'symbol' in locals() and 'amount' in locals() and 'price' in locals():
-        logger.log(msg='/buy_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price),
+        price_limit = update.effective_message.text.split(' ')[2]
+    if 'symbol' in locals() and 'amount' in locals() and 'price_limit' in locals():
+        logger.log(msg='/buy_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
                    level=logging.INFO)
-        status = pyCrypto.buy_order(symbol=symbol, amount=amount, type_order='limit', price=price)
+        status = pyCrypto.buy_order(symbol=symbol, amount=amount, type_order='limit', price_limit=price_limit)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_(
                                      "Create limit buy order with "
                                      "symbol {0}, amount {1} and  price {2}--> status {3}").format(
                                      symbol,
                                      amount,
-                                     price,
+                                     price_limit,
                                      status))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
@@ -332,22 +331,22 @@ def sell_limit(update: Update, context: CallbackContext):
         if '/' not in symbol:
             symbol = symbol + '/USDT'
         amount = update.effective_message.text.split(' ')[2]
-        price = update.effective_message.text.split(' ')[3]
+        price_limit = update.effective_message.text.split(' ')[3]
     elif len(update.effective_message.text.split(' ')) == 3 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
         amount = update.effective_message.text.split(' ')[1]
-        price = update.effective_message.text.split(' ')[2]
-    if 'symbol' in locals() and 'amount' in locals() and 'price' in locals():
-        logger.log(msg='/sell_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price),
+        price_limit = update.effective_message.text.split(' ')[2]
+    if 'symbol' in locals() and 'amount' in locals() and 'price_limit' in locals():
+        logger.log(msg='/sell_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
                    level=logging.INFO)
-        status = pyCrypto.sell_order(symbol=symbol, amount=amount, type_order='limit', price=price)
+        status = pyCrypto.sell_order(symbol=symbol, amount=amount, type_order='limit', price_limit=price_limit)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_(
                                      "Create limit sell order with "
                                      "symbol {0}, amount {1} and  price {2}--> status {3}").format(
                                      symbol,
                                      amount,
-                                     price,
+                                     price_limit,
                                      status))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,

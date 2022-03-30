@@ -6,7 +6,6 @@ from datetime import datetime
 import gettext
 import ccxt
 import logging
-import time
 
 # i18n
 _ = gettext.gettext

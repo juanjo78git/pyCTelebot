@@ -74,33 +74,33 @@ def cancel_order(orderid, symbol):
     return status
 
 
-def buy_order(symbol, amount, type_order, price=0):
+def buy_order(symbol, amount, type_order, price_limit=0):
     try:
         if type_order == 'market':
             status = exchange.create_market_buy_order(symbol=symbol, amount=amount)
         elif type_order == 'limit':
-            status = exchange.create_limit_buy_order(symbol=symbol, amount=amount, price=price)
+            status = exchange.create_limit_buy_order(symbol=symbol, amount=amount, price=price_limit)
         else:
             status = 'ERROR: Type (market or limit)'
     except BaseException as err:
         status = str(err)
-    logger.log(msg='Order {0} - {1} - {2} ({3}): status: {4}'.format(type_order, symbol, amount, price, status),
+    logger.log(msg='Order {0} - {1} - {2} ({3}): status: {4}'.format(type_order, symbol, amount, price_limit, status),
                level=logging.INFO)
     # Return
     return status
 
 
-def sell_order(symbol, amount, type_order, price=0):
+def sell_order(symbol, amount, type_order, price_limit=0):
     try:
         if type == 'market':
             status = exchange.create_market_sell_order(symbol=symbol, amount=amount)
         elif type == 'limit':
-            status = exchange.create_limit_sell_order(symbol=symbol, amount=amount, price=price)
+            status = exchange.create_limit_sell_order(symbol=symbol, amount=amount, price=price_limit)
         else:
             status = 'ERROR: Type (market or limit)'
     except BaseException as err:
         status = str(err)
-    logger.log(msg='Order {0} - {1} - {2} ({3}): status: {4}'.format(type_order, symbol, amount, price, status),
+    logger.log(msg='Order {0} - {1} - {2} ({3}): status: {4}'.format(type_order, symbol, amount, price_limit, status),
                level=logging.INFO)
     # Return
     return status

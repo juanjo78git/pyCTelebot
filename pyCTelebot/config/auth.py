@@ -5,7 +5,7 @@ import os
 # TOKEN_TELEGRAM = 'Your Token'
 TOKEN_TELEGRAM = os.environ.get('TOKEN_TELEGRAM', 'NOT_FOUND')
 
-# Webook telegram Heroku
+# Webhook telegram Heroku
 WEBHOOK_URL_TELEGRAM = 'https://pyctelebot.herokuapp.com/'
 PORT = int(os.environ.get('PORT', 5000))
 
