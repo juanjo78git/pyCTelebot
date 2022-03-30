@@ -26,7 +26,7 @@ def error_callback(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
-def connection(user='READONLY'):
+def connection(user='ME'):
     # Binance connection
     logger.log(msg='Exchange connection user: {0}'.format(user), level=logging.INFO)
     if user == 'READONLY':
@@ -44,7 +44,7 @@ def connection(user='READONLY'):
     return exchange
 
 
-def price(symbol, exchange=connection()):
+def price(symbol, exchange=connection('READONLY')):
     last_price = exchange.fetch_ticker(symbol=symbol).get('last')
     logger.log(msg='Search price {0} --> value: {1}'.format(symbol, last_price), level=logging.INFO)
     # Return
