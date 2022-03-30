@@ -42,6 +42,12 @@ NOTE: If you want to run it with polling, you can use param -Tp
 $ python -m pyCTelebot.pyCTelebotBase -Tp
 ```
 
+#### Run cron for do something
+If you want to run a cron, you can use param -c
+```shell
+$ python -m pyCTelebot.pyCTelebotBase -c
+```
+
 #### For developers
 ```shell
 git clone https://github.com/juanjo78git/pyCTelebot.git
