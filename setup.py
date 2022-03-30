@@ -13,6 +13,7 @@ setup(
     author_email='juanjo78@gmail.com',
     description='pyCTelebot',
     long_description="On github: https://github.com/juanjo78git/pyCTelebot",
+    long_description_content_type='text/markdown',
     install_requires=[],
     url='https://github.com/juanjo78git/pyCTelebot',
     classifiers=[
