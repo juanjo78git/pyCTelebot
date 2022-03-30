@@ -1,7 +1,7 @@
 coverage
 coveralls
 codacy-coverage
-python-telegram-bot==13.11
+python-telegram-bot
 ccxt==1.77.49
 apscheduler==3.9.1
-pytz==2022.1
+pytz
