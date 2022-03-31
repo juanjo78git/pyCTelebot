@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from ccxt import binance
-from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY, TOKEN_CRYPTO_SECRET, TOKEN_CRYPTO_KEY_RO, TOKEN_CRYPTO_SECRET_RO
+from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY_RO, TOKEN_CRYPTO_SECRET_RO, select_user
 import gettext
 import ccxt
 import logging
@@ -25,6 +25,7 @@ logger.setLevel(logging.DEBUG)
 def connection(user='ME'):
     # Binance connection
     logger.log(msg='Exchange connection user: {0}'.format(user), level=logging.INFO)
+    exchange = None
     try:
         if user == 'READONLY':
             exchange = ccxt.binance({
@@ -32,10 +33,14 @@ def connection(user='ME'):
                 'secret': TOKEN_CRYPTO_SECRET_RO
             })
         else:
-            exchange = ccxt.binance({
-                'apiKey': TOKEN_CRYPTO_KEY,
-                'secret': TOKEN_CRYPTO_SECRET
-            })
+            u = select_user(user=user, telegramid=user)
+            if u is None:
+                raise Exception("User does not exist {0}".format(user))
+            if u['exchange'] == 'binance':
+                exchange = ccxt.binance({
+                    'apiKey': u['apiKey'],
+                    'secret': u['secret']
+                })
         # enable rate limiting
         # exchange.enableRateLimit = True
     except Exception as err:
@@ -49,7 +54,11 @@ def connection(user='ME'):
         return exchange
 
 
-def price(symbol, exchange=connection('READONLY')):
+def price(symbol, user=None):
+    if user is None:
+        exchange = connection(user='READONLY')
+    else:
+        exchange = connection(user=user)
     try:
         last_price = exchange.fetch_ticker(symbol=symbol).get('last')
     except Exception as err:
@@ -64,7 +73,11 @@ def price(symbol, exchange=connection('READONLY')):
         return last_price
 
 
-def open_orders(symbol, exchange=connection()):
+def open_orders(symbol, user=None):
+    if user is None:
+        exchange = connection(user='READONLY')
+    else:
+        exchange = connection(user=user)
     try:
         orders = exchange.fetch_open_orders(symbol=symbol)
     except Exception as err:
@@ -79,7 +92,11 @@ def open_orders(symbol, exchange=connection()):
         return orders
 
 
-def closed_orders(symbol, exchange=connection()):
+def closed_orders(symbol, user=None):
+    if user is None:
+        exchange = connection(user='READONLY')
+    else:
+        exchange = connection(user=user)
     try:
         orders = exchange.fetch_closed_orders(symbol=symbol)
     except Exception as err:
@@ -94,7 +111,11 @@ def closed_orders(symbol, exchange=connection()):
         return orders
 
 
-def balance(symbol='ALL_BALANCES', exchange=connection()):
+def balance(symbol=None, user=None):
+    if user is None:
+        exchange = connection(user='READONLY')
+    else:
+        exchange = connection(user=user)
     try:
         balances = exchange.fetch_total_balance()
         all_balances = {}
@@ -109,7 +130,7 @@ def balance(symbol='ALL_BALANCES', exchange=connection()):
             level=logging.ERROR)
         raise
     else:
-        if symbol == 'ALL_BALANCES':
+        if symbol is None:
             logger.log(msg='All balances:  {0}'.format(all_balances), level=logging.INFO)
             return all_balances
         else:
@@ -117,7 +138,11 @@ def balance(symbol='ALL_BALANCES', exchange=connection()):
             return balances[symbol]
 
 
-def cancel_order(orderid, symbol, exchange=connection()):
+def cancel_order(orderid, symbol, user=None):
+    if user is None:
+        exchange = connection(user='READONLY')
+    else:
+        exchange = connection(user=user)
     try:
         status = exchange.cancel_order(id=orderid, symbol=symbol)
     except Exception as err:
@@ -134,7 +159,11 @@ def cancel_order(orderid, symbol, exchange=connection()):
         return status
 
 
-def buy_order(symbol, amount, type_order, price_limit=0, exchange=connection()):
+def buy_order(symbol, amount, type_order, price_limit=0, user=None):
+    if user is None:
+        exchange = connection(user='READONLY')
+    else:
+        exchange = connection(user=user)
     try:
         if type_order == 'market':
             status = exchange.create_market_buy_order(symbol=symbol, amount=amount)
@@ -162,7 +191,11 @@ def buy_order(symbol, amount, type_order, price_limit=0, exchange=connection()):
         return status
 
 
-def sell_order(symbol, amount, type_order, price_limit=0, exchange=connection()):
+def sell_order(symbol, amount, type_order, price_limit=0, user=None):
+    if user is None:
+        exchange = connection(user='READONLY')
+    else:
+        exchange = connection(user=user)
     try:
         if type == 'market':
             status = exchange.create_market_sell_order(symbol=symbol, amount=amount)

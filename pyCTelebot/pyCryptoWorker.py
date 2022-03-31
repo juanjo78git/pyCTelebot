@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY, TOKEN_CRYPTO_SECRET
 from pyCTelebot import pyCrypto, pyTelegram
 from datetime import datetime
 import gettext
@@ -10,12 +9,6 @@ import pytz
 
 # i18n
 _ = gettext.gettext
-
-# Binance connection
-exchange = ccxt.binance({
-    'apiKey': TOKEN_CRYPTO_KEY,
-    'secret': TOKEN_CRYPTO_SECRET
-})
 
 # Logs
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -34,3 +27,4 @@ def run():
         datetime.now(tz=pytz.timezone("Europe/Madrid")),
         datetime.now(),
         last_price))
+

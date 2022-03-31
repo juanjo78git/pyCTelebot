@@ -7,7 +7,7 @@ from telegram.error import TelegramError
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
-from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, USER_ADMIN
+from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, users
 from pyCTelebot import pyCrypto
 import gettext
 import logging
@@ -168,7 +168,7 @@ def price(update: Update, context: CallbackContext):
     if 'symbol' in locals():
         logger.log(msg='/price symbol used: {0}'.format(symbol), level=logging.INFO)
         try:
-            last_price = pyCrypto.price(symbol=symbol)
+            last_price = pyCrypto.price(symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Trading pair: {0} Last price: {1}").format(
                                          symbol,
@@ -195,7 +195,7 @@ def balance(update: Update, context: CallbackContext):
     if 'symbol' in locals():
         logger.log(msg='/balance symbol used: {0}'.format(symbol), level=logging.INFO)
         try:
-            balances = pyCrypto.balance(symbol=symbol)
+            balances = pyCrypto.balance(symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Symbol: {0} Balance: {1}").format(
                                           symbol,
@@ -209,7 +209,7 @@ def balance(update: Update, context: CallbackContext):
                                          _("ERROR: I can't do it")))
     else:
         try:
-            balances = pyCrypto.balance()
+            balances = pyCrypto.balance(user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("All balances: {0}").format(
                                          balances))
@@ -234,7 +234,7 @@ def open_orders(update: Update, context: CallbackContext):
     if 'symbol' in locals():
         logger.log(msg='/open_orders symbol used: {0}'.format(symbol), level=logging.INFO)
         try:
-            orders = pyCrypto.open_orders(symbol=symbol)
+            orders = pyCrypto.open_orders(symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Trading pair: {0} open orders: {1}").format(
                                          symbol,
@@ -264,7 +264,7 @@ def closed_orders(update: Update, context: CallbackContext):
     if 'symbol' in locals():
         logger.log(msg='/closed_orders symbol used: {0}'.format(symbol), level=logging.INFO)
         try:
-            orders = pyCrypto.closed_orders(symbol=symbol)
+            orders = pyCrypto.closed_orders(symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Trading pair: {0} closed orders: {1}").format(
                                          symbol,
@@ -296,7 +296,10 @@ def buy(update: Update, context: CallbackContext):
     if 'symbol' in locals() and 'amount' in locals():
         logger.log(msg='/buy symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.INFO)
         try:
-            status = pyCrypto.buy_order(symbol=symbol, amount=amount, type_order='market')
+            status = pyCrypto.buy_order(symbol=symbol,
+                                        amount=amount,
+                                        type_order='market',
+                                        user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Buying order with symbol {0} and amount {1} --> status {2}").format(
                                          symbol,
@@ -334,7 +337,11 @@ def buy_limit(update: Update, context: CallbackContext):
         logger.log(msg='/buy_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
                    level=logging.INFO)
         try:
-            status = pyCrypto.buy_order(symbol=symbol, amount=amount, type_order='limit', price_limit=price_limit)
+            status = pyCrypto.buy_order(symbol=symbol,
+                                        amount=amount,
+                                        type_order='limit',
+                                        price_limit=price_limit,
+                                        user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_(
                                          "Create limit buy order with "
@@ -373,7 +380,10 @@ def sell(update: Update, context: CallbackContext):
     if 'symbol' in locals() and 'amount' in locals():
         logger.log(msg='/sell symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.INFO)
         try:
-            status = pyCrypto.sell_order(symbol=symbol, amount=amount, type_order='market')
+            status = pyCrypto.sell_order(symbol=symbol,
+                                         amount=amount,
+                                         type_order='market',
+                                         user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Selling order with "
                                             "symbol {0} and amount {1} --> status {2}").format(
@@ -412,7 +422,11 @@ def sell_limit(update: Update, context: CallbackContext):
         logger.log(msg='/sell_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
                    level=logging.INFO)
         try:
-            status = pyCrypto.sell_order(symbol=symbol, amount=amount, type_order='limit', price_limit=price_limit)
+            status = pyCrypto.sell_order(symbol=symbol,
+                                         amount=amount,
+                                         type_order='limit',
+                                         price_limit=price_limit,
+                                         user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_(
                                          "Create limit sell order with "
@@ -451,7 +465,7 @@ def cancel(update: Update, context: CallbackContext):
     if 'symbol' in locals() and 'orderid' in locals():
         logger.log(msg='/cancel symbol: {0}, orderid: {1}'.format(symbol, orderid), level=logging.INFO)
         try:
-            status = pyCrypto.cancel_order(orderid=orderid, symbol=symbol)
+            status = pyCrypto.cancel_order(orderid=orderid, symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Canceling order with "
                                             "symbol {0} and id {1} --> status {2}").format(
@@ -481,26 +495,26 @@ def unknown(update: Update, context: CallbackContext):
 
 
 def private_message_admins(message):
-    for user in USER_ADMIN:
+    for user in users('ADMIN'):
         bot = Bot(token=TOKEN_TELEGRAM)
         try:
-            bot.send_message(chat_id=user, text=message)
+            bot.send_message(chat_id=user['telegramid'], text=message)
         except TelegramError as err:
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
 
 
-def private_message(message, users):
-    for user in users:
-        bot = Bot(token=TOKEN_TELEGRAM)
-        try:
-            bot.send_message(chat_id=users, text=message)
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+def private_message(message, user):
+    bot = Bot(token=TOKEN_TELEGRAM)
+    try:
+        bot.send_message(chat_id=user['telegramid'], text=message)
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
 
 
 def authorization(update: Update, context: CallbackContext, action):
     logger.log(msg='User: {0} action: {1}'.format(update.effective_user.id, action), level=logging.INFO)
-    if str(update.effective_user.id) in USER_ADMIN:
+
+    if next((user for user in users('ADMIN') if user['telegramid'] == str(update.effective_user.id)), None):
         return True
     else:
         try:

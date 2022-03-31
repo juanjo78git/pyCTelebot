@@ -11,12 +11,6 @@ from pyCTelebot import pyCryptoWorker
 # i18n
 _ = gettext.gettext
 
-# Binance connection
-exchange = ccxt.binance({
-    'apiKey': TOKEN_CRYPTO_KEY,
-    'secret': TOKEN_CRYPTO_SECRET
-})
-
 # Logs
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
