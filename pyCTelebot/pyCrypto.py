@@ -22,75 +22,116 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def error_callback(update, context):
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
-
-
 def connection(user='ME'):
     # Binance connection
     logger.log(msg='Exchange connection user: {0}'.format(user), level=logging.INFO)
-    if user == 'READONLY':
-        exchange = ccxt.binance({
-            'apiKey': TOKEN_CRYPTO_KEY_RO,
-            'secret': TOKEN_CRYPTO_SECRET_RO
-        })
+    try:
+        if user == 'READONLY':
+            exchange = ccxt.binance({
+                'apiKey': TOKEN_CRYPTO_KEY_RO,
+                'secret': TOKEN_CRYPTO_SECRET_RO
+            })
+        else:
+            exchange = ccxt.binance({
+                'apiKey': TOKEN_CRYPTO_KEY,
+                'secret': TOKEN_CRYPTO_SECRET
+            })
+        # enable rate limiting
+        # exchange.enableRateLimit = True
+    except Exception as err:
+        logger.log(
+            msg='connection {0}: status: {1} - {2}'.format(user,
+                                                           type(err),
+                                                           str(err)),
+            level=logging.ERROR)
+        raise
     else:
-        exchange = ccxt.binance({
-            'apiKey': TOKEN_CRYPTO_KEY,
-            'secret': TOKEN_CRYPTO_SECRET
-        })
-    # enable rate limiting
-    # exchange.enableRateLimit = True
-    return exchange
+        return exchange
 
 
 def price(symbol, exchange=connection('READONLY')):
-    last_price = exchange.fetch_ticker(symbol=symbol).get('last')
-    logger.log(msg='Search price {0} --> value: {1}'.format(symbol, last_price), level=logging.INFO)
-    # Return
-    return last_price
+    try:
+        last_price = exchange.fetch_ticker(symbol=symbol).get('last')
+    except Exception as err:
+        logger.log(
+            msg='price {0}: status: {1} - {2}'.format(symbol,
+                                                      type(err),
+                                                      str(err)),
+            level=logging.ERROR)
+        raise
+    else:
+        logger.log(msg='Search price {0} --> value: {1}'.format(symbol, last_price), level=logging.INFO)
+        return last_price
 
 
 def open_orders(symbol, exchange=connection()):
-    orders = exchange.fetch_open_orders(symbol=symbol)
-    logger.log(msg='Open orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.INFO)
-    # Return
-    return orders
+    try:
+        orders = exchange.fetch_open_orders(symbol=symbol)
+    except Exception as err:
+        logger.log(
+            msg='open_orders {0}: status: {1} - {2}'.format(symbol,
+                                                            type(err),
+                                                            str(err)),
+            level=logging.ERROR)
+        raise
+    else:
+        logger.log(msg='Open orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.INFO)
+        return orders
 
 
 def closed_orders(symbol, exchange=connection()):
-    orders = exchange.fetch_closed_orders(symbol=symbol)
-    logger.log(msg='Closed orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.INFO)
-    # Return
-    return orders
+    try:
+        orders = exchange.fetch_closed_orders(symbol=symbol)
+    except Exception as err:
+        logger.log(
+            msg='closed_orders {0}: status: {1} - {2}'.format(symbol,
+                                                              type(err),
+                                                              str(err)),
+            level=logging.ERROR)
+        raise
+    else:
+        logger.log(msg='Closed orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.INFO)
+        return orders
 
 
 def balance(symbol='ALL_BALANCES', exchange=connection()):
-    balances = exchange.fetch_total_balance()
-    all_balances = {}
-    for key in balances:
-        if balances[key] != 0:
-            all_balances[key] = balances[key]
-    if symbol == 'ALL_BALANCES':
-        logger.log(msg='All balances:  {0}'.format(all_balances), level=logging.INFO)
-        return all_balances
+    try:
+        balances = exchange.fetch_total_balance()
+        all_balances = {}
+        for key in balances:
+            if balances[key] != 0:
+                all_balances[key] = balances[key]
+    except Exception as err:
+        logger.log(
+            msg='balance {0}: status: {1} - {2}'.format(symbol,
+                                                        type(err),
+                                                        str(err)),
+            level=logging.ERROR)
+        raise
     else:
-        logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances[symbol]), level=logging.INFO)
-        # Return
-        return balances[symbol]
+        if symbol == 'ALL_BALANCES':
+            logger.log(msg='All balances:  {0}'.format(all_balances), level=logging.INFO)
+            return all_balances
+        else:
+            logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances[symbol]), level=logging.INFO)
+            return balances[symbol]
 
 
 def cancel_order(orderid, symbol, exchange=connection()):
     try:
-        exchange.cancel_order(id=orderid, symbol=symbol)
-        status = 'OK'
-    except BaseException as err:
+        status = exchange.cancel_order(id=orderid, symbol=symbol)
+    except Exception as err:
         # Like OrderNotFound exception
-        status = str(err)
-
-    logger.log(msg='Order {0} - {1}: status: {2}'.format(orderid, symbol, status), level=logging.INFO)
-    # Return
-    return status
+        logger.log(
+            msg='cancel_order {0} - {1}: status: {2} - {3}'.format(orderid,
+                                                                   symbol,
+                                                                   type(err),
+                                                                   str(err)),
+            level=logging.ERROR)
+        raise
+    else:
+        logger.log(msg='cancel_order {0} - {1}: status: {2}'.format(orderid, symbol, status), level=logging.INFO)
+        return status
 
 
 def buy_order(symbol, amount, type_order, price_limit=0, exchange=connection()):
@@ -100,13 +141,25 @@ def buy_order(symbol, amount, type_order, price_limit=0, exchange=connection()):
         elif type_order == 'limit':
             status = exchange.create_limit_buy_order(symbol=symbol, amount=amount, price=price_limit)
         else:
-            status = 'ERROR: Type (market or limit)'
-    except BaseException as err:
-        status = str(err)
-    logger.log(msg='Order {0} - {1} - {2} ({3}): status: {4}'.format(type_order, symbol, amount, price_limit, status),
-               level=logging.INFO)
-    # Return
-    return status
+            raise Exception('ERROR: Type (market or limit)')
+    except Exception as err:
+        logger.log(
+            msg='buy_order {0} - {1} - {2} ({3}): status: {4} - {5}'.format(type_order,
+                                                                            symbol,
+                                                                            amount,
+                                                                            price_limit,
+                                                                            type(err),
+                                                                            str(err)),
+            level=logging.ERROR)
+        raise
+    else:
+        logger.log(msg='buy_order {0} - {1} - {2} ({3}): status: {4}'.format(type_order,
+                                                                             symbol,
+                                                                             amount,
+                                                                             price_limit,
+                                                                             status),
+                   level=logging.INFO)
+        return status
 
 
 def sell_order(symbol, amount, type_order, price_limit=0, exchange=connection()):
@@ -116,10 +169,22 @@ def sell_order(symbol, amount, type_order, price_limit=0, exchange=connection())
         elif type == 'limit':
             status = exchange.create_limit_sell_order(symbol=symbol, amount=amount, price=price_limit)
         else:
-            status = 'ERROR: Type (market or limit)'
-    except BaseException as err:
-        status = str(err)
-    logger.log(msg='Order {0} - {1} - {2} ({3}): status: {4}'.format(type_order, symbol, amount, price_limit, status),
-               level=logging.INFO)
-    # Return
-    return status
+            raise Exception('ERROR: Type (market or limit)')
+    except Exception as err:
+        logger.log(
+            msg='sell_order {0} - {1} - {2} ({3}): status: {4} - {5}'.format(type_order,
+                                                                             symbol,
+                                                                             amount,
+                                                                             price_limit,
+                                                                             type(err),
+                                                                             str(err)),
+            level=logging.ERROR)
+        raise
+    else:
+        logger.log(msg='sell_order {0} - {1} - {2} ({3}): status: {4}'.format(type_order,
+                                                                              symbol,
+                                                                              amount,
+                                                                              price_limit,
+                                                                              status),
+                   level=logging.INFO)
+        return status

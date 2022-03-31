@@ -24,10 +24,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def error_callback(update, context):
-    logger.warning('Update "%s" caused error "%s"', update, context.error)
-
-
 def run():
     logger.log(msg='CryptoCron start!', level=logging.INFO)
     # Mute log
