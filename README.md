@@ -22,7 +22,7 @@ Telegram bot to trade.
 ### Installation
 
 ```shell
-$ pip install ...
+$ pip install pyCTelebot
 ```
 #### Configure Vars
 
