@@ -138,7 +138,7 @@ def help_command(update: Update, context: CallbackContext):
     sell - Send a new sales order
     sell_limit - Send a new limit sales order
     cancel - Cancel open order
-    help - This help
+    help - Help command
     """
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=_("You can control me by sending these commands: \n"
@@ -154,7 +154,7 @@ def help_command(update: Update, context: CallbackContext):
                                     "/sell [SYMBOL] [AMOUNT] - Send a new sales order \n"
                                     "/sell_limit [SYMBOL] [AMOUNT] [PRICE] - Send a new limit sales order \n"
                                     "/cancel [SYMBOL] [ORDER ID] - Cancel open order \n"
-                                    "/help  - This help (version {0}").format(__version__))
+                                    "/help  - This help (version {0})").format(__version__))
 
 
 def price(update: Update, context: CallbackContext):
