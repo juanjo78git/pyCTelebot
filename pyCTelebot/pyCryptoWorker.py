@@ -21,9 +21,8 @@ def run():
     symbol = 'ETH/USDT'
     last_price = pyCrypto.price(symbol=symbol)
     # Send results
-    # logger.log(msg='Worker - Symbol: {0} --> value: {1}'.format(symbol, last_price), level=logging.INFO)
+    # logger.log(msg='Worker - Symbol: {0} --> value: {1}'.format(symbol, last_price['bid']), level=logging.INFO)
     pyTelegram.private_message_admins(message='Worker: {0} UTC: {1} - {2}'.format(
         datetime.now(tz=pytz.timezone("Europe/Madrid")),
         datetime.now(),
-        last_price))
-
+        last_price['bid']))
