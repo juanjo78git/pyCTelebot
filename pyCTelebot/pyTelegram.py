@@ -533,11 +533,10 @@ def authorization(update: Update, context: CallbackContext, action):
         if next((user for user in users('ADMIN') if user['telegram_id'] == str(update.effective_user.id)), None):
             return True
         else:
-            try:
-                context.bot.send_message(chat_id=update.effective_chat.id,
-                                         text=_("You can't do it!"))
-            except TelegramError as err:
-                logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text=_("You can't do it!"))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
     except Exception as err:
         logger.log(msg='authorization: {0}'.format(str(err)), level=logging.ERROR)
     return False

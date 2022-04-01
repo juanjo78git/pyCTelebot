@@ -62,7 +62,33 @@ def price(symbol, user=None):
     else:
         exchange = connection(user=user)
     try:
-        last_price = exchange.fetch_ticker(symbol=symbol, params=params).get('last')
+        """
+        ticker = {
+            'symbol':        string symbol of the market ('BTC/USD', 'ETH/BTC', ...)
+            'info':        { the original non-modified un-parsed reply from exchange API },
+            'timestamp':     int (64-bit Unix Timestamp in milliseconds since Epoch 1 Jan 1970)
+            'datetime':      ISO8601 datetime string with milliseconds
+            'high':          float, // highest price
+            'low':           float, // lowest price
+            'bid':           float, // current best bid (buy) price
+            'bidVolume':     float, // current best bid (buy) amount (may be missing or undefined)
+            'ask':           float, // current best ask (sell) price
+            'askVolume':     float, // current best ask (sell) amount (may be missing or undefined)
+            'vwap':          float, // volume weighed average price
+            'open':          float, // opening price
+            'close':         float, // price of last trade (closing price for current period)
+            'last':          float, // same as `close`, duplicated for convenience
+            'previousClose': float, // closing price for the previous period
+            'change':        float, // absolute change, `last - open`
+            'percentage':    float, // relative change, `(change/open) * 100`
+            'average':       float, // average price, `(last + open) / 2`
+            'baseVolume':    float, // volume of base currency traded for last 24 hours
+            'quoteVolume':   float, // volume of quote currency traded for last 24 hours
+        }
+        """
+        ticker = exchange.fetch_ticker(symbol=symbol, params=params)
+        logger.log(msg='Search price {0} --> value: {1}'.format(symbol, ticker), level=logging.INFO)
+
     except Exception as err:
         logger.log(
             msg='price {0}: status: {1} - {2}'.format(symbol,
@@ -71,8 +97,7 @@ def price(symbol, user=None):
             level=logging.ERROR)
         raise
     else:
-        logger.log(msg='Search price {0} --> value: {1}'.format(symbol, last_price), level=logging.INFO)
-        return last_price
+        return ticker
 
 
 def open_orders(symbol, user=None):
