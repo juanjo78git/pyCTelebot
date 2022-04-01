@@ -14,6 +14,9 @@ _ = gettext.gettext
 #     'apiKey': TOKEN_CRYPTO_KEY,
 #     'secret': TOKEN_CRYPTO_SECRET
 # })
+# Test Exchange
+params = {}
+# params = {'test': True}
 
 # Logs
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -33,7 +36,7 @@ def connection(user='ME'):
                 'secret': TOKEN_CRYPTO_SECRET_RO
             })
         else:
-            u = select_user(user=user, telegramid=user)
+            u = select_user(user=user, telegram_id=user)
             if u is None:
                 raise Exception("User does not exist {0}".format(user))
             if u['exchange'] == 'binance':
@@ -60,7 +63,7 @@ def price(symbol, user=None):
     else:
         exchange = connection(user=user)
     try:
-        last_price = exchange.fetch_ticker(symbol=symbol).get('last')
+        last_price = exchange.fetch_ticker(symbol=symbol, params=params).get('last')
     except Exception as err:
         logger.log(
             msg='price {0}: status: {1} - {2}'.format(symbol,
@@ -79,7 +82,7 @@ def open_orders(symbol, user=None):
     else:
         exchange = connection(user=user)
     try:
-        orders = exchange.fetch_open_orders(symbol=symbol)
+        orders = exchange.fetch_open_orders(symbol=symbol, params=params)
     except Exception as err:
         logger.log(
             msg='open_orders {0}: status: {1} - {2}'.format(symbol,
@@ -98,7 +101,7 @@ def closed_orders(symbol, user=None):
     else:
         exchange = connection(user=user)
     try:
-        orders = exchange.fetch_closed_orders(symbol=symbol)
+        orders = exchange.fetch_closed_orders(symbol=symbol, params=params)
     except Exception as err:
         logger.log(
             msg='closed_orders {0}: status: {1} - {2}'.format(symbol,
@@ -117,7 +120,7 @@ def balance(symbol=None, user=None):
     else:
         exchange = connection(user=user)
     try:
-        balances = exchange.fetch_total_balance()
+        balances = exchange.fetch_total_balance(params=params)
         all_balances = {}
         for key in balances:
             if balances[key] != 0:
@@ -144,7 +147,7 @@ def cancel_order(orderid, symbol, user=None):
     else:
         exchange = connection(user=user)
     try:
-        status = exchange.cancel_order(id=orderid, symbol=symbol)
+        status = exchange.cancel_order(id=orderid, symbol=symbol, params=params)
     except Exception as err:
         # Like OrderNotFound exception
         logger.log(
@@ -166,9 +169,9 @@ def buy_order(symbol, amount, type_order, price_limit=0, user=None):
         exchange = connection(user=user)
     try:
         if type_order == 'market':
-            status = exchange.create_market_buy_order(symbol=symbol, amount=amount)
+            status = exchange.create_market_buy_order(symbol=symbol, amount=amount, params=params)
         elif type_order == 'limit':
-            status = exchange.create_limit_buy_order(symbol=symbol, amount=amount, price=price_limit)
+            status = exchange.create_limit_buy_order(symbol=symbol, amount=amount, price=price_limit, params=params)
         else:
             raise Exception('ERROR: Type (market or limit)')
     except Exception as err:
@@ -198,9 +201,9 @@ def sell_order(symbol, amount, type_order, price_limit=0, user=None):
         exchange = connection(user=user)
     try:
         if type == 'market':
-            status = exchange.create_market_sell_order(symbol=symbol, amount=amount)
+            status = exchange.create_market_sell_order(symbol=symbol, amount=amount, params=params)
         elif type == 'limit':
-            status = exchange.create_limit_sell_order(symbol=symbol, amount=amount, price=price_limit)
+            status = exchange.create_limit_sell_order(symbol=symbol, amount=amount, price=price_limit, params=params)
         else:
             raise Exception('ERROR: Type (market or limit)')
     except Exception as err:

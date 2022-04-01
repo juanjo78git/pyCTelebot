@@ -31,9 +31,9 @@ TOKEN_CRYPTO_SECRET_RO = os.environ.get('TOKEN_CRYPTO_SECRET_RO', TOKEN_CRYPTO_S
 # USER_LIST = [{
 # "user": "username",
 # "email": "email",
-# "telegramid": "telegram ID",
+# "telegram_id": "telegram ID",
 # "role": "USER/ADMIN",
-# "exchange": "binance",
+# "exchange": "exchange name",
 # "apiKey": "API_KEY",
 # "secret": "SECRET"}
 # ]
@@ -48,9 +48,9 @@ def users(role='ALL'):
     return my_users
 
 
-def select_user(user=None, telegramid=None):
-    if user is not None or telegramid is not None:
+def select_user(user=None, telegram_id=None):
+    if user is not None or telegram_id is not None:
         for my_user in USER_LIST:
-            if my_user['user'] == user or my_user['telegramid'] == str(telegramid):
+            if my_user['user'] == user or my_user['telegram_id'] == str(telegram_id):
                 return my_user
     return None

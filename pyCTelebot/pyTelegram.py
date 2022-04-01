@@ -499,7 +499,7 @@ def private_message_admins(message):
     for user in users('ADMIN'):
         bot = Bot(token=TOKEN_TELEGRAM)
         try:
-            bot.send_message(chat_id=user['telegramid'], text=message)
+            bot.send_message(chat_id=user['telegram_id'], text=message)
         except TelegramError as err:
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
 
@@ -507,7 +507,7 @@ def private_message_admins(message):
 def private_message(message, user):
     bot = Bot(token=TOKEN_TELEGRAM)
     try:
-        bot.send_message(chat_id=user['telegramid'], text=message)
+        bot.send_message(chat_id=user['telegram_id'], text=message)
     except TelegramError as err:
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
 
@@ -515,7 +515,7 @@ def private_message(message, user):
 def authorization(update: Update, context: CallbackContext, action):
     logger.log(msg='User: {0} action: {1}'.format(update.effective_user.id, action), level=logging.INFO)
 
-    if next((user for user in users('ADMIN') if user['telegramid'] == str(update.effective_user.id)), None):
+    if next((user for user in users('ADMIN') if user['telegram_id'] == str(update.effective_user.id)), None):
         return True
     else:
         try:
