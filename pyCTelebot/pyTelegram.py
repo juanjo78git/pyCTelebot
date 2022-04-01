@@ -40,8 +40,8 @@ def run(how):
     help_handler = CommandHandler('help', help_command)
     dispatcher.add_handler(help_handler)
 
-    echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
-    dispatcher.add_handler(echo_handler)
+    # echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
+    # dispatcher.add_handler(echo_handler)
 
     price_handler = CommandHandler('price', price)
     dispatcher.add_handler(price_handler)
@@ -115,12 +115,12 @@ def stop(update: Update, context: CallbackContext):
 
 
 # Eco
-def echo(update: Update, context: CallbackContext):
-    # if not authorization(update=update, context=context, action='echo'):
-    #     return 1
-    # context.bot.send_message(chat_id=update.effective_chat.id, text=_("{0} said: {1}").format(
-    #    update.effective_user.first_name, update.message.text))
-    return 1
+# def echo(update: Update, context: CallbackContext):
+#      if not authorization(update=update, context=context, action='echo'):
+#          return 1
+#      context.bot.send_message(chat_id=update.effective_chat.id, text=_("{0} said: {1}").format(
+#         update.effective_user.first_name, update.message.text))
+#     return 1
 
 
 def help_command(update: Update, context: CallbackContext):
@@ -178,9 +178,10 @@ def price(update: Update, context: CallbackContext):
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Trading pair: {0} price --> status {1}").format(
+                                     text=_("Trading pair: {0} price --> {1} {2}").format(
                                          symbol,
-                                         _("ERROR: I can't do it")))
+                                         _("ERROR: I can't do it."),
+                                         str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -205,9 +206,10 @@ def balance(update: Update, context: CallbackContext):
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Balance {0} --> status {1}").format(
+                                     text=_("Balance {0} --> {1} {2}").format(
                                          symbol,
-                                         _("ERROR: I can't do it")))
+                                         _("ERROR: I can't do it."),
+                                         str(err)))
     else:
         try:
             balances = pyCrypto.balance(user=update.effective_user.id)
@@ -218,8 +220,9 @@ def balance(update: Update, context: CallbackContext):
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("All balances --> status {0}").format(
-                                         _("ERROR: I can't do it")))
+                                     text=_("All balances --> {0} {1}").format(
+                                         _("ERROR: I can't do it."),
+                                         str(err)))
 
 
 def open_orders(update: Update, context: CallbackContext):
@@ -244,9 +247,10 @@ def open_orders(update: Update, context: CallbackContext):
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Trading pair: {0} open orders --> status {1}").format(
+                                     text=_("Trading pair: {0} open orders --> {1} {2}").format(
                                          symbol,
-                                         _("ERROR: I can't do it")))
+                                         _("ERROR: I can't do it."),
+                                         str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -274,9 +278,10 @@ def closed_orders(update: Update, context: CallbackContext):
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Trading pair: {0} closed orders --> status {1}").format(
+                                     text=_("Trading pair: {0} closed orders --> {1} {2}").format(
                                          symbol,
-                                         _("ERROR: I can't do it")))
+                                         _("ERROR: I can't do it."),
+                                         str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -302,7 +307,7 @@ def buy(update: Update, context: CallbackContext):
                                         type_order='market',
                                         user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Buying order with symbol {0} and amount {1} --> status {2}").format(
+                                     text=_("Buying order with symbol {0} and amount {1} --> {2}").format(
                                          symbol,
                                          amount,
                                          status))
@@ -311,10 +316,11 @@ def buy(update: Update, context: CallbackContext):
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Buying order with "
-                                            "symbol {0} and amount {1} --> status {2}").format(
+                                            "symbol {0} and amount {1} --> {2} {3}").format(
                                          symbol,
                                          amount,
-                                         _("ERROR: I can't do it")))
+                                         _("ERROR: I can't do it."),
+                                         str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -346,7 +352,7 @@ def buy_limit(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_(
                                          "Create limit buy order with "
-                                         "symbol {0}, amount {1} and price {2} --> status {3}").format(
+                                         "symbol {0}, amount {1} and price {2} --> {3}").format(
                                          symbol,
                                          amount,
                                          price_limit,
@@ -356,11 +362,12 @@ def buy_limit(update: Update, context: CallbackContext):
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Create limit buy order with "
-                                            "symbol {0} and amount {1} and price {2} --> status {3}").format(
+                                            "symbol {0} and amount {1} and price {2} --> {3} {4}").format(
                                              symbol,
                                              amount,
                                              price_limit,
-                                             _("ERROR: I can't do it")))
+                                             _("ERROR: I can't do it."),
+                                             str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -387,7 +394,7 @@ def sell(update: Update, context: CallbackContext):
                                          user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Selling order with "
-                                            "symbol {0} and amount {1} --> status {2}").format(
+                                            "symbol {0} and amount {1} --> {2}").format(
                                              symbol,
                                              amount,
                                              status))
@@ -396,10 +403,11 @@ def sell(update: Update, context: CallbackContext):
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Selling order with "
-                                            "symbol {0} and amount {1} --> status {2}").format(
+                                            "symbol {0} and amount {1} --> {2} {3}").format(
                                              symbol,
                                              amount,
-                                             _("ERROR: I can't do it")))
+                                             _("ERROR: I can't do it."),
+                                             str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -431,7 +439,7 @@ def sell_limit(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_(
                                          "Create limit sell order with "
-                                         "symbol {0}, amount {1} and price {2}--> status {3}").format(
+                                         "symbol {0}, amount {1} and price {2} --> {3}").format(
                                          symbol,
                                          amount,
                                          price_limit,
@@ -441,11 +449,12 @@ def sell_limit(update: Update, context: CallbackContext):
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Create limit sell order with "
-                                            "symbol {0} and amount {1} and price {2} --> status {3}").format(
+                                            "symbol {0} and amount {1} and price {2} --> {3} {4}").format(
                                              symbol,
                                              amount,
                                              price_limit,
-                                             _("ERROR: I can't do it")))
+                                             _("ERROR: I can't do it."),
+                                             str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -469,7 +478,7 @@ def cancel(update: Update, context: CallbackContext):
             status = pyCrypto.cancel_order(orderid=orderid, symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Canceling order with "
-                                            "symbol {0} and id {1} --> status {2}").format(
+                                            "symbol {0} and id {1} --> {2}").format(
                                              symbol,
                                              orderid,
                                              status))
@@ -478,10 +487,11 @@ def cancel(update: Update, context: CallbackContext):
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Canceling order with "
-                                            "symbol {0} and id {1} --> status {2}").format(
+                                            "symbol {0} and id {1} --> {2} {3}").format(
                                              symbol,
                                              orderid,
-                                             _("ERROR: I can't do it")))
+                                             _("ERROR: I can't do it."),
+                                             str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))

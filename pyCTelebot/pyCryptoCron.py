@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY, TOKEN_CRYPTO_SECRET
 import gettext
-import ccxt
 import logging
 # Package Scheduler.
 from apscheduler.schedulers.blocking import BlockingScheduler

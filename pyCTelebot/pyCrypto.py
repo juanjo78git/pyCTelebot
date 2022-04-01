@@ -31,7 +31,7 @@ def connection(user='ME'):
     exchange = None
     try:
         if user == 'READONLY':
-            exchange = ccxt.binance({
+            exchange = binance({
                 'apiKey': TOKEN_CRYPTO_KEY_RO,
                 'secret': TOKEN_CRYPTO_SECRET_RO
             })
@@ -40,7 +40,7 @@ def connection(user='ME'):
             if u is None:
                 raise Exception("User does not exist {0}".format(user))
             if u['exchange'] == 'binance':
-                exchange = ccxt.binance({
+                exchange = binance({
                     'apiKey': u['apiKey'],
                     'secret': u['secret']
                 })

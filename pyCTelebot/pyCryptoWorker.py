@@ -3,7 +3,6 @@
 from pyCTelebot import pyCrypto, pyTelegram
 from datetime import datetime
 import gettext
-import ccxt
 import logging
 import pytz
 
