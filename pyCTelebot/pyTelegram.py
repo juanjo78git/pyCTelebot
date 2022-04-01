@@ -9,6 +9,7 @@ from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, users
 from pyCTelebot import pyCrypto
+from pyCTelebot.config import __version__
 import gettext
 import logging
 
@@ -153,7 +154,7 @@ def help_command(update: Update, context: CallbackContext):
                                     "/sell [SYMBOL] [AMOUNT] - Send a new sales order \n"
                                     "/sell_limit [SYMBOL] [AMOUNT] [PRICE] - Send a new limit sales order \n"
                                     "/cancel [SYMBOL] [ORDER ID] - Cancel open order \n"
-                                    "/help  - This help"))
+                                    "/help  - This help (version {0}").format(__version__))
 
 
 def price(update: Update, context: CallbackContext):
@@ -468,19 +469,19 @@ def cancel(update: Update, context: CallbackContext):
         symbol = update.effective_message.text.split(' ')[1].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
-        orderid = update.effective_message.text.split(' ')[2]
+        order_id = update.effective_message.text.split(' ')[2]
     elif len(update.effective_message.text.split(' ')) == 2 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
-        orderid = update.effective_message.text.split(' ')[1]
-    if 'symbol' in locals() and 'orderid' in locals():
-        logger.log(msg='/cancel symbol: {0}, orderid: {1}'.format(symbol, orderid), level=logging.INFO)
+        order_id = update.effective_message.text.split(' ')[1]
+    if 'symbol' in locals() and 'order_id' in locals():
+        logger.log(msg='/cancel symbol: {0}, order_id: {1}'.format(symbol, order_id), level=logging.INFO)
         try:
-            status = pyCrypto.cancel_order(orderid=orderid, symbol=symbol, user=update.effective_user.id)
+            status = pyCrypto.cancel_order(order_id=order_id, symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Canceling order with "
                                             "symbol {0} and id {1} --> {2}").format(
                                              symbol,
-                                             orderid,
+                                             order_id,
                                              status))
         except TelegramError as err:
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
@@ -489,7 +490,7 @@ def cancel(update: Update, context: CallbackContext):
                                      text=_("Canceling order with "
                                             "symbol {0} and id {1} --> {2} {3}").format(
                                              symbol,
-                                             orderid,
+                                             order_id,
                                              _("ERROR: I can't do it."),
                                              str(err)))
     else:
@@ -512,6 +513,8 @@ def private_message_admins(message):
             bot.send_message(chat_id=user['telegram_id'], text=message)
         except TelegramError as err:
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+        except Exception as err:
+            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
 
 
 def private_message(message, user):
@@ -520,17 +523,21 @@ def private_message(message, user):
         bot.send_message(chat_id=user['telegram_id'], text=message)
     except TelegramError as err:
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
 
 
 def authorization(update: Update, context: CallbackContext, action):
     logger.log(msg='User: {0} action: {1}'.format(update.effective_user.id, action), level=logging.INFO)
-
-    if next((user for user in users('ADMIN') if user['telegram_id'] == str(update.effective_user.id)), None):
-        return True
-    else:
-        try:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("You can't do it!"))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        return False
+    try:
+        if next((user for user in users('ADMIN') if user['telegram_id'] == str(update.effective_user.id)), None):
+            return True
+        else:
+            try:
+                context.bot.send_message(chat_id=update.effective_chat.id,
+                                         text=_("You can't do it!"))
+            except TelegramError as err:
+                logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        logger.log(msg='authorization: {0}'.format(str(err)), level=logging.ERROR)
+    return False

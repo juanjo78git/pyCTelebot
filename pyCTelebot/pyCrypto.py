@@ -3,7 +3,6 @@
 from ccxt import binance
 from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY_RO, TOKEN_CRYPTO_SECRET_RO, select_user
 import gettext
-import ccxt
 import logging
 
 # i18n
@@ -141,24 +140,24 @@ def balance(symbol=None, user=None):
             return balances[symbol]
 
 
-def cancel_order(orderid, symbol, user=None):
+def cancel_order(order_id, symbol, user=None):
     if user is None:
         exchange = connection(user='READONLY')
     else:
         exchange = connection(user=user)
     try:
-        status = exchange.cancel_order(id=orderid, symbol=symbol, params=params)
+        status = exchange.cancel_order(id=order_id, symbol=symbol, params=params)
     except Exception as err:
         # Like OrderNotFound exception
         logger.log(
-            msg='cancel_order {0} - {1}: status: {2} - {3}'.format(orderid,
+            msg='cancel_order {0} - {1}: status: {2} - {3}'.format(order_id,
                                                                    symbol,
                                                                    type(err),
                                                                    str(err)),
             level=logging.ERROR)
         raise
     else:
-        logger.log(msg='cancel_order {0} - {1}: status: {2}'.format(orderid, symbol, status), level=logging.INFO)
+        logger.log(msg='cancel_order {0} - {1}: status: {2}'.format(order_id, symbol, status), level=logging.INFO)
         return status
 
 
