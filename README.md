@@ -26,13 +26,14 @@ $ pip install ...
 ```
 #### Configure Vars
 
-| Vars                 | Description                                                  |
-|----------------------|--------------------------------------------------------------|
-| TOKEN_TELEGRAM       | Token telegram bot                                           |
-| WEBHOOK_URL_TELEGRAM | URL app in [Heroku](https://www.heroku.com/) or other server |
-| TOKEN_CRYPTO_KEY     | Cryptocurrency exchange apiKey                               |
-| TOKEN_CRYPTO_SECRET  | Cryptocurrency exchange secret                               |
-| USER_ADMIN           | Telegram user ID                                             |
+| Vars                   | Description                                                                                                                                                                                                        |
+|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| TOKEN_TELEGRAM         | Token telegram bot                                                                                                                                                                                                 |
+| WEBHOOK_URL_TELEGRAM   | URL app in [Heroku](https://www.heroku.com/) or other server                                                                                                                                                       |
+| TOKEN_CRYPTO_KEY_RO    | Cryptocurrency exchange apiKey (read only)                                                                                                                                                                         |
+| TOKEN_CRYPTO_SECRET_RO | Cryptocurrency exchange secret (read only)                                                                                                                                                                         |
+| USER_LIST              | [{ "user": "username", "email": "email", "telegramid": "telegram ID", "role": "USER/ADMIN", "exchange": "Exchange name", "apiKey": "Cryptocurrency exchange apiKey ", "secret": "Cryptocurrency exchange secret"}] |
+
 
 #### Activate Webhook in Telegram bot
 Execute: https://api.telegram.org/bot<TOKEN_TELEGRAM>/setWebHook?url=<WEBHOOK_URL_TELEGRAM>

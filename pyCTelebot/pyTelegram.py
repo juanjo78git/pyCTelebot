@@ -116,10 +116,11 @@ def stop(update: Update, context: CallbackContext):
 
 # Eco
 def echo(update: Update, context: CallbackContext):
-    if not authorization(update=update, context=context, action='echo'):
-        return 1
+    # if not authorization(update=update, context=context, action='echo'):
+    #     return 1
     # context.bot.send_message(chat_id=update.effective_chat.id, text=_("{0} said: {1}").format(
     #    update.effective_user.first_name, update.message.text))
+    return 1
 
 
 def help_command(update: Update, context: CallbackContext):
