@@ -37,21 +37,26 @@ def run():
     percent = 1
     percent_value = 1 + percent/100
     # bid: current best buy price // ask: current best sell price
-    """
     price_name_list = ["bid", "ask"]
     for price_name in price_name_list:
         if ticker.get(price_name) > ticker2.get(price_name)*percent_value:
-            pyTelegram.message_admins(message='Worker: {0} Symbol {1} {2} PRICE UP OVER {3}%!! {4}'.format(
+            # pyTelegram.message_admins(message='Worker: {0} Symbol {1} {2} PRICE UP OVER {3}%!! {4}'.format(
+            logger.log(msg='Worker: {0} Symbol {1} {2} PRICE UP OVER {3}%!! {4} - {5}'.format(
                 datetime.now(tz=pytz.timezone("Europe/Madrid")),
                 symbol,
                 price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
                 percent,
-                ticker))
+                ticker.get(price_name),
+                ticker2.get(price_name)
+            ), level=logging.INFO)
         elif ticker.get(price_name)*percent_value < ticker2.get(price_name):
-            pyTelegram.message_admins(message='Worker: {0} Symbol {1} {2} PRICE DOWN OVER {3}!! {4}'.format(
+            # pyTelegram.message_admins(message='Worker: {0} Symbol {1} {2} PRICE DOWN OVER {3}!! {4}'.format(
+            logger.log(msg='Worker: {0} Symbol {1} {2} PRICE DOWN OVER {3}!! {4} - {5}'.format(
                 datetime.now(tz=pytz.timezone("Europe/Madrid")),
                 symbol,
                 price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
                 percent,
-                ticker))
-    """
+                ticker.get(price_name),
+                ticker2.get(price_name)
+            ), level=logging.INFO)
+
