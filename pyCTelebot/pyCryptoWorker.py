@@ -32,7 +32,7 @@ def run():
     symbol = os.environ.get('SYMBOL_TEST', 'ETH/USDT')
     ticker = pyCrypto.price(symbol=symbol)
     # period
-    sleep(int(os.environ.get('PERIOD_TEST', '60')))
+    sleep(int(os.environ.get('PERIOD_TEST', '520')))
     ticker2 = pyCrypto.price(symbol=symbol)
     # Send results
     # logger.log(msg='Worker - Symbol: {0} --> value: {1}'.format(symbol, ticker), level=logging.INFO)
@@ -79,15 +79,15 @@ def run():
                         old_price
                         ), level=logging.INFO)
         else:
-            pyTelegram.message_admins(message='WorkerTelegram: {0} Symbol {1} '
-                                              '{2}  PRICE NOT CHANGE A {3}% only a {4}%!! {5} - {6}'.format(
-                                                datetime.now(tz=pytz.timezone("Europe/Madrid")),
-                                                symbol,
-                                                price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
-                                                percent,
-                                                percent_dif_price,
-                                                new_price,
-                                                old_price))
+            # pyTelegram.message_admins(message='WorkerTelegram: {0} Symbol {1} '
+            #                                   '{2}  PRICE NOT CHANGE A {3}% only a {4}%!! {5} - {6}'.format(
+            #                                     datetime.now(tz=pytz.timezone("Europe/Madrid")),
+            #                                     symbol,
+            #                                     price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
+            #                                     percent,
+            #                                     percent_dif_price,
+            #                                     new_price,
+            #                                     old_price))
             logger.log(msg='WorkerTelegram: {0} Symbol {1} '
                            '{2} PRICE NOT CHANGE A {3}% only a {4}%!! {5} (Last: {6})'.format(
                             datetime.now(tz=pytz.timezone("Europe/Madrid")),

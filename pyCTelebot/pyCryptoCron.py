@@ -28,7 +28,7 @@ else:
 
 
 def run():
-    s = int(os.environ.get('PERIOD_TEST', '5')) + 5
+    s = int(os.environ.get('PERIOD_TEST', '520')) + 5
     logger.log(msg='CryptoCron start! {0} seconds'.format(s), level=logging.INFO)
     # Mute log
     logging.getLogger('apscheduler.scheduler').setLevel(logging.CRITICAL)
