@@ -7,7 +7,7 @@ from telegram.error import TelegramError
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
-from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, users
+from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, ENV_CONFIG, TELEGRAM_ADMIN_GROUP, users
 from pyCTelebot import pyCrypto
 from pyCTelebot.config import __version__
 import gettext
@@ -16,10 +16,18 @@ import logging
 # i18n
 _ = gettext.gettext
 # Logs
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# DEBUG / INFO / WARNING / ERROR / CRITICAL
+if ENV_CONFIG.get('log') == 'CRITICAL':
+    logger.setLevel(logging.CRITICAL)
+elif ENV_CONFIG.get('log') == 'ERROR':
+    logger.setLevel(logging.ERROR)
+elif ENV_CONFIG.get('log') == 'WARNING':
+    logger.setLevel(logging.WARNING)
+elif ENV_CONFIG.get('log') == 'INFO':
+    logger.setLevel(logging.INFO)
+else:
+    logger.setLevel(logging.DEBUG)
 
 
 def error_callback(update, context):
@@ -117,6 +125,10 @@ def stop(update: Update, context: CallbackContext):
 
 # Eco
 # def echo(update: Update, context: CallbackContext):
+#     logger.log(msg='User ({0}): {1} chat: {2}'.format(update.effective_user.name,
+#                                                       update.effective_user.id,
+#                                                       update.effective_chat.id),
+#                level=logging.INFO)
 #      if not authorization(update=update, context=context, action='echo'):
 #          return 1
 #      context.bot.send_message(chat_id=update.effective_chat.id, text=_("{0} said: {1}").format(
@@ -201,8 +213,8 @@ def balance(update: Update, context: CallbackContext):
             balances = pyCrypto.balance(symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Symbol: {0} Balance: {1}").format(
-                                          symbol,
-                                          balances))
+                                         symbol,
+                                         balances))
         except TelegramError as err:
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
         except Exception as err:
@@ -364,11 +376,11 @@ def buy_limit(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Create limit buy order with "
                                             "symbol {0} and amount {1} and price {2} --> {3} {4}").format(
-                                             symbol,
-                                             amount,
-                                             price_limit,
-                                             _("ERROR: I can't do it."),
-                                             str(err)))
+                                         symbol,
+                                         amount,
+                                         price_limit,
+                                         _("ERROR: I can't do it."),
+                                         str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -396,19 +408,19 @@ def sell(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Selling order with "
                                             "symbol {0} and amount {1} --> {2}").format(
-                                             symbol,
-                                             amount,
-                                             status))
+                                         symbol,
+                                         amount,
+                                         status))
         except TelegramError as err:
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Selling order with "
                                             "symbol {0} and amount {1} --> {2} {3}").format(
-                                             symbol,
-                                             amount,
-                                             _("ERROR: I can't do it."),
-                                             str(err)))
+                                         symbol,
+                                         amount,
+                                         _("ERROR: I can't do it."),
+                                         str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -451,11 +463,11 @@ def sell_limit(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Create limit sell order with "
                                             "symbol {0} and amount {1} and price {2} --> {3} {4}").format(
-                                             symbol,
-                                             amount,
-                                             price_limit,
-                                             _("ERROR: I can't do it."),
-                                             str(err)))
+                                         symbol,
+                                         amount,
+                                         price_limit,
+                                         _("ERROR: I can't do it."),
+                                         str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -480,19 +492,19 @@ def cancel(update: Update, context: CallbackContext):
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Canceling order with "
                                             "symbol {0} and id {1} --> {2}").format(
-                                             symbol,
-                                             order_id,
-                                             status))
+                                         symbol,
+                                         order_id,
+                                         status))
         except TelegramError as err:
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
         except Exception as err:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Canceling order with "
                                             "symbol {0} and id {1} --> {2} {3}").format(
-                                             symbol,
-                                             order_id,
-                                             _("ERROR: I can't do it."),
-                                             str(err)))
+                                         symbol,
+                                         order_id,
+                                         _("ERROR: I can't do it."),
+                                         str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -511,6 +523,17 @@ def private_message_admins(message):
         bot = Bot(token=TOKEN_TELEGRAM)
         try:
             bot.send_message(chat_id=user['telegram_id'], text=message)
+        except TelegramError as err:
+            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+        except Exception as err:
+            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+
+
+def message_admins(message):
+    for group_id in TELEGRAM_ADMIN_GROUP:
+        bot = Bot(token=TOKEN_TELEGRAM)
+        try:
+            bot.send_message(chat_id=group_id, text=message)
         except TelegramError as err:
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
         except Exception as err:

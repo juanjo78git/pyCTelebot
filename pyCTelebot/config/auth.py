@@ -7,8 +7,6 @@ import json
 # i18n
 _ = gettext.gettext
 # Logs
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -20,13 +18,14 @@ TOKEN_TELEGRAM = os.environ.get('TOKEN_TELEGRAM', 'NOT_FOUND')
 WEBHOOK_URL_TELEGRAM = 'https://pyctelebot.herokuapp.com/'
 PORT = int(os.environ.get('PORT', 5000))
 
-# API crypto info
-TOKEN_CRYPTO_KEY = os.environ.get('TOKEN_CRYPTO_KEY', 'NOT_FOUND')
-TOKEN_CRYPTO_SECRET = os.environ.get('TOKEN_CRYPTO_SECRET', 'NOT_FOUND')
-
 # API crypto info Read-only
-TOKEN_CRYPTO_KEY_RO = os.environ.get('TOKEN_CRYPTO_KEY_RO', TOKEN_CRYPTO_KEY)
-TOKEN_CRYPTO_SECRET_RO = os.environ.get('TOKEN_CRYPTO_SECRET_RO', TOKEN_CRYPTO_SECRET)
+TOKEN_CRYPTO_KEY_RO = os.environ.get('TOKEN_CRYPTO_KEY_RO', "NOT_FOUND")
+TOKEN_CRYPTO_SECRET_RO = os.environ.get('TOKEN_CRYPTO_SECRET_RO', "NOT_FOUND")
+
+# Environment config
+# log values: DEBUG / INFO / WARNING / ERROR / CRITICAL
+# env values: TEST / PROD
+ENV_CONFIG = json.loads(os.environ.get('ENV_CONFIG', '{"log": "DEBUG", "env": "TEST"}'))
 
 # USER_LIST = [{
 # "user": "username",
@@ -38,6 +37,9 @@ TOKEN_CRYPTO_SECRET_RO = os.environ.get('TOKEN_CRYPTO_SECRET_RO', TOKEN_CRYPTO_S
 # "secret": "SECRET"}
 # ]
 USER_LIST = json.loads(os.environ.get('USER_LIST', '[]'))
+
+# Telegram admin group id list
+TELEGRAM_ADMIN_GROUP = json.loads(os.environ.get('TELEGRAM_ADMIN_GROUP', "[]"))
 
 
 def users(role='ALL'):

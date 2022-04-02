@@ -26,14 +26,15 @@ $ pip install pyCTelebot
 ```
 #### Configure Vars
 
-| Vars                   | Description                                                                                                                                                                                                         |
-|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| TOKEN_TELEGRAM         | Token telegram bot                                                                                                                                                                                                  |
-| WEBHOOK_URL_TELEGRAM   | URL app in [Heroku](https://www.heroku.com/) or other server                                                                                                                                                        |
-| TOKEN_CRYPTO_KEY_RO    | Cryptocurrency exchange apiKey (read only)                                                                                                                                                                          |
-| TOKEN_CRYPTO_SECRET_RO | Cryptocurrency exchange secret (read only)                                                                                                                                                                          |
-| USER_LIST              | [{ "user": "username", "email": "email", "telegram_id": "telegram ID", "role": "USER/ADMIN", "exchange": "Exchange name", "apiKey": "Cryptocurrency exchange apiKey ", "secret": "Cryptocurrency exchange secret"}] |
-
+| Vars                   | Description                                                                                                                                                                                                            |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| TOKEN_TELEGRAM         | Token telegram bot                                                                                                                                                                                                     |
+| WEBHOOK_URL_TELEGRAM   | URL app in [Heroku](https://www.heroku.com/) or other server                                                                                                                                                           |
+| TOKEN_CRYPTO_KEY_RO    | Cryptocurrency exchange apiKey (read only)                                                                                                                                                                             |
+| TOKEN_CRYPTO_SECRET_RO | Cryptocurrency exchange secret (read only)                                                                                                                                                                             |
+| USER_LIST              | \[{ "user": "username", "email": "email", "telegram_id": "telegram ID", "role": "USER/ADMIN", "exchange": "Exchange name", "apiKey": "Cryptocurrency exchange apiKey ", "secret": "Cryptocurrency exchange secret"}]   |
+| TELEGRAM_ADMIN_GROUP   | Telegram admin group id list. Format: \[chat_id]                                                                                                                                                                       |
+| ENV_CONFIG             | Environment config. log values: DEBUG / INFO / WARNING / ERROR / CRITICAL. env values: TEST / PROD. Default values: {"log": "DEBUG", "env": "TEST"}                                                                    |
 
 #### Activate Webhook in Telegram bot
 Execute: https://api.telegram.org/bot<TOKEN_TELEGRAM>/setWebHook?url=<WEBHOOK_URL_TELEGRAM>

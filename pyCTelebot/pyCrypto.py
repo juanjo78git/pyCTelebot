@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from ccxt import binance
-from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY_RO, TOKEN_CRYPTO_SECRET_RO, select_user
+from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY_RO, TOKEN_CRYPTO_SECRET_RO, ENV_CONFIG, select_user
 import gettext
 import logging
 
@@ -14,17 +14,27 @@ _ = gettext.gettext
 #     'secret': TOKEN_CRYPTO_SECRET
 # })
 # Test Exchange
-params = {}
-# params = {'test': True}
+if ENV_CONFIG.get('env') != 'TEST':
+    params = {}
+else:
+    params = {'test': True}
 
 # Logs
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# DEBUG / INFO / WARNING / ERROR / CRITICAL
+if ENV_CONFIG.get('log') == 'CRITICAL':
+    logger.setLevel(logging.CRITICAL)
+elif ENV_CONFIG.get('log') == 'ERROR':
+    logger.setLevel(logging.ERROR)
+elif ENV_CONFIG.get('log') == 'WARNING':
+    logger.setLevel(logging.WARNING)
+elif ENV_CONFIG.get('log') == 'INFO':
+    logger.setLevel(logging.INFO)
+else:
+    logger.setLevel(logging.DEBUG)
 
 
-def connection(user='ME'):
+def connection(user: str = 'ME'):
     # Binance connection
     logger.log(msg='Exchange connection user: {0}'.format(user), level=logging.INFO)
     exchange = None
@@ -56,13 +66,14 @@ def connection(user='ME'):
         return exchange
 
 
-def price(symbol, user=None):
+def price(symbol: str, user: str = None):
     if user is None:
         exchange = connection(user='READONLY')
     else:
         exchange = connection(user=user)
     try:
         """
+        NOTE: period is 24h
         ticker = {
             'symbol':        string symbol of the market ('BTC/USD', 'ETH/BTC', ...)
             'info':        { the original non-modified un-parsed reply from exchange API },
@@ -100,7 +111,7 @@ def price(symbol, user=None):
         return ticker
 
 
-def open_orders(symbol, user=None):
+def open_orders(symbol: str, user: str = None):
     if user is None:
         exchange = connection(user='READONLY')
     else:
@@ -119,7 +130,7 @@ def open_orders(symbol, user=None):
         return orders
 
 
-def closed_orders(symbol, user=None):
+def closed_orders(symbol: str, user: str = None):
     if user is None:
         exchange = connection(user='READONLY')
     else:
@@ -138,7 +149,7 @@ def closed_orders(symbol, user=None):
         return orders
 
 
-def balance(symbol=None, user=None):
+def balance(symbol: str = None, user: str = None):
     if user is None:
         exchange = connection(user='READONLY')
     else:
@@ -165,7 +176,7 @@ def balance(symbol=None, user=None):
             return balances[symbol]
 
 
-def cancel_order(order_id, symbol, user=None):
+def cancel_order(order_id: str, symbol: str, user: str = None):
     if user is None:
         exchange = connection(user='READONLY')
     else:
@@ -186,7 +197,7 @@ def cancel_order(order_id, symbol, user=None):
         return status
 
 
-def buy_order(symbol, amount, type_order, price_limit=0, user=None):
+def buy_order(symbol: str, amount, type_order: str, price_limit=0, user: str = None):
     if user is None:
         exchange = connection(user='READONLY')
     else:
@@ -218,7 +229,7 @@ def buy_order(symbol, amount, type_order, price_limit=0, user=None):
         return status
 
 
-def sell_order(symbol, amount, type_order, price_limit=0, user=None):
+def sell_order(symbol: str, amount, type_order: str, price_limit=0, user: str = None):
     if user is None:
         exchange = connection(user='READONLY')
     else:

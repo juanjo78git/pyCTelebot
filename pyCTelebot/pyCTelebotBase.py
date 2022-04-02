@@ -6,14 +6,29 @@ import sys
 import gettext
 import logging
 from pyCTelebot import pyTelegram, pyCryptoCron, pyCryptoWorker
+from pyCTelebot.config.auth import ENV_CONFIG
 
 # i18n
 _ = gettext.gettext
 # Logs
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+                    level=logging.INFO,
+                    handlers=[
+                        logging.StreamHandler(sys.stdout)
+                    ]
+                    )
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# DEBUG / INFO / WARNING / ERROR / CRITICAL
+if ENV_CONFIG.get('log') == 'CRITICAL':
+    logger.setLevel(logging.CRITICAL)
+elif ENV_CONFIG.get('log') == 'ERROR':
+    logger.setLevel(logging.ERROR)
+elif ENV_CONFIG.get('log') == 'WARNING':
+    logger.setLevel(logging.WARNING)
+elif ENV_CONFIG.get('log') == 'INFO':
+    logger.setLevel(logging.INFO)
+else:
+    logger.setLevel(logging.DEBUG)
 
 
 def main():
@@ -41,10 +56,12 @@ def main():
 
     if options.worker:
         pyCryptoWorker.run()
+        logger.log(msg='Worker ends', level=logging.INFO)
         exit()
 
     if options.cron:
         pyCryptoCron.run()
+        logger.log(msg='Cron ends', level=logging.INFO)
         exit()
 
     if options.telebot:

@@ -5,15 +5,24 @@ import logging
 # Package Scheduler.
 from apscheduler.schedulers.blocking import BlockingScheduler
 from pyCTelebot import pyCryptoWorker
+from pyCTelebot.config.auth import ENV_CONFIG
 
 # i18n
 _ = gettext.gettext
 
 # Logs
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# DEBUG / INFO / WARNING / ERROR / CRITICAL
+if ENV_CONFIG.get('log') == 'CRITICAL':
+    logger.setLevel(logging.CRITICAL)
+elif ENV_CONFIG.get('log') == 'ERROR':
+    logger.setLevel(logging.ERROR)
+elif ENV_CONFIG.get('log') == 'WARNING':
+    logger.setLevel(logging.WARNING)
+elif ENV_CONFIG.get('log') == 'INFO':
+    logger.setLevel(logging.INFO)
+else:
+    logger.setLevel(logging.DEBUG)
 
 
 def run():
@@ -23,6 +32,6 @@ def run():
     logging.getLogger('apscheduler.scheduler').propagate = False
     # Create an instance of scheduler and add function.
     scheduler = BlockingScheduler()
-    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=10)
+    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=15)
 
     scheduler.start()
