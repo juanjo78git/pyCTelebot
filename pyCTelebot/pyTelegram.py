@@ -34,7 +34,7 @@ def error_callback(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 
-def run(how):
+def run(how: str):
     # Connection
     updater = Updater(token=TOKEN_TELEGRAM, use_context=True)
     dispatcher = updater.dispatcher
@@ -91,12 +91,14 @@ def run(how):
     # Start this bot
     if how == 'w':
         logger.log(msg='Start with webhook', level=logging.INFO)
+        message_admins(_('Start pyCTelebot on telegram with webhook'))
         updater.start_webhook(listen="0.0.0.0",
                               port=PORT,
                               url_path=TOKEN_TELEGRAM,
                               webhook_url=WEBHOOK_URL_TELEGRAM + TOKEN_TELEGRAM)
     else:
         logger.log(msg='Start with polling', level=logging.INFO)
+        message_admins(_('Start pyCTelebot on telegram with polling'))
         updater.start_polling()
 
     # Keep it from stopping
