@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 
 from pyCTelebot import pyCrypto, pyTelegram
 from datetime import datetime
@@ -28,14 +29,14 @@ else:
 
 def run():
     logger.log(msg='CryptoWorker doing something!', level=logging.INFO)
-    symbol = 'ETH/USDT'
+    symbol = os.environ.get('SYMBOL_TEST', 'ETH/USDT')
     ticker = pyCrypto.price(symbol=symbol)
     # period
-    sleep(60)
+    sleep(int(os.environ.get('PERIOD_TEST', '60')))
     ticker2 = pyCrypto.price(symbol=symbol)
     # Send results
     # logger.log(msg='Worker - Symbol: {0} --> value: {1}'.format(symbol, ticker), level=logging.INFO)
-    percent = 1
+    percent = int(os.environ.get('PERCENT_TEST', '1'))
     percent_value = 1 + percent / 100
     # bid: current best buy price // ask: current best sell price
     price_name_list = ["bid", "ask"]

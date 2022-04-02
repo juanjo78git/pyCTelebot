@@ -3,6 +3,8 @@
 import gettext
 import logging
 # Package Scheduler.
+import os
+
 from apscheduler.schedulers.blocking import BlockingScheduler
 from pyCTelebot import pyCryptoWorker
 from pyCTelebot.config.auth import ENV_CONFIG
@@ -26,12 +28,13 @@ else:
 
 
 def run():
-    logger.log(msg='CryptoCron start!', level=logging.INFO)
+    s = int(os.environ.get('PERIOD_TEST', '60')) + 5
+    logger.log(msg='CryptoCron start! {0} seconds'.format(s), level=logging.INFO)
     # Mute log
     logging.getLogger('apscheduler.scheduler').setLevel(logging.CRITICAL)
     logging.getLogger('apscheduler.scheduler').propagate = False
     # Create an instance of scheduler and add function.
     scheduler = BlockingScheduler()
-    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=65)
+    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=s)
 
     scheduler.start()
