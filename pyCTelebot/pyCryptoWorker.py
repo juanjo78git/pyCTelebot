@@ -30,7 +30,8 @@ def run():
     logger.log(msg='CryptoWorker doing something!', level=logging.INFO)
     symbol = 'ETH/USDT'
     ticker = pyCrypto.price(symbol=symbol)
-    sleep(10)
+    # period
+    sleep(60)
     ticker2 = pyCrypto.price(symbol=symbol)
     # Send results
     # logger.log(msg='Worker - Symbol: {0} --> value: {1}'.format(symbol, ticker), level=logging.INFO)

@@ -32,6 +32,6 @@ def run():
     logging.getLogger('apscheduler.scheduler').propagate = False
     # Create an instance of scheduler and add function.
     scheduler = BlockingScheduler()
-    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=15)
+    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=65)
 
     scheduler.start()
