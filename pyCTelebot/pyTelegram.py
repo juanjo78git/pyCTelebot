@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import os
 
 from telegram.ext import Updater
 from telegram import Update, Bot
@@ -82,6 +82,12 @@ def run(how: str):
     message_admins_by_telegram_handler = CommandHandler('message_admins', message_admins_by_telegram)
     dispatcher.add_handler(message_admins_by_telegram_handler)
 
+    message_admins_by_telegram_handler = CommandHandler('message_admins', message_admins_by_telegram)
+    dispatcher.add_handler(message_admins_by_telegram_handler)
+
+    alert_handler = CommandHandler('alert', alert)
+    dispatcher.add_handler(alert_handler)
+
     # Unknown commands
     unknown_handler = MessageHandler(Filters.command, unknown)
     dispatcher.add_handler(unknown_handler)
@@ -156,6 +162,7 @@ def help_command(update: Update, context: CallbackContext):
     sell_limit - Send a new limit sales order
     cancel - Cancel open order
     message_admins - Send message to admins
+    alert - Send message alert with these conditions
     help - Help command
     """
     context.bot.send_message(chat_id=update.effective_chat.id,
@@ -173,6 +180,7 @@ def help_command(update: Update, context: CallbackContext):
                                     "/sell_limit [SYMBOL] [AMOUNT] [PRICE] - Send a new limit sales order \n"
                                     "/cancel [SYMBOL] [ORDER ID] - Cancel open order \n"
                                     "/message_admins [MESSAGE] - Send message to admins \n"
+                                    "/alert [SYMBOL] [PERCENT] [PERIOD] - Send message alert with these conditions\n"
                                     "/help  - This help (version {0})").format(__version__))
 
 
@@ -592,3 +600,65 @@ def authorization(update: Update, context: CallbackContext, action: str):
     except Exception as err:
         logger.log(msg='authorization: {0}'.format(str(err)), level=logging.ERROR)
     return False
+
+
+def alert(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='alert'):
+        return 1
+    logger.log(msg='/alert', level=logging.INFO)
+    if len(update.effective_message.text.split(' ')) == 4:
+        symbol = update.effective_message.text.split(' ')[1].upper()
+        if '/' not in symbol:
+            symbol = symbol + '/USDT'
+        percent = update.effective_message.text.split(' ')[2]
+        period = update.effective_message.text.split(' ')[3]
+    elif len(update.effective_message.text.split(' ')) == 3 and "symbol" in context.user_data:
+        symbol = context.user_data["symbol"]
+        percent = update.effective_message.text.split(' ')[1]
+        period = update.effective_message.text.split(' ')[2]
+
+    if 'symbol' in locals() and 'percent' in locals() and 'period' in locals():
+        logger.log(msg='/alert symbol: {0}, percent {1}, period {2} seconds'.format(symbol, percent, period),
+                   level=logging.INFO)
+        try:
+            os.environ['SYMBOL_TEST'] = symbol
+            os.environ['PERCENT_TEST'] = percent
+            os.environ['PERIOD_TEST'] = period
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text=_(
+                                         "Create alert with "
+                                         "symbol {0}, percent {1} and period {2} seconds").format(
+                                         symbol,
+                                         percent,
+                                         period))
+        except TelegramError as err:
+            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+        except Exception as err:
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text=_("Create alert with "
+                                            "symbol {0}, percent {1} and period {2} seconds --> {3}").format(
+                                             symbol,
+                                             percent,
+                                             period,
+                                             _("ERROR: I can't do it."),
+                                             str(err)))
+    elif len(update.effective_message.text.split(' ')) == 1:
+        symbol = os.environ.get('SYMBOL_TEST', 'NONE')
+        percent = os.environ.get('PERCENT_TEST', 'NONE')
+        period = os.environ.get('PERIOD_TEST', 'NONE')
+        logger.log(msg='/alert list: symbol {0}, percent {1} and period {2} seconds'.format(
+            symbol,
+            percent,
+            period),
+            level=logging.INFO)
+        try:
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text=_("Alert list: symbol {0}, percent {1} and period {2} seconds").format(
+                                         symbol,
+                                         percent,
+                                         period))
+        except TelegramError as err:
+            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error: invalid parameters"))
