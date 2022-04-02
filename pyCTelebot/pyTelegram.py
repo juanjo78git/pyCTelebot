@@ -616,7 +616,7 @@ def alert(update: Update, context: CallbackContext):
         symbol = context.user_data["symbol"]
         percent = update.effective_message.text.split(' ')[1]
         period = update.effective_message.text.split(' ')[2]
-
+    #TODO: Change it!! os.environ out of this file !!
     if 'symbol' in locals() and 'percent' in locals() and 'period' in locals():
         logger.log(msg='/alert symbol: {0}, percent {1}, period {2} seconds'.format(symbol, percent, period),
                    level=logging.INFO)
