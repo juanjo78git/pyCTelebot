@@ -535,7 +535,10 @@ def message_admins_by_telegram(update: Update, context: CallbackContext):
         user_id = update.effective_user.id
         chat = update.effective_chat.title
         chat_id = update.effective_chat.id
-        message_admins(_("{0} ({1}) in chat {2} ({3}) said: {4}").format(user, user_id, chat, chat_id, message))
+        if chat_id == user_id:
+            message_admins(_("{0} ({1}) said: {2}").format(user, user_id, message))
+        else:
+            message_admins(_("{0} ({1}) in chat {2} ({3}) said: {4}").format(user, user_id, chat, chat_id, message))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
