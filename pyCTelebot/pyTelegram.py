@@ -79,6 +79,9 @@ def run(how):
     cancel_order_handler = CommandHandler('cancel', cancel)
     dispatcher.add_handler(cancel_order_handler)
 
+    message_admins_by_telegram_handler = CommandHandler('message_admins', message_admins_by_telegram)
+    dispatcher.add_handler(message_admins_by_telegram_handler)
+
     # Unknown commands
     unknown_handler = MessageHandler(Filters.command, unknown)
     dispatcher.add_handler(unknown_handler)
@@ -150,6 +153,7 @@ def help_command(update: Update, context: CallbackContext):
     sell - Send a new sales order
     sell_limit - Send a new limit sales order
     cancel - Cancel open order
+    message_admins - Send message to admins
     help - Help command
     """
     context.bot.send_message(chat_id=update.effective_chat.id,
@@ -166,6 +170,7 @@ def help_command(update: Update, context: CallbackContext):
                                     "/sell [SYMBOL] [AMOUNT] - Send a new sales order \n"
                                     "/sell_limit [SYMBOL] [AMOUNT] [PRICE] - Send a new limit sales order \n"
                                     "/cancel [SYMBOL] [ORDER ID] - Cancel open order \n"
+                                    "/message_admins [MESSAGE] - Send message to admins"
                                     "/help  - This help (version {0})").format(__version__))
 
 
@@ -516,6 +521,22 @@ def unknown(update: Update, context: CallbackContext):
                                  text=_("Sorry, I didn't understand that command."))
     except TelegramError as err:
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+
+
+def message_admins_by_telegram(update: Update, context: CallbackContext):
+    if not authorization(update=update, context=context, action='message_admin'):
+        return 1
+    logger.log(msg='/message_admin', level=logging.INFO)
+    if len(update.effective_message.text.split(' ')) == 1:
+        message = update.effective_message.text.split(' ')[1]
+        user = update.effective_user.name
+        user_id = update.effective_user.id
+        chat = update.effective_chat.title
+        chat_id = update.effective_chat.id
+        message_admins(_("{0} ({1}) in chat {3} ({4}) said: {2}").format(user, user_id, chat, chat_id, message))
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error: invalid parameters"))
 
 
 def private_message_admins(message):
