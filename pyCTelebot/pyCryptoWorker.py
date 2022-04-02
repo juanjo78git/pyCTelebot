@@ -35,36 +35,49 @@ def run():
     # Send results
     # logger.log(msg='Worker - Symbol: {0} --> value: {1}'.format(symbol, ticker), level=logging.INFO)
     percent = 1
-    percent_value = 1 + percent/100
+    percent_value = 1 + percent / 100
     # bid: current best buy price // ask: current best sell price
     price_name_list = ["bid", "ask"]
     for price_name in price_name_list:
-        if ticker.get(price_name) > ticker2.get(price_name)*percent_value:
-            # pyTelegram.message_admins(message='Worker: {0} Symbol {1} {2} PRICE UP OVER {3}%!! {4}'.format(
+        if ticker.get(price_name) > ticker2.get(price_name) * percent_value:
+            pyTelegram.message_admins(message='WorkerTelegram: {0} Symbol {1} '
+                                              '{2} PRICE DOWN OVER {3}%!! {4} - {5}'.format(
+                                                datetime.now(tz=pytz.timezone("Europe/Madrid")),
+                                                symbol,
+                                                price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
+                                                percent,
+                                                ticker2.get(price_name),
+                                                ticker.get(price_name)))
             logger.log(msg='WorkerTelegram: {0} Symbol {1} {2} PRICE UP OVER {3}%!! {4} - {5}'.format(
                 datetime.now(tz=pytz.timezone("Europe/Madrid")),
                 symbol,
                 price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
                 percent,
-                ticker.get(price_name),
-                ticker2.get(price_name)
-            ), level=logging.INFO)
-        elif ticker.get(price_name)*percent_value < ticker2.get(price_name):
-            # pyTelegram.message_admins(message='Worker: {0} Symbol {1} {2} PRICE DOWN OVER {3}!! {4}'.format(
+                ticker2.get(price_name),
+                ticker.get(price_name)), level=logging.INFO)
+        elif ticker.get(price_name) * percent_value < ticker2.get(price_name):
+            pyTelegram.message_admins(message='WorkerTelegram: {0} Symbol {1} '
+                                              '{2} PRICE DOWN OVER {3}%!! {4} - {5}'.format(
+                                                datetime.now(tz=pytz.timezone("Europe/Madrid")),
+                                                symbol,
+                                                price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
+                                                percent,
+                                                ticker2.get(price_name),
+                                                ticker.get(price_name)))
             logger.log(msg='WorkerTelegram: {0} Symbol {1} {2} PRICE DOWN OVER {3}%!! {4} - {5}'.format(
-                datetime.now(tz=pytz.timezone("Europe/Madrid")),
-                symbol,
-                price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
-                percent,
-                ticker.get(price_name),
-                ticker2.get(price_name)
-            ), level=logging.INFO)
+                        datetime.now(tz=pytz.timezone("Europe/Madrid")),
+                        symbol,
+                        price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
+                        percent,
+                        ticker2.get(price_name),
+                        ticker.get(price_name)
+                        ), level=logging.INFO)
         else:
-            logger.log(msg='WorkerTelegram: {0} Symbol {1} {2} PRICE NOT CHANGE A {3}%!! {4} - {5}'.format(
-                datetime.now(tz=pytz.timezone("Europe/Madrid")),
-                symbol,
-                price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
-                percent,
-                ticker.get(price_name),
-                ticker2.get(price_name)
-            ), level=logging.INFO)
+            logger.log(msg='WorkerTelegram: {0} Symbol {1} {2} PRICE NOT CHANGE A {3}%!! {4} (Last: {5})'.format(
+                        datetime.now(tz=pytz.timezone("Europe/Madrid")),
+                        symbol,
+                        price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
+                        percent,
+                        ticker.get(price_name),
+                        ticker2.get(price_name)
+                        ), level=logging.INFO)
