@@ -37,6 +37,7 @@ def run():
     percent = 1
     percent_value = 1 + percent/100
     # bid: current best buy price // ask: current best sell price
+    """
     price_name_list = ["bid", "ask"]
     for price_name in price_name_list:
         if ticker.get(price_name) > ticker2.get(price_name)*percent_value:
@@ -53,3 +54,4 @@ def run():
                 price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
                 percent,
                 ticker))
+    """
