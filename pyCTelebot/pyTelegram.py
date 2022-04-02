@@ -527,13 +527,13 @@ def message_admins_by_telegram(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='message_admin'):
         return 1
     logger.log(msg='/message_admin', level=logging.INFO)
-    if len(update.effective_message.text.split(' ')) == 1:
+    if len(update.effective_message.text.split(' ')) == 2:
         message = update.effective_message.text.split(' ')[1]
         user = update.effective_user.name
         user_id = update.effective_user.id
         chat = update.effective_chat.title
         chat_id = update.effective_chat.id
-        message_admins(_("{0} ({1}) in chat {3} ({4}) said: {2}").format(user, user_id, chat, chat_id, message))
+        message_admins(_("{0} ({1}) in chat {2} ({3}) said: {4}").format(user, user_id, chat, chat_id, message))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
@@ -571,10 +571,13 @@ def private_message(message, user):
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
 
 
-def authorization(update: Update, context: CallbackContext, action):
-    logger.log(msg='User: {0} action: {1}'.format(update.effective_user.id, action), level=logging.INFO)
+def authorization(update: Update, context: CallbackContext, action: str):
+    logger.log(msg='authorization - User: {0} action: {1}'.format(update.effective_user.id, action), level=logging.INFO)
     try:
         if next((user for user in users('ADMIN') if user['telegram_id'] == str(update.effective_user.id)), None):
+            return True
+        if (next((user for user in users('USER') if user['telegram_id'] == str(update.effective_user.id)), None)) \
+                and action == 'message_admin':
             return True
         else:
             context.bot.send_message(chat_id=update.effective_chat.id,
