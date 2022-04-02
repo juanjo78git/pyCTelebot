@@ -13,7 +13,7 @@ _ = gettext.gettext
 #     'apiKey': TOKEN_CRYPTO_KEY,
 #     'secret': TOKEN_CRYPTO_SECRET
 # })
-# Test Exchange
+# TODO: Test Exchange
 if ENV_CONFIG.get('env') != 'TEST':
     params = {}
 else:
@@ -97,7 +97,8 @@ def price(symbol: str, user: str = None):
             'quoteVolume':   float, // volume of quote currency traded for last 24 hours
         }
         """
-        ticker = exchange.fetch_ticker(symbol=symbol, params=params)
+        # without params=params
+        ticker = exchange.fetch_ticker(symbol=symbol)
         logger.log(msg='Search price {0} --> value: {1}'.format(symbol, ticker), level=logging.INFO)
 
     except Exception as err:
