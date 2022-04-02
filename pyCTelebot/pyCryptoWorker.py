@@ -41,7 +41,7 @@ def run():
     for price_name in price_name_list:
         if ticker.get(price_name) > ticker2.get(price_name)*percent_value:
             # pyTelegram.message_admins(message='Worker: {0} Symbol {1} {2} PRICE UP OVER {3}%!! {4}'.format(
-            logger.log(msg='Worker: {0} Symbol {1} {2} PRICE UP OVER {3}%!! {4} - {5}'.format(
+            logger.log(msg='WorkerTelegram: {0} Symbol {1} {2} PRICE UP OVER {3}%!! {4} - {5}'.format(
                 datetime.now(tz=pytz.timezone("Europe/Madrid")),
                 symbol,
                 price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
@@ -51,7 +51,16 @@ def run():
             ), level=logging.INFO)
         elif ticker.get(price_name)*percent_value < ticker2.get(price_name):
             # pyTelegram.message_admins(message='Worker: {0} Symbol {1} {2} PRICE DOWN OVER {3}!! {4}'.format(
-            logger.log(msg='Worker: {0} Symbol {1} {2} PRICE DOWN OVER {3}!! {4} - {5}'.format(
+            logger.log(msg='WorkerTelegram: {0} Symbol {1} {2} PRICE DOWN OVER {3}%!! {4} - {5}'.format(
+                datetime.now(tz=pytz.timezone("Europe/Madrid")),
+                symbol,
+                price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
+                percent,
+                ticker.get(price_name),
+                ticker2.get(price_name)
+            ), level=logging.INFO)
+        else:
+            logger.log(msg='WorkerTelegram: {0} Symbol {1} {2} PRICE NOT CHANGE A {3}%!! {4} - {5}'.format(
                 datetime.now(tz=pytz.timezone("Europe/Madrid")),
                 symbol,
                 price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
