@@ -170,7 +170,7 @@ def help_command(update: Update, context: CallbackContext):
                                     "/sell [SYMBOL] [AMOUNT] - Send a new sales order \n"
                                     "/sell_limit [SYMBOL] [AMOUNT] [PRICE] - Send a new limit sales order \n"
                                     "/cancel [SYMBOL] [ORDER ID] - Cancel open order \n"
-                                    "/message_admins [MESSAGE] - Send message to admins"
+                                    "/message_admins [MESSAGE] - Send message to admins \n"
                                     "/help  - This help (version {0})").format(__version__))
 
 
