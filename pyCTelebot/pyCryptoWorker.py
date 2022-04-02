@@ -59,4 +59,3 @@ def run():
                 ticker.get(price_name),
                 ticker2.get(price_name)
             ), level=logging.INFO)
-
