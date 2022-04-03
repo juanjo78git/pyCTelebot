@@ -36,7 +36,7 @@ else:
 
 def connection(user: str = 'ME'):
     # Binance connection
-    logger.log(msg='Exchange connection user: {0}'.format(user), level=logging.INFO)
+    logger.log(msg='Exchange connection user: {0}'.format(user), level=logging.DEBUG)
     exchange = None
     try:
         if user == 'READONLY':
@@ -99,7 +99,7 @@ def price(symbol: str, user: str = None):
         """
         # without params=params
         ticker = exchange.fetch_ticker(symbol=symbol)
-        logger.log(msg='Search price {0} --> value: {1}'.format(symbol, ticker), level=logging.INFO)
+        logger.log(msg='Search price {0} --> value: {1}'.format(symbol, ticker), level=logging.DEBUG)
 
     except Exception as err:
         logger.log(
@@ -127,7 +127,7 @@ def open_orders(symbol: str, user: str = None):
             level=logging.ERROR)
         raise
     else:
-        logger.log(msg='Open orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.INFO)
+        logger.log(msg='Open orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.DEBUG)
         return orders
 
 
@@ -146,7 +146,7 @@ def closed_orders(symbol: str, user: str = None):
             level=logging.ERROR)
         raise
     else:
-        logger.log(msg='Closed orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.INFO)
+        logger.log(msg='Closed orders: symbol {0} - Count: {1}'.format(symbol, len(orders)), level=logging.DEBUG)
         return orders
 
 
@@ -170,10 +170,10 @@ def balance(symbol: str = None, user: str = None):
         raise
     else:
         if symbol is None:
-            logger.log(msg='All balances:  {0}'.format(all_balances), level=logging.INFO)
+            logger.log(msg='All balances:  {0}'.format(all_balances), level=logging.DEBUG)
             return all_balances
         else:
-            logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances[symbol]), level=logging.INFO)
+            logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances[symbol]), level=logging.DEBUG)
             return balances[symbol]
 
 
@@ -194,7 +194,7 @@ def cancel_order(order_id: str, symbol: str, user: str = None):
             level=logging.ERROR)
         raise
     else:
-        logger.log(msg='cancel_order {0} - {1}: status: {2}'.format(order_id, symbol, status), level=logging.INFO)
+        logger.log(msg='cancel_order {0} - {1}: status: {2}'.format(order_id, symbol, status), level=logging.DEBUG)
         return status
 
 
@@ -226,7 +226,7 @@ def buy_order(symbol: str, amount, type_order: str, price_limit=0, user: str = N
                                                                              amount,
                                                                              price_limit,
                                                                              status),
-                   level=logging.INFO)
+                   level=logging.DEBUG)
         return status
 
 
@@ -258,5 +258,5 @@ def sell_order(symbol: str, amount, type_order: str, price_limit=0, user: str = 
                                                                               amount,
                                                                               price_limit,
                                                                               status),
-                   level=logging.INFO)
+                   level=logging.DEBUG)
         return status

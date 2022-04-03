@@ -48,7 +48,7 @@ def main():
     gettext.bindtextdomain('pyCTelebot', './pyCTelebot/locale')
 
     clear_screen()
-    logger.log(msg='Locale: {0}'.format(os.environ['LANG']), level=logging.INFO)
+    logger.log(msg='Locale: {0}'.format(os.environ['LANG']), level=logging.DEBUG)
 
     if options.about:
         print(print_about_us())

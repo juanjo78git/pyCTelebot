@@ -139,7 +139,7 @@ def stop(update: Update, context: CallbackContext):
 #     logger.log(msg='User ({0}): {1} chat: {2}'.format(update.effective_user.name,
 #                                                       update.effective_user.id,
 #                                                       update.effective_chat.id),
-#                level=logging.INFO)
+#                level=logging.DEBUG)
 #      if not authorization(update=update, context=context, action='echo'):
 #          return 1
 #      context.bot.send_message(chat_id=update.effective_chat.id, text=_("{0} said: {1}").format(
@@ -195,7 +195,7 @@ def price(update: Update, context: CallbackContext):
         symbol = context.user_data["symbol"]
 
     if 'symbol' in locals():
-        logger.log(msg='/price symbol used: {0}'.format(symbol), level=logging.INFO)
+        logger.log(msg='/price symbol used: {0}'.format(symbol), level=logging.DEBUG)
         try:
             last_price = pyCrypto.price(symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
@@ -223,7 +223,7 @@ def balance(update: Update, context: CallbackContext):
     elif len(update.effective_message.text.split(' ')) == 1 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"].split('/')[0]
     if 'symbol' in locals():
-        logger.log(msg='/balance symbol used: {0}'.format(symbol), level=logging.INFO)
+        logger.log(msg='/balance symbol used: {0}'.format(symbol), level=logging.DEBUG)
         try:
             balances = pyCrypto.balance(symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
@@ -264,7 +264,7 @@ def open_orders(update: Update, context: CallbackContext):
         symbol = context.user_data["symbol"]
 
     if 'symbol' in locals():
-        logger.log(msg='/open_orders symbol used: {0}'.format(symbol), level=logging.INFO)
+        logger.log(msg='/open_orders symbol used: {0}'.format(symbol), level=logging.DEBUG)
         try:
             orders = pyCrypto.open_orders(symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
@@ -295,7 +295,7 @@ def closed_orders(update: Update, context: CallbackContext):
         symbol = context.user_data["symbol"]
 
     if 'symbol' in locals():
-        logger.log(msg='/closed_orders symbol used: {0}'.format(symbol), level=logging.INFO)
+        logger.log(msg='/closed_orders symbol used: {0}'.format(symbol), level=logging.DEBUG)
         try:
             orders = pyCrypto.closed_orders(symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
@@ -318,7 +318,7 @@ def closed_orders(update: Update, context: CallbackContext):
 def buy(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='buy'):
         return 1
-    logger.log(msg='/buy', level=logging.INFO)
+    logger.log(msg='/buy', level=logging.DEBUG)
     if len(update.effective_message.text.split(' ')) == 3:
         symbol = update.effective_message.text.split(' ')[1].upper()
         if '/' not in symbol:
@@ -328,7 +328,7 @@ def buy(update: Update, context: CallbackContext):
         symbol = context.user_data["symbol"]
         amount = update.effective_message.text.split(' ')[1]
     if 'symbol' in locals() and 'amount' in locals():
-        logger.log(msg='/buy symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.INFO)
+        logger.log(msg='/buy symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.DEBUG)
         try:
             status = pyCrypto.buy_order(symbol=symbol,
                                         amount=amount,
@@ -357,7 +357,7 @@ def buy(update: Update, context: CallbackContext):
 def buy_limit(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='buy_limit'):
         return 1
-    logger.log(msg='/buy_limit', level=logging.INFO)
+    logger.log(msg='/buy_limit', level=logging.DEBUG)
     if len(update.effective_message.text.split(' ')) == 4:
         symbol = update.effective_message.text.split(' ')[1].upper()
         if '/' not in symbol:
@@ -370,7 +370,7 @@ def buy_limit(update: Update, context: CallbackContext):
         price_limit = update.effective_message.text.split(' ')[2]
     if 'symbol' in locals() and 'amount' in locals() and 'price_limit' in locals():
         logger.log(msg='/buy_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
-                   level=logging.INFO)
+                   level=logging.DEBUG)
         try:
             status = pyCrypto.buy_order(symbol=symbol,
                                         amount=amount,
@@ -404,7 +404,7 @@ def buy_limit(update: Update, context: CallbackContext):
 def sell(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='sell'):
         return 1
-    logger.log(msg='/sell', level=logging.INFO)
+    logger.log(msg='/sell', level=logging.DEBUG)
     if len(update.effective_message.text.split(' ')) == 3:
         symbol = update.effective_message.text.split(' ')[1].upper()
         if '/' not in symbol:
@@ -414,7 +414,7 @@ def sell(update: Update, context: CallbackContext):
         symbol = context.user_data["symbol"]
         amount = update.effective_message.text.split(' ')[1]
     if 'symbol' in locals() and 'amount' in locals():
-        logger.log(msg='/sell symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.INFO)
+        logger.log(msg='/sell symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.DEBUG)
         try:
             status = pyCrypto.sell_order(symbol=symbol,
                                          amount=amount,
@@ -444,7 +444,7 @@ def sell(update: Update, context: CallbackContext):
 def sell_limit(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='sell_limit'):
         return 1
-    logger.log(msg='/sell_limit', level=logging.INFO)
+    logger.log(msg='/sell_limit', level=logging.DEBUG)
     if len(update.effective_message.text.split(' ')) == 4:
         symbol = update.effective_message.text.split(' ')[1].upper()
         if '/' not in symbol:
@@ -457,7 +457,7 @@ def sell_limit(update: Update, context: CallbackContext):
         price_limit = update.effective_message.text.split(' ')[2]
     if 'symbol' in locals() and 'amount' in locals() and 'price_limit' in locals():
         logger.log(msg='/sell_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
-                   level=logging.INFO)
+                   level=logging.DEBUG)
         try:
             status = pyCrypto.sell_order(symbol=symbol,
                                          amount=amount,
@@ -491,7 +491,7 @@ def sell_limit(update: Update, context: CallbackContext):
 def cancel(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='cancel'):
         return 1
-    logger.log(msg='/cancel', level=logging.INFO)
+    logger.log(msg='/cancel', level=logging.DEBUG)
     if len(update.effective_message.text.split(' ')) == 3:
         symbol = update.effective_message.text.split(' ')[1].upper()
         if '/' not in symbol:
@@ -501,7 +501,7 @@ def cancel(update: Update, context: CallbackContext):
         symbol = context.user_data["symbol"]
         order_id = update.effective_message.text.split(' ')[1]
     if 'symbol' in locals() and 'order_id' in locals():
-        logger.log(msg='/cancel symbol: {0}, order_id: {1}'.format(symbol, order_id), level=logging.INFO)
+        logger.log(msg='/cancel symbol: {0}, order_id: {1}'.format(symbol, order_id), level=logging.DEBUG)
         try:
             status = pyCrypto.cancel_order(order_id=order_id, symbol=symbol, user=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
@@ -536,7 +536,7 @@ def unknown(update: Update, context: CallbackContext):
 def message_admins_by_telegram(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='message_admin'):
         return 1
-    logger.log(msg='/message_admin', level=logging.INFO)
+    logger.log(msg='/message_admin', level=logging.DEBUG)
     if len(update.effective_message.text.split(' ')) == 2:
         message = update.effective_message.text.split(' ')[1]
         user = update.effective_user.name
@@ -585,7 +585,8 @@ def private_message(message, user):
 
 
 def authorization(update: Update, context: CallbackContext, action: str):
-    logger.log(msg='authorization - User: {0} action: {1}'.format(update.effective_user.id, action), level=logging.INFO)
+    logger.log(msg='authorization - User: {0} action: {1}'.format(update.effective_user.id, action),
+               level=logging.DEBUG)
     try:
         if next((user for user in users('ADMIN') if user['telegram_id'] == str(update.effective_user.id)), None):
             return True
@@ -605,7 +606,7 @@ def authorization(update: Update, context: CallbackContext, action: str):
 def alert(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='alert'):
         return 1
-    logger.log(msg='/alert', level=logging.INFO)
+    logger.log(msg='/alert', level=logging.DEBUG)
     if len(update.effective_message.text.split(' ')) == 4:
         symbol = update.effective_message.text.split(' ')[1].upper()
         if '/' not in symbol:
@@ -619,7 +620,7 @@ def alert(update: Update, context: CallbackContext):
     #TODO: Change it!! os.environ out of this file !!
     if 'symbol' in locals() and 'percent' in locals() and 'period' in locals():
         logger.log(msg='/alert symbol: {0}, percent {1}, period {2} seconds'.format(symbol, percent, period),
-                   level=logging.INFO)
+                   level=logging.DEBUG)
         try:
             os.environ['SYMBOL_TEST'] = symbol
             os.environ['PERCENT_TEST'] = percent
@@ -650,7 +651,7 @@ def alert(update: Update, context: CallbackContext):
             symbol,
             percent,
             period),
-            level=logging.INFO)
+            level=logging.DEBUG)
         try:
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("Alert list: symbol {0}, percent {1} and period {2} seconds").format(
