@@ -8,7 +8,8 @@ import logging
 from pyCTelebot.config.auth import ENV_CONFIG
 import pytz
 from time import sleep
-
+import random
+import sys
 # i18n
 _ = gettext.gettext
 
@@ -28,7 +29,16 @@ else:
 
 
 def run():
-    logger.log(msg='CryptoWorker doing something!', level=logging.INFO)
+    seed = random.randint(0, sys.maxsize)
+    logger.log(msg='Worker start ID: {0}'.format(seed), level=logging.INFO)
+    pyTelegram.message_admins(message='Worker start ID: {0}'.format(seed))
+    sleep(50)
+    logger.log(msg='Worker stop ID: {0}'.format(seed), level=logging.INFO)
+    pyTelegram.message_admins(message='Worker stop ID: {0}'.format(seed))
+
+
+def alert_worker():
+    logger.log(msg='alert_worker doing something!', level=logging.INFO)
     symbol = os.environ.get('SYMBOL_TEST', 'ETH/USDT')
     ticker = pyCrypto.price(symbol=symbol)
     # period
