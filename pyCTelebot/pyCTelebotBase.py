@@ -7,6 +7,7 @@ import gettext
 import logging
 from pyCTelebot import pyTelegram, pyCryptoCron, pyCryptoWorker
 from pyCTelebot.config.auth import ENV_CONFIG
+import pyPoC
 
 # i18n
 _ = gettext.gettext
@@ -49,6 +50,12 @@ def main():
 
     clear_screen()
     logger.log(msg='Locale: {0}'.format(os.environ['LANG']), level=logging.DEBUG)
+
+    if options.poc:
+        logger.log(msg='PoC start', level=logging.INFO)
+        pyPoC.run()
+        logger.log(msg='PoC ends', level=logging.INFO)
+        exit()
 
     if options.about:
         print(print_about_us())

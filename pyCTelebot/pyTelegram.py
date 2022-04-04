@@ -8,7 +8,7 @@ from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, ENV_CONFIG, TELEGRAM_ADMIN_GROUP, users
-from pyCTelebot import pyCrypto
+from pyCTelebot import pyCrypto, pyPoC
 from pyCTelebot.config import __version__
 import gettext
 import logging
@@ -49,8 +49,8 @@ def run(how: str):
     help_handler = CommandHandler('help', help_command)
     dispatcher.add_handler(help_handler)
 
-    # echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
-    # dispatcher.add_handler(echo_handler)
+    any_message_handler = MessageHandler(Filters.text & (~Filters.command), any_message)
+    dispatcher.add_handler(any_message_handler)
 
     price_handler = CommandHandler('price', price)
     dispatcher.add_handler(price_handler)
@@ -78,6 +78,10 @@ def run(how: str):
 
     cancel_order_handler = CommandHandler('cancel', cancel)
     dispatcher.add_handler(cancel_order_handler)
+
+    # PoC
+    poc_handler = CommandHandler('poc', poc)
+    dispatcher.add_handler(poc_handler)
 
     message_admins_by_telegram_handler = CommandHandler('message_admins', message_admins_by_telegram)
     dispatcher.add_handler(message_admins_by_telegram_handler)
@@ -114,8 +118,8 @@ def run(how: str):
 def start(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='start'):
         return 1
-    if len(update.effective_message.text.split(' ')) == 2:
-        symbol = update.effective_message.text.split(' ')[1].upper()
+    if len(context.args) == 1:
+        symbol = context.args[0].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
         context.user_data["symbol"] = symbol
@@ -134,17 +138,18 @@ def stop(update: Update, context: CallbackContext):
                              text=_("Bye!!"))
 
 
-# Eco
-# def echo(update: Update, context: CallbackContext):
-#     logger.log(msg='User ({0}): {1} chat: {2}'.format(update.effective_user.name,
-#                                                       update.effective_user.id,
-#                                                       update.effective_chat.id),
-#                level=logging.DEBUG)
-#      if not authorization(update=update, context=context, action='echo'):
-#          return 1
-#      context.bot.send_message(chat_id=update.effective_chat.id, text=_("{0} said: {1}").format(
-#         update.effective_user.first_name, update.message.text))
-#     return 1
+def any_message(update: Update, context: CallbackContext):
+    logger.log(msg='User {0} ({1}) - chat: {2} ({3}) - message {4}'.format(update.effective_user.name,
+                                                                           update.effective_user.id,
+                                                                           update.effective_chat.title,
+                                                                           update.effective_chat.id,
+                                                                           update.message.text),
+               level=logging.DEBUG)
+    if not authorization(update=update, context=context, action='any_message'):
+        return 1
+    # Do something with messages
+
+    return 1
 
 
 def help_command(update: Update, context: CallbackContext):
@@ -185,59 +190,48 @@ def help_command(update: Update, context: CallbackContext):
 
 
 def price(update: Update, context: CallbackContext):
+    # Authorization
     if not authorization(update=update, context=context, action='price'):
         return 1
-    if len(update.effective_message.text.split(' ')) == 2:
-        symbol = update.effective_message.text.split(' ')[1].upper()
+    # Params
+    if len(context.args) == 1:
+        symbol = context.args[0].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
-    elif len(update.effective_message.text.split(' ')) == 1 and "symbol" in context.user_data:
+    elif len(context.args) == 0 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
-
-    if 'symbol' in locals():
-        logger.log(msg='/price symbol used: {0}'.format(symbol), level=logging.DEBUG)
-        try:
-            last_price = pyCrypto.price(symbol=symbol, user=update.effective_user.id)
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Trading pair: {0} Last price: {1}").format(
-                                         symbol,
-                                         last_price))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        except Exception as err:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Trading pair: {0} price --> {1} {2}").format(
-                                         symbol,
-                                         _("ERROR: I can't do it."),
-                                         str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
+        return 1
+    # Action
+    logger.log(msg='/price symbol used: {0}'.format(symbol), level=logging.DEBUG)
+    try:
+        last_price = pyCrypto.price(symbol=symbol, user=update.effective_user.id)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Trading pair: {0} Last price: {1}").format(
+                                     symbol,
+                                     last_price))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Trading pair: {0} price --> {1} {2}").format(
+                                     symbol,
+                                     _("ERROR: I can't do it."),
+                                     str(err)))
 
 
 def balance(update: Update, context: CallbackContext):
+    # Authorization
     if not authorization(update=update, context=context, action='balance'):
         return 1
-    if len(update.effective_message.text.split(' ')) == 2:
-        symbol = update.effective_message.text.split(' ')[1].upper()
-    elif len(update.effective_message.text.split(' ')) == 1 and "symbol" in context.user_data:
+    # Params
+    if len(context.args) == 1:
+        symbol = context.args[0].upper()
+    elif len(context.args) == 0 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"].split('/')[0]
-    if 'symbol' in locals():
-        logger.log(msg='/balance symbol used: {0}'.format(symbol), level=logging.DEBUG)
-        try:
-            balances = pyCrypto.balance(symbol=symbol, user=update.effective_user.id)
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Symbol: {0} Balance: {1}").format(
-                                         symbol,
-                                         balances))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        except Exception as err:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Balance {0} --> {1} {2}").format(
-                                         symbol,
-                                         _("ERROR: I can't do it."),
-                                         str(err)))
+    # Action without params
     else:
         try:
             balances = pyCrypto.balance(user=update.effective_user.id)
@@ -251,278 +245,309 @@ def balance(update: Update, context: CallbackContext):
                                      text=_("All balances --> {0} {1}").format(
                                          _("ERROR: I can't do it."),
                                          str(err)))
+        return 1
+    # Action with params
+    logger.log(msg='/balance symbol used: {0}'.format(symbol), level=logging.DEBUG)
+    try:
+        balances = pyCrypto.balance(symbol=symbol, user=update.effective_user.id)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Symbol: {0} Balance: {1}").format(
+                                     symbol,
+                                     balances))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Balance {0} --> {1} {2}").format(
+                                     symbol,
+                                     _("ERROR: I can't do it."),
+                                     str(err)))
 
 
 def open_orders(update: Update, context: CallbackContext):
+    # Authorization
     if not authorization(update=update, context=context, action='open_orders'):
         return 1
-    if len(update.effective_message.text.split(' ')) == 2:
-        symbol = update.effective_message.text.split(' ')[1].upper()
+    # Params
+    if len(context.args) == 1:
+        symbol = context.args[0].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
-    elif len(update.effective_message.text.split(' ')) == 1 and "symbol" in context.user_data:
+    elif len(context.args) == 0 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
-
-    if 'symbol' in locals():
-        logger.log(msg='/open_orders symbol used: {0}'.format(symbol), level=logging.DEBUG)
-        try:
-            orders = pyCrypto.open_orders(symbol=symbol, user=update.effective_user.id)
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Trading pair: {0} open orders: {1}").format(
-                                         symbol,
-                                         orders))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        except Exception as err:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Trading pair: {0} open orders --> {1} {2}").format(
-                                         symbol,
-                                         _("ERROR: I can't do it."),
-                                         str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
+        return 1
+    # Action
+    logger.log(msg='/open_orders symbol used: {0}'.format(symbol), level=logging.DEBUG)
+    try:
+        orders = pyCrypto.open_orders(symbol=symbol, user=update.effective_user.id)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Trading pair: {0} open orders: {1}").format(
+                                     symbol,
+                                     orders))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Trading pair: {0} open orders --> {1} {2}").format(
+                                     symbol,
+                                     _("ERROR: I can't do it."),
+                                     str(err)))
 
 
 def closed_orders(update: Update, context: CallbackContext):
+    # Authorization
     if not authorization(update=update, context=context, action='closed_orders'):
         return 1
-    if len(update.effective_message.text.split(' ')) == 2:
+    # Params
+    if len(context.args) == 1:
         symbol = update.effective_message.text.split(' ')[1].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
-    elif len(update.effective_message.text.split(' ')) == 1 and "symbol" in context.user_data:
+    elif len(context.args) == 0 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
-
-    if 'symbol' in locals():
-        logger.log(msg='/closed_orders symbol used: {0}'.format(symbol), level=logging.DEBUG)
-        try:
-            orders = pyCrypto.closed_orders(symbol=symbol, user=update.effective_user.id)
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Trading pair: {0} closed orders: {1}").format(
-                                         symbol,
-                                         orders))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        except Exception as err:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Trading pair: {0} closed orders --> {1} {2}").format(
-                                         symbol,
-                                         _("ERROR: I can't do it."),
-                                         str(err)))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
+        return 1
+    # Action
+    logger.log(msg='/closed_orders symbol used: {0}'.format(symbol), level=logging.DEBUG)
+    try:
+        orders = pyCrypto.closed_orders(symbol=symbol, user=update.effective_user.id)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Trading pair: {0} closed orders: {1}").format(
+                                     symbol,
+                                     orders))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Trading pair: {0} closed orders --> {1} {2}").format(
+                                     symbol,
+                                     _("ERROR: I can't do it."),
+                                     str(err)))
 
 
 def buy(update: Update, context: CallbackContext):
+    # Authorization
     if not authorization(update=update, context=context, action='buy'):
         return 1
-    logger.log(msg='/buy', level=logging.DEBUG)
-    if len(update.effective_message.text.split(' ')) == 3:
-        symbol = update.effective_message.text.split(' ')[1].upper()
+    # Params
+    if len(context.args) == 2:
+        symbol = context.args[1].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
-        amount = update.effective_message.text.split(' ')[2]
-    elif len(update.effective_message.text.split(' ')) == 2 and "symbol" in context.user_data:
+        amount = context.args[1]
+    elif len(context.args) == 1 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
-        amount = update.effective_message.text.split(' ')[1]
-    if 'symbol' in locals() and 'amount' in locals():
-        logger.log(msg='/buy symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.DEBUG)
-        try:
-            status = pyCrypto.buy_order(symbol=symbol,
-                                        amount=amount,
-                                        type_order='market',
-                                        user=update.effective_user.id)
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Buying order with symbol {0} and amount {1} --> {2}").format(
-                                         symbol,
-                                         amount,
-                                         status))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        except Exception as err:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Buying order with "
-                                            "symbol {0} and amount {1} --> {2} {3}").format(
-                                         symbol,
-                                         amount,
-                                         _("ERROR: I can't do it."),
-                                         str(err)))
+        amount = context.args[0]
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
+        return 1
+    # Action
+    logger.log(msg='/buy symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.DEBUG)
+    try:
+        status = pyCrypto.buy_order(symbol=symbol,
+                                    amount=amount,
+                                    type_order='market',
+                                    user=update.effective_user.id)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Buying order with symbol {0} and amount {1} --> {2}").format(
+                                     symbol,
+                                     amount,
+                                     status))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Buying order with "
+                                        "symbol {0} and amount {1} --> {2} {3}").format(
+                                     symbol,
+                                     amount,
+                                     _("ERROR: I can't do it."),
+                                     str(err)))
 
 
 def buy_limit(update: Update, context: CallbackContext):
+    # Authorization
     if not authorization(update=update, context=context, action='buy_limit'):
         return 1
-    logger.log(msg='/buy_limit', level=logging.DEBUG)
-    if len(update.effective_message.text.split(' ')) == 4:
-        symbol = update.effective_message.text.split(' ')[1].upper()
+    # Params
+    if len(context.args) == 3:
+        symbol = context.args[0].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
-        amount = update.effective_message.text.split(' ')[2]
-        price_limit = update.effective_message.text.split(' ')[3]
-    elif len(update.effective_message.text.split(' ')) == 3 and "symbol" in context.user_data:
+        amount = context.args[1]
+        price_limit = context.args[2]
+    elif len(context.args) == 2 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
-        amount = update.effective_message.text.split(' ')[1]
-        price_limit = update.effective_message.text.split(' ')[2]
-    if 'symbol' in locals() and 'amount' in locals() and 'price_limit' in locals():
-        logger.log(msg='/buy_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
-                   level=logging.DEBUG)
-        try:
-            status = pyCrypto.buy_order(symbol=symbol,
-                                        amount=amount,
-                                        type_order='limit',
-                                        price_limit=price_limit,
-                                        user=update.effective_user.id)
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_(
-                                         "Create limit buy order with "
-                                         "symbol {0}, amount {1} and price {2} --> {3}").format(
-                                         symbol,
-                                         amount,
-                                         price_limit,
-                                         status))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        except Exception as err:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Create limit buy order with "
-                                            "symbol {0} and amount {1} and price {2} --> {3} {4}").format(
-                                         symbol,
-                                         amount,
-                                         price_limit,
-                                         _("ERROR: I can't do it."),
-                                         str(err)))
+        amount = context.args[0]
+        price_limit = context.args[1]
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
+        return 1
+    # Action
+    logger.log(msg='/buy_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
+               level=logging.DEBUG)
+    try:
+        status = pyCrypto.buy_order(symbol=symbol,
+                                    amount=amount,
+                                    type_order='limit',
+                                    price_limit=price_limit,
+                                    user=update.effective_user.id)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_(
+                                     "Create limit buy order with "
+                                     "symbol {0}, amount {1} and price {2} --> {3}").format(
+                                     symbol,
+                                     amount,
+                                     price_limit,
+                                     status))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Create limit buy order with "
+                                        "symbol {0} and amount {1} and price {2} --> {3} {4}").format(
+                                     symbol,
+                                     amount,
+                                     price_limit,
+                                     _("ERROR: I can't do it."),
+                                     str(err)))
 
 
 def sell(update: Update, context: CallbackContext):
+    # Authorization
     if not authorization(update=update, context=context, action='sell'):
         return 1
-    logger.log(msg='/sell', level=logging.DEBUG)
-    if len(update.effective_message.text.split(' ')) == 3:
-        symbol = update.effective_message.text.split(' ')[1].upper()
+    # Params
+    if len(context.args) == 2:
+        symbol = context.args[0].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
-        amount = update.effective_message.text.split(' ')[2]
-    elif len(update.effective_message.text.split(' ')) == 2 and "symbol" in context.user_data:
+        amount = context.args[1]
+    elif len(context.args) == 1 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
-        amount = update.effective_message.text.split(' ')[1]
-    if 'symbol' in locals() and 'amount' in locals():
-        logger.log(msg='/sell symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.DEBUG)
-        try:
-            status = pyCrypto.sell_order(symbol=symbol,
-                                         amount=amount,
-                                         type_order='market',
-                                         user=update.effective_user.id)
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Selling order with "
-                                            "symbol {0} and amount {1} --> {2}").format(
-                                         symbol,
-                                         amount,
-                                         status))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        except Exception as err:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Selling order with "
-                                            "symbol {0} and amount {1} --> {2} {3}").format(
-                                         symbol,
-                                         amount,
-                                         _("ERROR: I can't do it."),
-                                         str(err)))
+        amount = context.args[0]
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
+        return 1
+    # Action
+    logger.log(msg='/sell symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.DEBUG)
+    try:
+        status = pyCrypto.sell_order(symbol=symbol,
+                                     amount=amount,
+                                     type_order='market',
+                                     user=update.effective_user.id)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Selling order with "
+                                        "symbol {0} and amount {1} --> {2}").format(
+                                     symbol,
+                                     amount,
+                                     status))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Selling order with "
+                                        "symbol {0} and amount {1} --> {2} {3}").format(
+                                     symbol,
+                                     amount,
+                                     _("ERROR: I can't do it."),
+                                     str(err)))
 
 
 def sell_limit(update: Update, context: CallbackContext):
+    # Authorization
     if not authorization(update=update, context=context, action='sell_limit'):
         return 1
-    logger.log(msg='/sell_limit', level=logging.DEBUG)
-    if len(update.effective_message.text.split(' ')) == 4:
-        symbol = update.effective_message.text.split(' ')[1].upper()
+    # Params
+    if len(context.args) == 3:
+        symbol = context.args[0].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
-        amount = update.effective_message.text.split(' ')[2]
-        price_limit = update.effective_message.text.split(' ')[3]
-    elif len(update.effective_message.text.split(' ')) == 3 and "symbol" in context.user_data:
+        amount = context.args[1]
+        price_limit = context.args[2]
+    elif len(context.args) == 2 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
-        amount = update.effective_message.text.split(' ')[1]
-        price_limit = update.effective_message.text.split(' ')[2]
-    if 'symbol' in locals() and 'amount' in locals() and 'price_limit' in locals():
-        logger.log(msg='/sell_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
-                   level=logging.DEBUG)
-        try:
-            status = pyCrypto.sell_order(symbol=symbol,
-                                         amount=amount,
-                                         type_order='limit',
-                                         price_limit=price_limit,
-                                         user=update.effective_user.id)
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_(
-                                         "Create limit sell order with "
-                                         "symbol {0}, amount {1} and price {2} --> {3}").format(
-                                         symbol,
-                                         amount,
-                                         price_limit,
-                                         status))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        except Exception as err:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Create limit sell order with "
-                                            "symbol {0} and amount {1} and price {2} --> {3} {4}").format(
-                                         symbol,
-                                         amount,
-                                         price_limit,
-                                         _("ERROR: I can't do it."),
-                                         str(err)))
+        amount = context.args[0]
+        price_limit = context.args[1]
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
+        return 1
+    # Action
+    logger.log(msg='/sell_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
+               level=logging.DEBUG)
+    try:
+        status = pyCrypto.sell_order(symbol=symbol,
+                                     amount=amount,
+                                     type_order='limit',
+                                     price_limit=price_limit,
+                                     user=update.effective_user.id)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_(
+                                     "Create limit sell order with "
+                                     "symbol {0}, amount {1} and price {2} --> {3}").format(
+                                     symbol,
+                                     amount,
+                                     price_limit,
+                                     status))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Create limit sell order with "
+                                        "symbol {0} and amount {1} and price {2} --> {3} {4}").format(
+                                     symbol,
+                                     amount,
+                                     price_limit,
+                                     _("ERROR: I can't do it."),
+                                     str(err)))
 
 
 def cancel(update: Update, context: CallbackContext):
+    # Authorization
     if not authorization(update=update, context=context, action='cancel'):
         return 1
-    logger.log(msg='/cancel', level=logging.DEBUG)
-    if len(update.effective_message.text.split(' ')) == 3:
-        symbol = update.effective_message.text.split(' ')[1].upper()
+    # Params
+    if len(context.args) == 2:
+        symbol = context.args[0].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
-        order_id = update.effective_message.text.split(' ')[2]
-    elif len(update.effective_message.text.split(' ')) == 2 and "symbol" in context.user_data:
+        order_id = context.args[1]
+    elif len(context.args) == 1 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
-        order_id = update.effective_message.text.split(' ')[1]
-    if 'symbol' in locals() and 'order_id' in locals():
-        logger.log(msg='/cancel symbol: {0}, order_id: {1}'.format(symbol, order_id), level=logging.DEBUG)
-        try:
-            status = pyCrypto.cancel_order(order_id=order_id, symbol=symbol, user=update.effective_user.id)
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Canceling order with "
-                                            "symbol {0} and id {1} --> {2}").format(
-                                         symbol,
-                                         order_id,
-                                         status))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        except Exception as err:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Canceling order with "
-                                            "symbol {0} and id {1} --> {2} {3}").format(
-                                         symbol,
-                                         order_id,
-                                         _("ERROR: I can't do it."),
-                                         str(err)))
+        order_id = context.args[0]
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
+        return 1
+    # Action
+    logger.log(msg='/cancel symbol: {0}, order_id: {1}'.format(symbol, order_id), level=logging.DEBUG)
+    try:
+        status = pyCrypto.cancel_order(order_id=order_id, symbol=symbol, user=update.effective_user.id)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Canceling order with "
+                                        "symbol {0} and id {1} --> {2}").format(
+                                     symbol,
+                                     order_id,
+                                     status))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Canceling order with "
+                                        "symbol {0} and id {1} --> {2} {3}").format(
+                                     symbol,
+                                     order_id,
+                                     _("ERROR: I can't do it."),
+                                     str(err)))
 
 
 def unknown(update: Update, context: CallbackContext):
@@ -534,22 +559,25 @@ def unknown(update: Update, context: CallbackContext):
 
 
 def message_admins_by_telegram(update: Update, context: CallbackContext):
+    # Authorization
     if not authorization(update=update, context=context, action='message_admin'):
         return 1
-    logger.log(msg='/message_admin', level=logging.DEBUG)
-    if len(update.effective_message.text.split(' ')) == 2:
-        message = update.effective_message.text.split(' ')[1]
+    # Params
+    if len(context.args) > 0:
+        message = update.effective_message.text.split(sep=' ', maxsplit=1)[1]
         user = update.effective_user.name
         user_id = update.effective_user.id
         chat = update.effective_chat.title
         chat_id = update.effective_chat.id
-        if chat_id == user_id:
-            message_admins(_("{0} ({1}) said: {2}").format(user, user_id, message))
-        else:
-            message_admins(_("{0} ({1}) in chat {2} ({3}) said: {4}").format(user, user_id, chat, chat_id, message))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
+        return 1
+    # Action
+    if chat_id == user_id:
+        message_admins(_("{0} ({1}) said: {2}").format(user, user_id, message))
+    else:
+        message_admins(_("{0} ({1}) in chat {2} ({3}) said: {4}").format(user, user_id, chat, chat_id, message))
 
 
 def private_message_admins(message):
@@ -604,46 +632,23 @@ def authorization(update: Update, context: CallbackContext, action: str):
 
 
 def alert(update: Update, context: CallbackContext):
+    # Authorization
     if not authorization(update=update, context=context, action='alert'):
         return 1
-    logger.log(msg='/alert', level=logging.DEBUG)
-    if len(update.effective_message.text.split(' ')) == 4:
-        symbol = update.effective_message.text.split(' ')[1].upper()
+    # Params
+    if len(context.args) == 3:
+        symbol = context.args[0].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
-        percent = update.effective_message.text.split(' ')[2]
-        period = update.effective_message.text.split(' ')[3]
-    elif len(update.effective_message.text.split(' ')) == 3 and "symbol" in context.user_data:
+        percent = context.args[1]
+        period = context.args[2]
+    elif len(context.args) == 2 and "symbol" in context.user_data:
         symbol = context.user_data["symbol"]
-        percent = update.effective_message.text.split(' ')[1]
-        period = update.effective_message.text.split(' ')[2]
-    #TODO: Change it!! os.environ out of this file !!
-    if 'symbol' in locals() and 'percent' in locals() and 'period' in locals():
-        logger.log(msg='/alert symbol: {0}, percent {1}, period {2} seconds'.format(symbol, percent, period),
-                   level=logging.DEBUG)
-        try:
-            os.environ['SYMBOL_TEST'] = symbol
-            os.environ['PERCENT_TEST'] = percent
-            os.environ['PERIOD_TEST'] = period
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_(
-                                         "Create alert with "
-                                         "symbol {0}, percent {1} and period {2} seconds").format(
-                                         symbol,
-                                         percent,
-                                         period))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        except Exception as err:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Create alert with "
-                                            "symbol {0}, percent {1} and period {2} seconds --> {3}").format(
-                                             symbol,
-                                             percent,
-                                             period,
-                                             _("ERROR: I can't do it."),
-                                             str(err)))
-    elif len(update.effective_message.text.split(' ')) == 1:
+        percent = context.args[0]
+        period = context.args[1]
+    # Action without params
+    elif len(context.args) == 0:
+        # TODO: Change it!! os.environ out of this file !!
         symbol = os.environ.get('SYMBOL_TEST', 'NONE')
         percent = os.environ.get('PERCENT_TEST', 'NONE')
         period = os.environ.get('PERIOD_TEST', 'NONE')
@@ -660,6 +665,42 @@ def alert(update: Update, context: CallbackContext):
                                          period))
         except TelegramError as err:
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+        return 1
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Error: invalid parameters"))
+        return 1
+    # Action
+    # TODO: Change it!! os.environ out of this file !!
+    logger.log(msg='/alert symbol: {0}, percent {1}, period {2} seconds'.format(symbol, percent, period),
+               level=logging.DEBUG)
+    try:
+        os.environ['SYMBOL_TEST'] = symbol
+        os.environ['PERCENT_TEST'] = percent
+        os.environ['PERIOD_TEST'] = period
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_(
+                                     "Create alert with "
+                                     "symbol {0}, percent {1} and period {2} seconds").format(
+                                     symbol,
+                                     percent,
+                                     period))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Create alert with "
+                                        "symbol {0}, percent {1} and period {2} seconds --> {3}").format(
+                                         symbol,
+                                         percent,
+                                         period,
+                                         _("ERROR: I can't do it."),
+                                         str(err)))
+
+
+def poc(update: Update, context: CallbackContext):
+    # Authorization
+    if not authorization(update=update, context=context, action='poc'):
+        return 1
+    # Action
+    pyPoC.run_telegram(update=update, context=context)
