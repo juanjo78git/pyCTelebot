@@ -35,8 +35,8 @@ def run_telegram(update: Update, context: CallbackContext):
                                                                                       update.effective_user.id,
                                                                                       update.effective_chat.title,
                                                                                       update.effective_chat.id,
-                                                                                      update.message.text,
-                                                                                      len(context.args)),
+                                                                                      len(context.args),
+                                                                                      update.message.text),
                level=logging.DEBUG)
     if logger.level == logging.DEBUG:
         context.bot.send_message(chat_id=update.effective_chat.id,
@@ -45,8 +45,8 @@ def run_telegram(update: Update, context: CallbackContext):
                                      update.effective_user.id,
                                      update.effective_chat.title,
                                      update.effective_chat.id,
-                                     update.message.text,
-                                     len(context.args)))
+                                     len(context.args),
+                                     update.message.text))
     # Do something
 
     logger.log(msg='pyPoC run_telegram stop ID: {0}'.format(seed), level=logging.INFO)
