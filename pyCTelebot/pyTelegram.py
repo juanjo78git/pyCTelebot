@@ -8,7 +8,8 @@ from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, ENV_CONFIG, TELEGRAM_ADMIN_GROUP, users
-from pyCTelebot import pyCrypto, pyPoC
+from pyCTelebot import pyCrypto
+from pyCTelebot import pyPoC
 from pyCTelebot.config import __version__
 import gettext
 import logging
