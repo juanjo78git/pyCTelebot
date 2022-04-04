@@ -47,8 +47,9 @@ def run():
     scheduler.add_job(pyCryptoWorker.run, "interval", seconds=60)
     s = int(os.environ.get('PERIOD_TEST', '520')) + 5
     scheduler.add_job(pyCryptoWorker.alert_worker, "interval", seconds=s)
-
-    scheduler.start()
-    logger.log(msg='CryptoCron stop ID: {0}'.format(seed), level=logging.INFO)
-    pyTelegram.message_admins(message='CryptoCron stop  at {0} with ID: {1}'.format(
-        datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
+    try:
+        scheduler.start()
+    finally:
+        logger.log(msg='CryptoCron stop ID: {0}'.format(seed), level=logging.INFO)
+        pyTelegram.message_admins(message='CryptoCron stop  at {0} with ID: {1}'.format(
+            datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))

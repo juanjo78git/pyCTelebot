@@ -8,6 +8,7 @@ from telegram import Update
 from telegram.ext import CallbackContext
 import telegram
 from pyCTelebot.config.auth import ENV_CONFIG
+import psutil
 
 # i18n
 _ = gettext.gettext
@@ -29,6 +30,7 @@ else:
 logger.setLevel(logging.DEBUG)
 
 
+# Telegram Proof of Concept
 def run_telegram(update: Update, context: CallbackContext):
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run_telegram start ID: {0}'.format(seed), level=logging.INFO)
@@ -55,7 +57,7 @@ def run_telegram(update: Update, context: CallbackContext):
                 [telegram.InlineKeyboardButton('Option BTC', callback_data='/start btc')]]
 
     reply_markup = telegram.InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('*****Menu*****\nOptions:',  reply_markup=reply_markup,
+    update.message.reply_text('*****Menu*****\nOptions:', reply_markup=reply_markup,
                               reply_to_message_id=update.message.message_id)
 
     logger.log(msg='pyPoC run_telegram stop ID: {0}'.format(seed), level=logging.INFO)
@@ -69,9 +71,29 @@ def poc_button(update: Update, context: CallbackContext):
                                 text=query.data)
 
 
+# Proof of Concept
 def run():
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
-
+    for p in psutil.process_iter():
+        try:
+            if 'PY' in str(p).upper():
+                logger.log(msg='pyPoC PS: {0} - {1}'.format(p.pid, p.cmdline()), level=logging.INFO)
+        except Exception:
+            logger.log(msg='pyPoC run stop/KILLED ID: {0}'.format(seed), level=logging.INFO)
     logger.log(msg='pyPoC run stop ID: {0}'.format(seed), level=logging.INFO)
+
+
+# Telegram Proof of Concept
+def ps(update: Update, context: CallbackContext):
+    for p in psutil.process_iter():
+        try:
+            if 'PY' in str(p).upper():
+                logger.log(msg='pyPoC PS: {0} - {1}'.format(p.pid, p.cmdline()), level=logging.INFO)
+                context.bot.send_message(chat_id=update.effective_chat.id,
+                                         text='/ps {0} - {1}'.format(
+                                             p.pid,
+                                             p.cmdline()))
+        except Exception:
+            logger.log(msg='pyPoC run stop/KILLED ID: {0}'.format(seed), level=logging.INFO)

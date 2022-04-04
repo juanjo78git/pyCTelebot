@@ -84,6 +84,9 @@ def run(how: str):
     poc_handler = CommandHandler('poc', poc)
     dispatcher.add_handler(poc_handler)
 
+    ps_handler = CommandHandler('ps', ps)
+    dispatcher.add_handler(ps_handler)
+
     dispatcher.add_handler(CallbackQueryHandler(poc_button))
 
     message_admins_by_telegram_handler = CommandHandler('message_admins', message_admins_by_telegram)
@@ -699,6 +702,14 @@ def alert(update: Update, context: CallbackContext):
                                          period,
                                          _("ERROR: I can't do it."),
                                          str(err)))
+
+
+def ps(update: Update, context: CallbackContext):
+    # Authorization
+    if not authorization(update=update, context=context, action='ps'):
+        return 1
+    # Action
+    pyPoC.ps(update=update, context=context)
 
 
 def poc(update: Update, context: CallbackContext):

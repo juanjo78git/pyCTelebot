@@ -33,10 +33,16 @@ def run():
     logger.log(msg='Worker start ID: {0}'.format(seed), level=logging.INFO)
     pyTelegram.message_admins(message='Worker start at {0} with ID: {1}'.format(
         datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
-    sleep(50)
-    logger.log(msg='Worker stop ID: {0}'.format(seed), level=logging.INFO)
-    pyTelegram.message_admins(message='Worker stop at {0} with ID: {1}'.format(
-        datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
+    try:
+        sleep(50)
+    except Exception:
+        logger.log(msg='Worker stop/KILLED ID: {0}'.format(seed), level=logging.INFO)
+        pyTelegram.message_admins(message='Worker stop/KILLED at {0} with ID: {1}'.format(
+            datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
+    else:
+        logger.log(msg='Worker stop ID: {0}'.format(seed), level=logging.INFO)
+        pyTelegram.message_admins(message='Worker stop at {0} with ID: {1}'.format(
+            datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
 
 
 def alert_worker():
