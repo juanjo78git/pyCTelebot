@@ -6,6 +6,7 @@ import random
 import sys
 from telegram import Update
 from telegram.ext import CallbackContext
+import telegram
 from pyCTelebot.config.auth import ENV_CONFIG
 
 # i18n
@@ -50,6 +51,22 @@ def run_telegram(update: Update, context: CallbackContext):
     # Do something
 
     logger.log(msg='pyPoC run_telegram stop ID: {0}'.format(seed), level=logging.INFO)
+    keyboard = [[telegram.InlineKeyboardButton('Option ETH', callback_data='/start eth')],
+                [telegram.InlineKeyboardButton('Option BTC', callback_data='/start btc')]]
+
+    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+    update.message.reply_text('*****Menu*****\nOptions:',  reply_markup=reply_markup,
+                              reply_to_message_id=update.message.message_id)
+
+    logger.log(msg='pyPoC run_telegram stop ID: {0}'.format(seed), level=logging.INFO)
+
+
+def poc_button(update: Update, context: CallbackContext):
+    query = update.callback_query
+    logger.log(msg='poc_button selected: {0}'.format(query.data), level=logging.INFO)
+    context.bot.editMessageText(message_id=query.message.message_id,
+                                chat_id=query.message.chat_id,
+                                text=query.data)
 
 
 def run():

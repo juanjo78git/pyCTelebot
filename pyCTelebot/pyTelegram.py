@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from telegram.ext import Updater
+from telegram.ext import Updater, CallbackQueryHandler
 from telegram import Update, Bot
 from telegram.error import TelegramError
 from telegram.ext import CallbackContext
@@ -84,6 +84,8 @@ def run(how: str):
     poc_handler = CommandHandler('poc', poc)
     dispatcher.add_handler(poc_handler)
 
+    dispatcher.add_handler(CallbackQueryHandler(poc_button))
+
     message_admins_by_telegram_handler = CommandHandler('message_admins', message_admins_by_telegram)
     dispatcher.add_handler(message_admins_by_telegram_handler)
 
@@ -110,7 +112,7 @@ def run(how: str):
     else:
         logger.log(msg='Start with polling', level=logging.INFO)
         message_admins(_('Start pyCTelebot on telegram with polling'))
-        updater.start_polling()
+        updater.start_polling(allowed_updates=[])
 
     # Keep it from stopping
     updater.idle()
@@ -705,3 +707,8 @@ def poc(update: Update, context: CallbackContext):
         return 1
     # Action
     pyPoC.run_telegram(update=update, context=context)
+
+
+def poc_button(update: Update, context: CallbackContext):
+    # Action
+    pyPoC.poc_button(update=update, context=context)
