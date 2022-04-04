@@ -34,7 +34,7 @@ def build_parser():
                         dest='worker', action='store_true',
                         help='Run worker from cron')
 
-    parser.add_argument('-PoC', '--PoC',
+    parser.add_argument('-poc', '--PoC',
                         dest='poc', action='store_true',
                         help='Run Proof of Concept')
 

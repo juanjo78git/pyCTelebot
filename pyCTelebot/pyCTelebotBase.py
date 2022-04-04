@@ -7,7 +7,7 @@ import gettext
 import logging
 from pyCTelebot import pyTelegram, pyCryptoCron, pyCryptoWorker
 from pyCTelebot.config.auth import ENV_CONFIG
-import pyPoC
+from pyCTelebot import pyPoC
 
 # i18n
 _ = gettext.gettext
