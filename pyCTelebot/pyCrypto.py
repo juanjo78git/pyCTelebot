@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from ccxt import binance
+from ccxt import binance, kucoin
 from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY_RO, TOKEN_CRYPTO_SECRET_RO, ENV_CONFIG, select_user
 import gettext
 import logging
@@ -52,6 +52,12 @@ def connection(user: str = 'ME'):
                 exchange = binance({
                     'apiKey': u['apiKey'],
                     'secret': u['secret']
+                })
+            elif u['exchange'] == 'kucoin':
+                exchange = kucoin({
+                    'apiKey': u['apiKey'],
+                    'secret': u['secret'],
+                    'password': u['passphrase']
                 })
         # enable rate limiting
         # exchange.enableRateLimit = True
