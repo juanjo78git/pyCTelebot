@@ -56,7 +56,8 @@ $ python -m pyCTelebot.pyCTelebotBase -c
 git clone https://github.com/juanjo78git/pyCTelebot.git
 cd pyCTelebot
 $ pip install -e . 
-$ python -m pyCTelebot.pyCTelebotBase  # Or run without install
+$ python -m pyCTelebot.pyCTelebotBase  # Run Telegram bot
+$ python -m pyCTelebot.pyCTelebotBase  -c # Run Cron
 ```
 
 
