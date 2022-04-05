@@ -7,3 +7,4 @@ ccxt
 apscheduler
 pytz
 psutil
+python-kucoin
