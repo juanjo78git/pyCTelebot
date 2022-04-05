@@ -8,11 +8,6 @@ import logging
 # i18n
 _ = gettext.gettext
 
-# Binance connection
-# exchange = ccxt.binance({
-#     'apiKey': TOKEN_CRYPTO_KEY,
-#     'secret': TOKEN_CRYPTO_SECRET
-# })
 # TODO: Test Exchange
 if ENV_CONFIG.get('env') != 'TEST':
     params = {}

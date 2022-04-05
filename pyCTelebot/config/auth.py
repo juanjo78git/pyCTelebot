@@ -34,7 +34,8 @@ ENV_CONFIG = json.loads(os.environ.get('ENV_CONFIG', '{"log": "DEBUG", "env": "T
 # "role": "USER/ADMIN",
 # "exchange": "exchange name",
 # "apiKey": "API_KEY",
-# "secret": "SECRET"}
+# "secret": "SECRET",
+# "passphrase": "API Passphrase"}
 # ]
 USER_LIST = json.loads(os.environ.get('USER_LIST', '[]'))
 
