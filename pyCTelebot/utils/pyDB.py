@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pyCTelebot.config.auth import DATABASE_URL, ENV_CONFIG
+from pyCTelebot.config.pyVars import DATABASE_URL, ENV_CONFIG
 import psycopg2
 import logging
 
@@ -24,7 +24,7 @@ class MyDB:
         self.conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         self.cur = self.conn.cursor()
 
-    def query(self, query, *args):
+    def query(self, query):
         try:
             self.cur.execute(query)
             res = self.cur.fetchall()

@@ -190,4 +190,4 @@ crashlytics-build.properties
 fabric.properties
 
 #Tokens
-#pyCTelebot/config/auth.py
+#pyCTelebot/config/pyVars.py

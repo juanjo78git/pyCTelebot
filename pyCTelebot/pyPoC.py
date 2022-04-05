@@ -7,7 +7,7 @@ import sys
 from telegram import Update
 from telegram.ext import CallbackContext
 import telegram
-from pyCTelebot.config.auth import ENV_CONFIG
+from pyCTelebot.config.pyVars import ENV_CONFIG
 import psutil
 from pyCTelebot.utils.pyDB import MyDB
 
@@ -35,11 +35,6 @@ logger.setLevel(logging.DEBUG)
 def run_telegram(update: Update, context: CallbackContext):
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run_telegram start ID: {0}'.format(seed), level=logging.INFO)
-    db = MyDB()
-    result = db.query(query='select * from strategies')
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text='SQL - Total strategies are: {0}'.format(len(result)))
-    db.close()
     logger.log(msg='/poc User {0} ({1}) - chat: {2} ({3}) - message ({4}) {5}'.format(update.effective_user.name,
                                                                                       update.effective_user.id,
                                                                                       update.effective_chat.title,
@@ -82,12 +77,10 @@ def run():
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
-    for p in psutil.process_iter():
-        try:
-            if 'PY' in str(p).upper():
-                logger.log(msg='pyPoC PS: {0} - {1}'.format(p.pid, p.cmdline()), level=logging.INFO)
-        except Exception:
-            logger.log(msg='pyPoC run stop/KILLED ID: {0}'.format(seed), level=logging.INFO)
+    db = MyDB()
+    result = db.query(query='select * from strategies')
+    logger.log(msg='pyPoC SQL: {0}'.format(result), level=logging.INFO)
+    db.close()
     logger.log(msg='pyPoC run stop ID: {0}'.format(seed), level=logging.INFO)
 
 

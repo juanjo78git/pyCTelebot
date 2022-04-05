@@ -7,7 +7,8 @@ from telegram.error import TelegramError
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
-from pyCTelebot.config.auth import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, ENV_CONFIG, TELEGRAM_ADMIN_GROUP, users
+from pyCTelebot.config.pyVars import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, ENV_CONFIG, TELEGRAM_ADMIN_GROUP
+from pyCTelebot.utils.pyUsers import users, authorization
 from pyCTelebot import pyCrypto
 from pyCTelebot import pyPoC
 from pyCTelebot.config import __version__
@@ -122,7 +123,9 @@ def run(how: str):
 
 
 def start(update: Update, context: CallbackContext):
-    if not authorization(update=update, context=context, action='start'):
+    if not authorization(telegram_id=update.effective_user.id, action='start'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     if len(context.args) == 1:
         symbol = context.args[0].upper()
@@ -137,7 +140,9 @@ def start(update: Update, context: CallbackContext):
 
 
 def stop(update: Update, context: CallbackContext):
-    if not authorization(update=update, context=context, action='stop'):
+    if not authorization(telegram_id=update.effective_user.id, action='stop'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     context.user_data.clear()
     context.bot.send_message(chat_id=update.effective_chat.id,
@@ -151,7 +156,7 @@ def any_message(update: Update, context: CallbackContext):
                                                                            update.effective_chat.id,
                                                                            update.message.text),
                level=logging.DEBUG)
-    if not authorization(update=update, context=context, action='any_message'):
+    if not authorization(telegram_id=update.effective_user.id, action='any_message'):
         return 1
     # Do something with messages
     pyPoC.any_message_poc(update=update, context=context)
@@ -196,7 +201,9 @@ def help_command(update: Update, context: CallbackContext):
 
 def price(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='price'):
+    if not authorization(telegram_id=update.effective_user.id, action='price'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Params
     if len(context.args) == 1:
@@ -229,7 +236,9 @@ def price(update: Update, context: CallbackContext):
 
 def balance(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='balance'):
+    if not authorization(telegram_id=update.effective_user.id, action='balance'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Params
     if len(context.args) == 1:
@@ -271,7 +280,9 @@ def balance(update: Update, context: CallbackContext):
 
 def open_orders(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='open_orders'):
+    if not authorization(telegram_id=update.effective_user.id, action='open_orders'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Params
     if len(context.args) == 1:
@@ -304,7 +315,9 @@ def open_orders(update: Update, context: CallbackContext):
 
 def closed_orders(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='closed_orders'):
+    if not authorization(telegram_id=update.effective_user.id, action='closed_orders'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Params
     if len(context.args) == 1:
@@ -337,7 +350,9 @@ def closed_orders(update: Update, context: CallbackContext):
 
 def buy(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='buy'):
+    if not authorization(telegram_id=update.effective_user.id, action='buy'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Params
     if len(context.args) == 2:
@@ -378,7 +393,9 @@ def buy(update: Update, context: CallbackContext):
 
 def buy_limit(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='buy_limit'):
+    if not authorization(telegram_id=update.effective_user.id, action='buy_limit'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Params
     if len(context.args) == 3:
@@ -427,7 +444,9 @@ def buy_limit(update: Update, context: CallbackContext):
 
 def sell(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='sell'):
+    if not authorization(telegram_id=update.effective_user.id, action='sell'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Params
     if len(context.args) == 2:
@@ -469,7 +488,9 @@ def sell(update: Update, context: CallbackContext):
 
 def sell_limit(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='sell_limit'):
+    if not authorization(telegram_id=update.effective_user.id, action='sell_limit'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Params
     if len(context.args) == 3:
@@ -518,7 +539,9 @@ def sell_limit(update: Update, context: CallbackContext):
 
 def cancel(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='cancel'):
+    if not authorization(telegram_id=update.effective_user.id, action='cancel'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Params
     if len(context.args) == 2:
@@ -565,7 +588,9 @@ def unknown(update: Update, context: CallbackContext):
 
 def message_admins_by_telegram(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='message_admin'):
+    if not authorization(telegram_id=update.effective_user.id, action='message_admin'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Params
     if len(context.args) > 0:
@@ -617,28 +642,11 @@ def private_message(message, user):
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
 
 
-def authorization(update: Update, context: CallbackContext, action: str):
-    logger.log(msg='authorization - User: {0} action: {1}'.format(update.effective_user.id, action),
-               level=logging.DEBUG)
-    try:
-        if next((user for user in users('ADMIN') if user['telegram_id'] == str(update.effective_user.id)), None):
-            return True
-        if (next((user for user in users('USER') if user['telegram_id'] == str(update.effective_user.id)), None)) \
-                and action == 'message_admin':
-            return True
-        else:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("You can't do it!"))
-    except TelegramError as err:
-        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-    except Exception as err:
-        logger.log(msg='authorization: {0}'.format(str(err)), level=logging.ERROR)
-    return False
-
-
 def alert(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='alert'):
+    if not authorization(telegram_id=update.effective_user.id, action='alert'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Params
     if len(context.args) == 3:
@@ -705,7 +713,9 @@ def alert(update: Update, context: CallbackContext):
 
 def ps(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='ps'):
+    if not authorization(telegram_id=update.effective_user.id, action='ps'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Action
     pyPoC.ps(update=update, context=context)
@@ -713,7 +723,9 @@ def ps(update: Update, context: CallbackContext):
 
 def poc(update: Update, context: CallbackContext):
     # Authorization
-    if not authorization(update=update, context=context, action='poc'):
+    if not authorization(telegram_id=update.effective_user.id, action='poc'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
         return 1
     # Action
     pyPoC.run_telegram(update=update, context=context)

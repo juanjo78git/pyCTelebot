@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from ccxt import binance, kucoin
-from pyCTelebot.config.auth import TOKEN_CRYPTO_KEY_RO, TOKEN_CRYPTO_SECRET_RO, ENV_CONFIG, select_user
+from pyCTelebot.config.pyVars import TOKEN_CRYPTO_KEY_RO, TOKEN_CRYPTO_SECRET_RO, ENV_CONFIG
+from pyCTelebot.utils.pyUsers import select_user
 import gettext
 import logging
 

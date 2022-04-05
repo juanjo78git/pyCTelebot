@@ -11,7 +11,7 @@ from datetime import datetime
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from pyCTelebot import pyCryptoWorker, pyTelegram
-from pyCTelebot.config.auth import ENV_CONFIG
+from pyCTelebot.config.pyVars import ENV_CONFIG
 
 # i18n
 _ = gettext.gettext

@@ -19,7 +19,7 @@ WEBHOOK_URL_TELEGRAM = 'https://pyctelebot.herokuapp.com/'
 PORT = int(os.environ.get('PORT', 5000))
 
 # Database connection
-DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = os.environ.get('DATABASE_URL', "NOT_FOUND")
 
 # API crypto info Read-only
 TOKEN_CRYPTO_KEY_RO = os.environ.get('TOKEN_CRYPTO_KEY_RO', "NOT_FOUND")
@@ -46,17 +46,3 @@ USER_LIST = json.loads(os.environ.get('USER_LIST', '[]'))
 TELEGRAM_ADMIN_GROUP = json.loads(os.environ.get('TELEGRAM_ADMIN_GROUP', "[]"))
 
 
-def users(role='ALL'):
-    my_users = []
-    for user in USER_LIST:
-        if user['role'] == role or role == 'ALL':
-            my_users.append(user)
-    return my_users
-
-
-def select_user(user=None, telegram_id=None):
-    if user is not None or telegram_id is not None:
-        for my_user in USER_LIST:
-            if my_user['user'] == user or my_user['telegram_id'] == str(telegram_id):
-                return my_user
-    return None

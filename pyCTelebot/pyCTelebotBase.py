@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from pyCTelebot import buildparser
+from pyCTelebot.utils import pyBuildParser
 import os
 import sys
 import gettext
 import logging
 from pyCTelebot import pyTelegram, pyCryptoCron, pyCryptoWorker
-from pyCTelebot.config.auth import ENV_CONFIG
+from pyCTelebot.config.pyVars import ENV_CONFIG
 from pyCTelebot import pyPoC
 
 # i18n
@@ -34,7 +34,7 @@ else:
 
 def main():
     # Get Args
-    parser = buildparser.build_parser()
+    parser = pyBuildParser.build_parser()
     options = parser.parse_args()
     # gettext
     if options.lang != '':

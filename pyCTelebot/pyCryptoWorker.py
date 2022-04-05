@@ -5,7 +5,7 @@ from pyCTelebot import pyCrypto, pyTelegram
 from datetime import datetime
 import gettext
 import logging
-from pyCTelebot.config.auth import ENV_CONFIG
+from pyCTelebot.config.pyVars import ENV_CONFIG
 import pytz
 from time import sleep
 import random
