@@ -8,3 +8,4 @@ apscheduler
 pytz
 psutil
 python-kucoin
+psycopg2-binary

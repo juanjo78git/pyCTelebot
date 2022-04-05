@@ -18,6 +18,9 @@ TOKEN_TELEGRAM = os.environ.get('TOKEN_TELEGRAM', 'NOT_FOUND')
 WEBHOOK_URL_TELEGRAM = 'https://pyctelebot.herokuapp.com/'
 PORT = int(os.environ.get('PORT', 5000))
 
+# Database connection
+DATABASE_URL = os.environ['DATABASE_URL']
+
 # API crypto info Read-only
 TOKEN_CRYPTO_KEY_RO = os.environ.get('TOKEN_CRYPTO_KEY_RO', "NOT_FOUND")
 TOKEN_CRYPTO_SECRET_RO = os.environ.get('TOKEN_CRYPTO_SECRET_RO', "NOT_FOUND")
