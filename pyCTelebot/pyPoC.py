@@ -9,6 +9,7 @@ from telegram.ext import CallbackContext
 import telegram
 from pyCTelebot.config.auth import ENV_CONFIG
 import psutil
+from utils.pyDB import MyDB
 
 # i18n
 _ = gettext.gettext
@@ -34,6 +35,11 @@ logger.setLevel(logging.DEBUG)
 def run_telegram(update: Update, context: CallbackContext):
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run_telegram start ID: {0}'.format(seed), level=logging.INFO)
+    db = MyDB()
+    result = db.query(query='select * from strategies')
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text='SQL - Total strategies are: {0}'.format(len(result)))
+    db.close()
     logger.log(msg='/poc User {0} ({1}) - chat: {2} ({3}) - message ({4}) {5}'.format(update.effective_user.name,
                                                                                       update.effective_user.id,
                                                                                       update.effective_chat.title,
