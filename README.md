@@ -39,7 +39,9 @@ $ pip install pyCTelebot
 #### Activate Webhook in Telegram bot
 Execute: https://api.telegram.org/bot<TOKEN_TELEGRAM>/setWebHook?url=<WEBHOOK_URL_TELEGRAM>
 Info about your webhook: https://api.telegram.org/bot<TOKEN_TELEGRAM>/getWebhookInfo
-
+```shell
+$ python -m pyCTelebot.pyCTelebotBase
+```
 NOTE: If you want to run it with polling, you can use param -Tp
 ```shell
 $ python -m pyCTelebot.pyCTelebotBase -Tp
@@ -56,10 +58,8 @@ $ python -m pyCTelebot.pyCTelebotBase -c
 git clone https://github.com/juanjo78git/pyCTelebot.git
 cd pyCTelebot
 $ pip install -e . 
-$ python -m pyCTelebot.pyCTelebotBase  # Run Telegram bot
-$ python -m pyCTelebot.pyCTelebotBase  -c # Run Cron
+$ python -m pyCTelebot.pyCTelebotBase  -poc # Run PoC implemented
 ```
-
 
 ## Info
 
