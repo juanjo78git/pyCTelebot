@@ -9,7 +9,7 @@ from telegram.ext import CallbackContext
 import telegram
 from pyCTelebot.config.auth import ENV_CONFIG
 import psutil
-from utils.pyDB import MyDB
+from pyCTelebot.utils.pyDB import MyDB
 
 # i18n
 _ = gettext.gettext
