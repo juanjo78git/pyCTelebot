@@ -35,6 +35,12 @@ $ pip install pyCTelebot
 | USER_LIST              | \[{ "user": "username", "email": "email", "telegram_id": "telegram ID", "role": "USER/ADMIN", "exchange": "Exchange name", "apiKey": "Cryptocurrency exchange apiKey ", "secret": "Cryptocurrency exchange secret", "passphrase": "API Passphrase"}] |
 | TELEGRAM_ADMIN_GROUP   | Telegram admin group id list. Format: \[chat_id]                                                                                                                                                                                                     |
 | ENV_CONFIG             | Environment config. log values: DEBUG / INFO / WARNING / ERROR / CRITICAL. env values: TEST / PROD. Default values: {"log": "DEBUG", "env": "TEST"}                                                                                                  |
+| DATABASE_URL           | DB Connection                                                                                                                                                                                                                                        |
+
+
+#### DataBase
+- [DDL](initial_ddl.sql)
+- DML - None
 
 #### Activate Webhook in Telegram bot
 Execute: https://api.telegram.org/bot<TOKEN_TELEGRAM>/setWebHook?url=<WEBHOOK_URL_TELEGRAM>
