@@ -154,8 +154,7 @@ def any_message(update: Update, context: CallbackContext):
     if not authorization(update=update, context=context, action='any_message'):
         return 1
     # Do something with messages
-
-    return 1
+    pyPoC.any_message_poc(update=update, context=context)
 
 
 def help_command(update: Update, context: CallbackContext):

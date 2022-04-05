@@ -34,6 +34,7 @@ def run():
     pyTelegram.message_admins(message='Worker start at {0} with ID: {1}'.format(
         datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
     try:
+        # Do something
         sleep(50)
     except Exception:
         logger.log(msg='Worker stop/KILLED ID: {0}'.format(seed), level=logging.INFO)

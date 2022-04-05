@@ -96,4 +96,10 @@ def ps(update: Update, context: CallbackContext):
                                              p.pid,
                                              p.cmdline()))
         except Exception:
-            logger.log(msg='pyPoC run stop/KILLED ID: {0}'.format(seed), level=logging.INFO)
+            logger.log(msg='pyPoC run stop/KILLED', level=logging.INFO)
+
+
+# Telegram Proof of Concept
+def any_message_poc(update: Update, context: CallbackContext):
+    logger.log(msg='pyPoC any_message_poc start', level=logging.INFO)
+    # Do something
