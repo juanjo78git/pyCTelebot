@@ -10,7 +10,7 @@ import telegram
 from pyCTelebot.config.pyVars import ENV_CONFIG
 import psutil
 from pyCTelebot.utils.pyUsers import select_user
-
+from pyCTelebot.utils.pyDB import MyDB
 # i18n
 _ = gettext.gettext
 
@@ -77,7 +77,15 @@ def run():
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
-    select_user(user_id='juagonm1')
+    args = []
+    query = 'select * from strategies '
+    # Do something
+    db = MyDB()
+    result = db.query(query=query, args=args)
+    logger.log(msg='select_user - SQL result: {0}'.format(str(result)),
+               level=logging.DEBUG)
+    db.close()
+
     logger.log(msg='pyPoC run stop ID: {0}'.format(seed), level=logging.INFO)
 
 

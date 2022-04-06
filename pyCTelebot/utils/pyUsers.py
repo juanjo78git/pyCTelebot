@@ -3,7 +3,6 @@
 from pyCTelebot.config.pyVars import ENV_CONFIG, USER_LIST
 import gettext
 import logging
-from pyCTelebot.utils.pyDB import MyDB
 
 # i18n
 _ = gettext.gettext
@@ -32,27 +31,6 @@ def users(role='ALL'):
 
 def select_user(user_id=None, telegram_id=None):
     if user_id is not None or telegram_id is not None:
-        query = 'select * ' \
-                'from users where '
-        args = []
-        if user_id is not None:
-            query = query + 'user_id = %s '
-            args.append(user_id)
-        if user_id is not None and telegram_id is not None:
-            query = query + ' and '
-        if telegram_id is not None:
-            query = query + 'telegram_id = %s '
-            args.append(telegram_id)
-
-        args = []
-        query = 'select * from strategies '
-        # Do something
-        db = MyDB()
-        result = db.query(query=query, args=args)
-        logger.log(msg='select_user - SQL result: {0}'.format(str(result)),
-                   level=logging.DEBUG)
-        db.close()
-
         for my_user in USER_LIST:
             if my_user['user'] == user_id or my_user['telegram_id'] == str(telegram_id):
                 return my_user
