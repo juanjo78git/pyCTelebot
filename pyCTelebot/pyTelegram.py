@@ -11,7 +11,7 @@ from pyCTelebot.config.pyVars import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT,
 from pyCTelebot.utils.pyUsers import users, authorization
 from pyCTelebot import pyCrypto
 from pyCTelebot import pyPoC
-from pyCTelebot.config import __version__
+from pyCTelebot import __version__
 import gettext
 import logging
 

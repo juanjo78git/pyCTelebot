@@ -3,7 +3,7 @@
 import argparse
 
 from argparse import RawTextHelpFormatter
-from pyCTelebot.config import __version__
+from pyCTelebot import __version__
 
 
 def build_parser():

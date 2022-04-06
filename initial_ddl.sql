@@ -29,10 +29,37 @@ CREATE TABLE IF NOT EXISTS active_strategies (
 	symbol VARCHAR(50) NOT NULL,
 	unit_value NUMERIC NOT NULL,
 	profit NUMERIC,
+	status VARCHAR(50) NOT NULL,
+	real_invest NUMERIC,
+	real_profit NUMERIC,
 	PRIMARY KEY (user_id, strategy_id),
 	FOREIGN KEY (user_id)
       REFERENCES users (user_id),
 	FOREIGN KEY (strategy_id)
       REFERENCES strategies (strategy_id)
+);
+CREATE TABLE IF NOT EXISTS active_strategy_steps (
+	user_id VARCHAR(50) NOT NULL,
+	strategy_id VARCHAR(50) NOT NULL,
+	symbol VARCHAR(50) NOT NULL,
+	step INTEGER NOT NULL,
+	unit_value NUMERIC NOT NULL,
+	profit NUMERIC,
+	margin NUMERIC NOT NULL,
+	units NUMERIC NOT NULL,
+	status VARCHAR(50) NOT NULL,
+	real_price NUMERIC,
+	order_id VARCHAR,
+	PRIMARY KEY (user_id, strategy_id, step),
+	FOREIGN KEY (user_id, strategy_id)
+      REFERENCES active_strategies (user_id, strategy_id)
+);
+CREATE TABLE IF NOT EXISTS exchange_prices (
+	exchange VARCHAR(50) NOT NULL,
+	symbol VARCHAR(50) NOT NULL,
+	last_price NUMERIC,
+	current_price NUMERIC,
+	price_variation_percentage NUMERIC,
+	PRIMARY KEY (exchange, symbol)
 );
 commit;
