@@ -30,18 +30,6 @@ TOKEN_CRYPTO_SECRET_RO = os.environ.get('TOKEN_CRYPTO_SECRET_RO', "NOT_FOUND")
 # env values: TEST / PROD
 ENV_CONFIG = json.loads(os.environ.get('ENV_CONFIG', '{"log": "DEBUG", "env": "TEST"}'))
 
-# USER_LIST = [{
-# "user": "username",
-# "email": "email",
-# "telegram_id": "telegram ID",
-# "role": "USER/ADMIN",
-# "exchange": "exchange name",
-# "apiKey": "API_KEY",
-# "secret": "SECRET",
-# "passphrase": "API Passphrase"}
-# ]
-USER_LIST = json.loads(os.environ.get('USER_LIST', '[]'))
-
 # Telegram admin group id list
 TELEGRAM_ADMIN_GROUP = json.loads(os.environ.get('TELEGRAM_ADMIN_GROUP', "[]"))
 

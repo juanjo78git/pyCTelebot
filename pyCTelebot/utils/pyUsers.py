@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from pyCTelebot.config.pyVars import ENV_CONFIG, USER_LIST
+from pyCTelebot.config.pyVars import ENV_CONFIG
 import gettext
 import logging
+from pyCTelebot.utils.pyDB import MyDB
 
 # i18n
 _ = gettext.gettext
@@ -21,42 +22,73 @@ else:
     logger.setLevel(logging.DEBUG)
 
 
+# users table:
+# { "user_id": "username",
+#   "telegram_id": "telegram ID",
+#   "email": "email",
+#   "role": "USER/ADMIN",
+#   "exchange": "Exchange name",
+#   "apiKey": "Cryptocurrency exchange apiKey ",
+#   "secret": "Cryptocurrency exchange secret",
+#   "passphrase": "API Passphrase"
+# }
 def users(role='ALL'):
     my_users = []
-    for user in USER_LIST:
-        if user['role'] == role or role == 'ALL':
-            my_users.append(user)
+    try:
+        logger.log(msg='users - role: {0}'.format(role),
+                   level=logging.DEBUG)
+        query = 'select * from users where '
+        args = []
+        query += " 'ALL' = %s or role = %s "
+        print(query)
+        args.append(role)
+        args.append(role)
+        db = MyDB()
+        result = db.query(query=query, args=args)
+        db.close()
+        for user in result:
+            my_users.append(dict(user))
+    except Exception as err:
+        logger.log(msg='users: {0}'.format(str(err)), level=logging.ERROR)
     return my_users
 
 
-def select_user(user_id=None, telegram_id=None):
-    if user_id is not None or telegram_id is not None:
-        for my_user in USER_LIST:
-            if my_user['user'] == user_id or my_user['telegram_id'] == str(telegram_id):
-                return my_user
+def select_user(user_id: str = None, telegram_id: str = None):
+    try:
+        logger.log(msg='select_user - user_id: {0} - telegram_id: {1}'.format(user_id, telegram_id),
+                   level=logging.DEBUG)
+        if user_id is not None or telegram_id is not None:
+            query = 'select * from users where '
+            args = []
+            if user_id is not None:
+                query += ' user_id = %s '
+                args.append(user_id)
+            if user_id is not None and telegram_id is not None:
+                query += ' and '
+            if telegram_id is not None:
+                query += ' telegram_id = %s '
+                args.append(telegram_id)
+            db = MyDB()
+            result = db.query(query=query, args=args)
+            db.close()
+            if len(result) == 1:
+                return dict(result[0])
+    except Exception as err:
+        logger.log(msg='select_user: {0}'.format(str(err)), level=logging.ERROR)
     return None
 
 
-def authorization(user_id: str = None, telegram_id=None, action: str = None):
+def authorization(user_id: str = None, telegram_id: str = None, action: str = None):
     logger.log(msg='authorization - User: {0} - {1} action: {2}'.format(user_id, telegram_id, action),
                level=logging.DEBUG)
     try:
-        if telegram_id is not None:
-            if next((user for user in users('ADMIN') if user['telegram_id'] == str(telegram_id)), None):
-                return True
-            if (next((user for user in users('USER') if user['telegram_id'] == str(telegram_id)), None)) \
-                    and action == 'message_admin':
-                return True
-            else:
-                return False
-        elif user_id is not None:
-            if next((user for user in users('ADMIN') if user['user_id'] == str(user_id)), None):
-                return True
-            if (next((user for user in users('USER') if user['user_id'] == str(user_id)), None)) \
-                    and action == 'message_admin':
-                return True
-            else:
-                return False
+        user = select_user(user_id=user_id, telegram_id=telegram_id)
+        if user is None:
+            return False
+        elif user['role'] == 'ADMIN':
+            return True
+        elif user['role'] == 'USER' and action == 'message_admin':
+            return True
         else:
             return False
     except Exception as err:
