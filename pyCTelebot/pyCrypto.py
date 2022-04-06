@@ -41,7 +41,7 @@ def connection(user: str = 'ME'):
                 'secret': TOKEN_CRYPTO_SECRET_RO
             })
         else:
-            u = select_user(user=user, telegram_id=user)
+            u = select_user(user_id=user, telegram_id=user)
             if u is None:
                 raise Exception("User does not exist {0}".format(user))
             if u['exchange'] == 'binance':

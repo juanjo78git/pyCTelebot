@@ -9,7 +9,7 @@ from telegram.ext import CallbackContext
 import telegram
 from pyCTelebot.config.pyVars import ENV_CONFIG
 import psutil
-from pyCTelebot.utils.pyDB import MyDB
+from pyCTelebot.utils.pyUsers import select_user
 
 # i18n
 _ = gettext.gettext
@@ -77,10 +77,7 @@ def run():
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
-    db = MyDB()
-    result = db.query(query='select * from strategies')
-    logger.log(msg='pyPoC SQL: {0}'.format(result), level=logging.INFO)
-    db.close()
+    select_user(user_id='juagonm1')
     logger.log(msg='pyPoC run stop ID: {0}'.format(seed), level=logging.INFO)
 
 
