@@ -60,6 +60,12 @@ CREATE TABLE IF NOT EXISTS exchange_prices (
 	last_price NUMERIC,
 	current_price NUMERIC,
 	price_variation_percentage NUMERIC,
+	last_buy_price NUMERIC,
+	current_buy_price NUMERIC,
+	buy_price_variation_percentage NUMERIC,
+	last_sell_price NUMERIC,
+	current_sell_price NUMERIC,
+	sell_price_variation_percentage NUMERIC,
 	PRIMARY KEY (exchange, symbol)
 );
 commit;
