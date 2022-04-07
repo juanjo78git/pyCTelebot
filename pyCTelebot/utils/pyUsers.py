@@ -57,10 +57,6 @@ def select_user(user_id: str = None, telegram_id: str = None):
     try:
         logger.log(msg='select_user - user_id: {0} - telegram_id: {1}'.format(user_id, telegram_id),
                    level=logging.DEBUG)
-        print('HOLA')
-        print(type(user_id))
-        print(None)
-        print(user_id)
         if user_id is not None or telegram_id is not None:
             query = 'select * from users where '
             args = []

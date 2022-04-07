@@ -46,12 +46,12 @@ def connection(user_id: str = None, telegram_id: str = None):
                 raise Exception("User does not exist {0} - {1}".format(user_id, telegram_id))
             if u['exchange'] == 'binance':
                 exchange = binance({
-                    'apiKey': u['apiKey'],
+                    'apiKey': u['apikey'],
                     'secret': u['secret']
                 })
             elif u['exchange'] == 'kucoin':
                 exchange = kucoin({
-                    'apiKey': u['apiKey'],
+                    'apiKey': u['apikey'],
                     'secret': u['secret'],
                     'password': u['passphrase']
                 })
