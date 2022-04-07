@@ -30,16 +30,19 @@ else:
     logger.setLevel(logging.DEBUG)
 
 
-def connection(user_id: str = None, telegram_id: str = None):
+def connection(user_id: str = None, telegram_id: str = None, exchange_name: str = None):
     # Binance connection
     logger.log(msg='Exchange connection user: {0}'.format(user_id), level=logging.DEBUG)
     exchange = None
     try:
         if user_id == 'READONLY':
-            exchange = binance({
-                'apiKey': TOKEN_CRYPTO_KEY_RO,
-                'secret': TOKEN_CRYPTO_SECRET_RO
-            })
+            if exchange_name == 'binance':
+                exchange = binance({
+                    'apiKey': TOKEN_CRYPTO_KEY_RO,
+                    'secret': TOKEN_CRYPTO_SECRET_RO
+                })
+            else:
+                raise Exception("Exchange {0} does not exist.".format(exchange_name))
         else:
             u = select_user(user_id=user_id, telegram_id=telegram_id)
             if u is None:
