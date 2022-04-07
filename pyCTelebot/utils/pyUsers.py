@@ -32,7 +32,7 @@ else:
 #   "secret": "Cryptocurrency exchange secret",
 #   "passphrase": "API Passphrase"
 # }
-def users(role='ALL'):
+def user_list(role='ALL'):
     my_users = []
     try:
         logger.log(msg='users - role: {0}'.format(role),
@@ -67,7 +67,7 @@ def select_user(user_id: str = None, telegram_id: str = None):
                 query += ' and '
             if telegram_id is not None:
                 query += ' telegram_id = %s '
-                args.append(telegram_id)
+                args.append(str(telegram_id))
             db = MyDB()
             result = db.query(query=query, args=args)
             db.close()

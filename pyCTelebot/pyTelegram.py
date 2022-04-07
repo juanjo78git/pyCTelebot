@@ -8,7 +8,7 @@ from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.pyVars import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, ENV_CONFIG, TELEGRAM_ADMIN_GROUP
-from pyCTelebot.utils.pyUsers import users, authorization
+from pyCTelebot.utils.pyUsers import user_list, authorization
 from pyCTelebot import pyCrypto
 from pyCTelebot import pyPoC
 from pyCTelebot import __version__
@@ -611,7 +611,7 @@ def message_admins_by_telegram(update: Update, context: CallbackContext):
 
 
 def private_message_admins(message):
-    for user in users('ADMIN'):
+    for user in user_list('ADMIN'):
         bot = Bot(token=TOKEN_TELEGRAM)
         try:
             bot.send_message(chat_id=user['telegram_id'], text=message)
