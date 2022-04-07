@@ -57,9 +57,6 @@ CREATE TABLE IF NOT EXISTS active_strategy_steps (
 CREATE TABLE IF NOT EXISTS exchange_prices (
 	exchange VARCHAR(50) NOT NULL,
 	symbol VARCHAR(50) NOT NULL,
-	last_price NUMERIC,
-	current_price NUMERIC,
-	price_variation_percentage NUMERIC,
 	last_buy_price NUMERIC,
 	current_buy_price NUMERIC,
 	buy_price_variation_percentage NUMERIC,
