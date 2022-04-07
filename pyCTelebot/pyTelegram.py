@@ -219,7 +219,7 @@ def price(update: Update, context: CallbackContext):
     # Action
     logger.log(msg='/price symbol used: {0}'.format(symbol), level=logging.DEBUG)
     try:
-        last_price = pyCrypto.price(symbol=symbol, user=update.effective_user.id)
+        last_price = pyCrypto.price(symbol=symbol, telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} Last price: {1}").format(
                                      symbol,
@@ -248,7 +248,7 @@ def balance(update: Update, context: CallbackContext):
     # Action without params
     else:
         try:
-            balances = pyCrypto.balance(user=update.effective_user.id)
+            balances = pyCrypto.balance(telegram_id=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("All balances: {0}").format(
                                          balances))
@@ -263,7 +263,7 @@ def balance(update: Update, context: CallbackContext):
     # Action with params
     logger.log(msg='/balance symbol used: {0}'.format(symbol), level=logging.DEBUG)
     try:
-        balances = pyCrypto.balance(symbol=symbol, user=update.effective_user.id)
+        balances = pyCrypto.balance(symbol=symbol, telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Symbol: {0} Balance: {1}").format(
                                      symbol,
@@ -298,7 +298,7 @@ def open_orders(update: Update, context: CallbackContext):
     # Action
     logger.log(msg='/open_orders symbol used: {0}'.format(symbol), level=logging.DEBUG)
     try:
-        orders = pyCrypto.open_orders(symbol=symbol, user=update.effective_user.id)
+        orders = pyCrypto.open_orders(symbol=symbol, telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} open orders: {1}").format(
                                      symbol,
@@ -333,7 +333,7 @@ def closed_orders(update: Update, context: CallbackContext):
     # Action
     logger.log(msg='/closed_orders symbol used: {0}'.format(symbol), level=logging.DEBUG)
     try:
-        orders = pyCrypto.closed_orders(symbol=symbol, user=update.effective_user.id)
+        orders = pyCrypto.closed_orders(symbol=symbol, telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} closed orders: {1}").format(
                                      symbol,
@@ -373,7 +373,7 @@ def buy(update: Update, context: CallbackContext):
         status = pyCrypto.buy_order(symbol=symbol,
                                     amount=amount,
                                     type_order='market',
-                                    user=update.effective_user.id)
+                                    telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Buying order with symbol {0} and amount {1} --> {2}").format(
                                      symbol,
@@ -420,7 +420,7 @@ def buy_limit(update: Update, context: CallbackContext):
                                     amount=amount,
                                     type_order='limit',
                                     price_limit=price_limit,
-                                    user=update.effective_user.id)
+                                    telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_(
                                      "Create limit buy order with "
@@ -467,7 +467,7 @@ def sell(update: Update, context: CallbackContext):
         status = pyCrypto.sell_order(symbol=symbol,
                                      amount=amount,
                                      type_order='market',
-                                     user=update.effective_user.id)
+                                     telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Selling order with "
                                         "symbol {0} and amount {1} --> {2}").format(
@@ -515,7 +515,7 @@ def sell_limit(update: Update, context: CallbackContext):
                                      amount=amount,
                                      type_order='limit',
                                      price_limit=price_limit,
-                                     user=update.effective_user.id)
+                                     telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_(
                                      "Create limit sell order with "
@@ -559,7 +559,7 @@ def cancel(update: Update, context: CallbackContext):
     # Action
     logger.log(msg='/cancel symbol: {0}, order_id: {1}'.format(symbol, order_id), level=logging.DEBUG)
     try:
-        status = pyCrypto.cancel_order(order_id=order_id, symbol=symbol, user=update.effective_user.id)
+        status = pyCrypto.cancel_order(order_id=order_id, symbol=symbol, telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Canceling order with "
                                         "symbol {0} and id {1} --> {2}").format(

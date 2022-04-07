@@ -30,20 +30,20 @@ else:
     logger.setLevel(logging.DEBUG)
 
 
-def connection(user: str = 'ME'):
+def connection(user_id: str = None, telegram_id: str = None):
     # Binance connection
-    logger.log(msg='Exchange connection user: {0}'.format(user), level=logging.DEBUG)
+    logger.log(msg='Exchange connection user: {0}'.format(user_id), level=logging.DEBUG)
     exchange = None
     try:
-        if user == 'READONLY':
+        if user_id == 'READONLY':
             exchange = binance({
                 'apiKey': TOKEN_CRYPTO_KEY_RO,
                 'secret': TOKEN_CRYPTO_SECRET_RO
             })
         else:
-            u = select_user(user_id=user, telegram_id=user)
+            u = select_user(user_id=user_id, telegram_id=telegram_id)
             if u is None:
-                raise Exception("User does not exist {0}".format(user))
+                raise Exception("User does not exist {0} - {1}".format(user_id, telegram_id))
             if u['exchange'] == 'binance':
                 exchange = binance({
                     'apiKey': u['apiKey'],
@@ -59,7 +59,7 @@ def connection(user: str = 'ME'):
         # exchange.enableRateLimit = True
     except Exception as err:
         logger.log(
-            msg='connection {0}: status: {1} - {2}'.format(user,
+            msg='connection {0}: status: {1} - {2}'.format(user_id,
                                                            type(err),
                                                            str(err)),
             level=logging.ERROR)
@@ -68,11 +68,11 @@ def connection(user: str = 'ME'):
         return exchange
 
 
-def price(symbol: str, user: str = None):
-    if user is None:
-        exchange = connection(user='READONLY')
+def price(symbol: str, user_id: str = None, telegram_id: str = None):
+    if user_id is None and telegram_id is None:
+        exchange = connection(user_id='READONLY')
     else:
-        exchange = connection(user=user)
+        exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
         """
         NOTE: period is 24h
@@ -114,11 +114,11 @@ def price(symbol: str, user: str = None):
         return ticker
 
 
-def open_orders(symbol: str, user: str = None):
-    if user is None:
-        exchange = connection(user='READONLY')
+def open_orders(symbol: str, user_id: str = None, telegram_id: str = None):
+    if user_id is None and telegram_id is None:
+        exchange = connection(user_id='READONLY')
     else:
-        exchange = connection(user=user)
+        exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
         orders = exchange.fetch_open_orders(symbol=symbol, params=params)
     except Exception as err:
@@ -133,11 +133,11 @@ def open_orders(symbol: str, user: str = None):
         return orders
 
 
-def closed_orders(symbol: str, user: str = None):
-    if user is None:
-        exchange = connection(user='READONLY')
+def closed_orders(symbol: str, user_id: str = None, telegram_id: str = None):
+    if user_id is None and telegram_id is None:
+        exchange = connection(user_id='READONLY')
     else:
-        exchange = connection(user=user)
+        exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
         orders = exchange.fetch_closed_orders(symbol=symbol, params=params)
     except Exception as err:
@@ -152,11 +152,11 @@ def closed_orders(symbol: str, user: str = None):
         return orders
 
 
-def balance(symbol: str = None, user: str = None):
-    if user is None:
-        exchange = connection(user='READONLY')
+def balance(symbol: str = None, user_id: str = None, telegram_id: str = None):
+    if user_id is None and telegram_id is None:
+        exchange = connection(user_id='READONLY')
     else:
-        exchange = connection(user=user)
+        exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
         balances = exchange.fetch_total_balance(params=params)
         all_balances = {}
@@ -179,11 +179,11 @@ def balance(symbol: str = None, user: str = None):
             return balances[symbol]
 
 
-def cancel_order(order_id: str, symbol: str, user: str = None):
-    if user is None:
-        exchange = connection(user='READONLY')
+def cancel_order(order_id: str, symbol: str, user_id: str = None, telegram_id: str = None):
+    if user_id is None and telegram_id is None:
+        exchange = connection(user_id='READONLY')
     else:
-        exchange = connection(user=user)
+        exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
         status = exchange.cancel_order(id=order_id, symbol=symbol, params=params)
     except Exception as err:
@@ -200,11 +200,11 @@ def cancel_order(order_id: str, symbol: str, user: str = None):
         return status
 
 
-def buy_order(symbol: str, amount, type_order: str, price_limit=0, user: str = None):
-    if user is None:
-        exchange = connection(user='READONLY')
+def buy_order(symbol: str, amount, type_order: str, price_limit=0, user_id: str = None, telegram_id: str = None):
+    if user_id is None and telegram_id is None:
+        exchange = connection(user_id='READONLY')
     else:
-        exchange = connection(user=user)
+        exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
         if type_order == 'market':
             status = exchange.create_market_buy_order(symbol=symbol, amount=amount, params=params)
@@ -232,11 +232,11 @@ def buy_order(symbol: str, amount, type_order: str, price_limit=0, user: str = N
         return status
 
 
-def sell_order(symbol: str, amount, type_order: str, price_limit=0, user: str = None):
-    if user is None:
-        exchange = connection(user='READONLY')
+def sell_order(symbol: str, amount, type_order: str, price_limit=0, user_id: str = None, telegram_id: str = None):
+    if user_id is None and telegram_id is None:
+        exchange = connection(user_id='READONLY')
     else:
-        exchange = connection(user=user)
+        exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
         if type == 'market':
             status = exchange.create_market_sell_order(symbol=symbol, amount=amount, params=params)

@@ -11,6 +11,8 @@ from pyCTelebot.config.pyVars import ENV_CONFIG
 import psutil
 
 # i18n
+from pyCTelebot.utils.pyUsers import select_user
+
 _ = gettext.gettext
 
 # Logs
