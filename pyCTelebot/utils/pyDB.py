@@ -40,6 +40,17 @@ class MyDB:
         else:
             return res
 
+    def dml(self, query, args):
+        try:
+            logger.log(msg='MyDB.dml: {0} - args: {1}'.format(query, args),
+                       level=logging.DEBUG)
+            self.cur.execute(query=query, vars=args)
+            logger.log(msg='MyDB.dml executed',
+                       level=logging.DEBUG)
+        except (Exception, psycopg2.DatabaseError) as error:
+            logger.log(msg='MyDB.dml: {0} - args: {1} ERROR: {2}'.format(query, args, str(error)),
+                       level=logging.ERROR)
+
     def commit(self):
         self.conn.commit()
 
