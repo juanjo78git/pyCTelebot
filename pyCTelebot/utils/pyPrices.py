@@ -40,22 +40,19 @@ def price_info(exchange: str = None, symbol: str = None):
     try:
         logger.log(msg='price_info - exchange: {0} - symbol: {1}'.format(exchange, symbol),
                    level=logging.DEBUG)
-        if exchange is not None or symbol is not None:
-            query = 'select * from exchange_prices where '
-            args = []
-            if exchange is not None:
-                query += ' exchange = %s '
-                args.append(exchange)
-            if exchange is not None and symbol is not None:
-                query += ' and '
-            if symbol is not None:
-                query += ' symbol = %s '
-                args.append(symbol)
-            db = MyDB()
-            result = db.query(query=query, args=args)
-            db.close()
-            for my_price in result:
-                my_prices.append(dict(my_price))
+        query = 'select * from exchange_prices where 1=1 '
+        args = []
+        if exchange is not None:
+            query += ' and exchange = %s '
+            args.append(exchange)
+        if symbol is not None:
+            query += ' and symbol = %s '
+            args.append(symbol)
+        db = MyDB()
+        result = db.query(query=query, args=args)
+        db.close()
+        for my_price in result:
+            my_prices.append(dict(my_price))
     except Exception as err:
         logger.log(msg='price_info: {0}'.format(str(err)), level=logging.ERROR)
     return my_prices
