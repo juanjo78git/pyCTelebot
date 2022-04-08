@@ -46,7 +46,7 @@ def run_telegram(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text='/initialize_price: {0}'.format(price))
     elif len(context.args) == 1:
-        symbol = context.args[1]
+        symbol = context.args[0]
         price = price_info(symbol=symbol)
         logger.log(msg='pyPoC price_info end', level=logging.INFO)
         context.bot.send_message(chat_id=update.effective_chat.id,
