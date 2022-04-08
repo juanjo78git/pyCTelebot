@@ -32,6 +32,8 @@ else:
 #   "last_sell_price": "last_sell_price",
 #   "current_sell_price": "current_sell_price",
 #   "sell_price_variation_percentage": "%",
+#   "last_audit_date": "TIMESTAMP of last prices"
+#   "current_audit_date": "TIMESTAMP of current prices"
 # }
 def price_info(exchange: str = None, symbol: str = None):
     my_prices = []
@@ -123,3 +125,61 @@ def update_price_info():
             db.close()
         except Exception as err:
             logger.log(msg='update_price_info: {0}'.format(str(err)), level=logging.ERROR)
+
+
+def initialize_price(exchange: str = None, symbol: str = None):
+    logger.log(msg='initialize_price - exchange: {0} - symbol: {1}'.format(exchange, symbol),
+               level=logging.DEBUG)
+    try:
+        if exchange is None or symbol is None:
+            raise Exception("Error initialize_price {0} - {1}".format(exchange, symbol))
+
+        current_price = pyCrypto.price(symbol=symbol, exchange_name=exchange)
+        logger.log(msg='initialize_price - current_price {0}'.format(current_price), level=logging.DEBUG)
+        query = 'insert into exchange_prices '
+        args = []
+        query += "(exchange, symbol, "
+        args.append(exchange)
+        args.append(symbol)
+        query += "last_buy_price, current_buy_price, buy_price_variation_percentage, "
+        args.append(current_price.get("bid"))
+        args.append(current_price.get("bid"))
+        args.append(0)
+        query += " last_sell_price, current_sell_price, sell_price_variation_percentage"
+        args.append(current_price.get("ask"))
+        args.append(current_price.get("ask"))
+        args.append(0)
+        query += " last_audit_date, current_audit_date)"
+        current_date = datetime.now(timezone.utc)
+        args.append(current_date)
+        args.append(current_date)
+        query += " values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+        db = MyDB()
+        logger.log(msg='initialize_price - sql {0}'.format(query), level=logging.DEBUG)
+        result = db.query(query=query, args=args)
+        logger.log(msg='initialize_price - result {0}'.format(result), level=logging.DEBUG)
+        db.commit()
+        db.close()
+    except Exception as err:
+        logger.log(msg='initialize_price: {0}'.format(str(err)), level=logging.ERROR)
+
+
+def delete_price(exchange: str = None, symbol: str = None):
+    logger.log(msg='delete_price - exchange: {0} - symbol: {1}'.format(exchange, symbol),
+               level=logging.DEBUG)
+    try:
+        if exchange is None or symbol is None:
+            raise Exception("Error delete_price {0} - {1}".format(exchange, symbol))
+        query = 'delete from exchange_prices where '
+        args = []
+        query += ' exchange = %s and symbol = %s '
+        args.append(exchange)
+        args.append(symbol)
+        db = MyDB()
+        logger.log(msg='delete_price - sql {0}'.format(query), level=logging.DEBUG)
+        result = db.query(query=query, args=args)
+        logger.log(msg='delete_price - result {0}'.format(result), level=logging.DEBUG)
+        db.commit()
+        db.close()
+    except Exception as err:
+        logger.log(msg='delete_price: {0}'.format(str(err)), level=logging.ERROR)

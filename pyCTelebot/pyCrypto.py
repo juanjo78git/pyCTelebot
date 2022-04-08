@@ -35,7 +35,7 @@ def connection(user_id: str = None, telegram_id: str = None, exchange_name: str 
     logger.log(msg='Exchange connection user: {0}'.format(user_id), level=logging.DEBUG)
     exchange = None
     try:
-        if user_id == 'READONLY':
+        if user_id is None and telegram_id is None:
             if exchange_name == 'binance':
                 exchange = binance({
                     'apiKey': TOKEN_CRYPTO_KEY_RO,
@@ -71,9 +71,9 @@ def connection(user_id: str = None, telegram_id: str = None, exchange_name: str 
         return exchange
 
 
-def price(symbol: str, user_id: str = None, telegram_id: str = None):
+def price(symbol: str, user_id: str = None, telegram_id: str = None, exchange_name: str = None):
     if user_id is None and telegram_id is None:
-        exchange = connection(user_id='READONLY')
+        exchange = connection(exchange_name=exchange_name)
     else:
         exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
@@ -119,7 +119,7 @@ def price(symbol: str, user_id: str = None, telegram_id: str = None):
 
 def open_orders(symbol: str, user_id: str = None, telegram_id: str = None):
     if user_id is None and telegram_id is None:
-        exchange = connection(user_id='READONLY')
+        exchange = connection()
     else:
         exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
@@ -138,7 +138,7 @@ def open_orders(symbol: str, user_id: str = None, telegram_id: str = None):
 
 def closed_orders(symbol: str, user_id: str = None, telegram_id: str = None):
     if user_id is None and telegram_id is None:
-        exchange = connection(user_id='READONLY')
+        exchange = connection()
     else:
         exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
@@ -157,7 +157,7 @@ def closed_orders(symbol: str, user_id: str = None, telegram_id: str = None):
 
 def balance(symbol: str = None, user_id: str = None, telegram_id: str = None):
     if user_id is None and telegram_id is None:
-        exchange = connection(user_id='READONLY')
+        exchange = connection()
     else:
         exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
@@ -184,7 +184,7 @@ def balance(symbol: str = None, user_id: str = None, telegram_id: str = None):
 
 def cancel_order(order_id: str, symbol: str, user_id: str = None, telegram_id: str = None):
     if user_id is None and telegram_id is None:
-        exchange = connection(user_id='READONLY')
+        exchange = connection()
     else:
         exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
@@ -205,7 +205,7 @@ def cancel_order(order_id: str, symbol: str, user_id: str = None, telegram_id: s
 
 def buy_order(symbol: str, amount, type_order: str, price_limit=0, user_id: str = None, telegram_id: str = None):
     if user_id is None and telegram_id is None:
-        exchange = connection(user_id='READONLY')
+        exchange = connection()
     else:
         exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
@@ -237,7 +237,7 @@ def buy_order(symbol: str, amount, type_order: str, price_limit=0, user_id: str 
 
 def sell_order(symbol: str, amount, type_order: str, price_limit=0, user_id: str = None, telegram_id: str = None):
     if user_id is None and telegram_id is None:
-        exchange = connection(user_id='READONLY')
+        exchange = connection()
     else:
         exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
