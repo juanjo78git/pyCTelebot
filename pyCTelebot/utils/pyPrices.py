@@ -92,6 +92,11 @@ def update_price_info():
             sell_price_variation_percentage = price_variation_percentage(last_price=last_sell_price,
                                                                          current_price=current_sell_price)
             last_audit_date = current_price.get("current_audit_date")
+            logger.log(msg='update_price_info - MIO {0} {1} {2} {3}'.format(type(last_audit_date),
+                                                                            last_audit_date,
+                                                                            type(current_price.get("current_audit_date")),
+                                                                            current_price.get("current_audit_date")
+                                                                            ), level=logging.INFO)
             current_audit_date = datetime.now(timezone.utc)
             query = 'update exchange_prices set '
             args = []
