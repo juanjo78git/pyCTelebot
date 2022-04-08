@@ -6,11 +6,12 @@ import random
 import sys
 from telegram import Update
 from telegram.ext import CallbackContext
-import telegram
 from pyCTelebot.config.pyVars import ENV_CONFIG
 import psutil
 
 # i18n
+from pyCTelebot.utils.pyPrices import initialize_price, price_info
+
 _ = gettext.gettext
 
 # Logs
@@ -34,32 +35,16 @@ logger.setLevel(logging.DEBUG)
 def run_telegram(update: Update, context: CallbackContext):
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run_telegram start ID: {0}'.format(seed), level=logging.INFO)
-    logger.log(msg='/poc User {0} ({1}) - chat: {2} ({3}) - message ({4}) {5}'.format(update.effective_user.name,
-                                                                                      update.effective_user.id,
-                                                                                      update.effective_chat.title,
-                                                                                      update.effective_chat.id,
-                                                                                      len(context.args),
-                                                                                      update.message.text),
-               level=logging.DEBUG)
-    if logger.level == logging.DEBUG:
+    if len(context.args) == 2:
+        exchange = context.args[0]
+        symbol = context.args[1]
+        logger.log(msg='pyPoC run_telegram: {0} - {1}'.format(exchange, symbol), level=logging.INFO)
+        initialize_price(exchange=exchange, symbol=symbol)
+        logger.log(msg='pyPoC initialize_price end', level=logging.INFO)
+        price = price_info(exchange=exchange, symbol=symbol)
+        logger.log(msg='pyPoC price_info end', level=logging.INFO)
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text='/poc User {0} ({1}) - chat: {2} ({3}) - message ({4}) {5}'.format(
-                                     update.effective_user.name,
-                                     update.effective_user.id,
-                                     update.effective_chat.title,
-                                     update.effective_chat.id,
-                                     len(context.args),
-                                     update.message.text))
-    # Do something
-
-    logger.log(msg='pyPoC run_telegram stop ID: {0}'.format(seed), level=logging.INFO)
-    keyboard = [[telegram.InlineKeyboardButton('Option ETH', callback_data='/start eth')],
-                [telegram.InlineKeyboardButton('Option BTC', callback_data='/start btc')]]
-
-    reply_markup = telegram.InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('*****Menu*****\nOptions:', reply_markup=reply_markup,
-                              reply_to_message_id=update.message.message_id)
-
+                                 text='/initialize_price: {0}'.format(price))
     logger.log(msg='pyPoC run_telegram stop ID: {0}'.format(seed), level=logging.INFO)
 
 
@@ -76,6 +61,7 @@ def run():
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
+
     logger.log(msg='pyPoC run stop ID: {0}'.format(seed), level=logging.INFO)
 
 

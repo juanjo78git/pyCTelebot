@@ -119,8 +119,7 @@ def update_price_info():
             args.append(symbol)
             db = MyDB()
             logger.log(msg='update_price_info - sql {0}'.format(query), level=logging.DEBUG)
-            result = db.query(query=query, args=args)
-            logger.log(msg='update_price_info - result {0}'.format(result), level=logging.DEBUG)
+            db.query(query=query, args=args)
             db.commit()
             db.close()
         except Exception as err:
@@ -156,8 +155,7 @@ def initialize_price(exchange: str = None, symbol: str = None):
         query += " values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
         db = MyDB()
         logger.log(msg='initialize_price - sql {0}'.format(query), level=logging.DEBUG)
-        result = db.query(query=query, args=args)
-        logger.log(msg='initialize_price - result {0}'.format(result), level=logging.DEBUG)
+        db.query(query=query, args=args)
         db.commit()
         db.close()
     except Exception as err:
@@ -177,8 +175,7 @@ def delete_price(exchange: str = None, symbol: str = None):
         args.append(symbol)
         db = MyDB()
         logger.log(msg='delete_price - sql {0}'.format(query), level=logging.DEBUG)
-        result = db.query(query=query, args=args)
-        logger.log(msg='delete_price - result {0}'.format(result), level=logging.DEBUG)
+        db.query(query=query, args=args)
         db.commit()
         db.close()
     except Exception as err:
