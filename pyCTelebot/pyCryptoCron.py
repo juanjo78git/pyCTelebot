@@ -44,7 +44,7 @@ def run():
 
     # Create an instance of scheduler and add function.
     scheduler = BlockingScheduler()
-    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=60)
+    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=5)
     s = int(os.environ.get('PERIOD_TEST', '520')) + 5
     scheduler.add_job(pyCryptoWorker.alert_worker, "interval", seconds=s)
     try:

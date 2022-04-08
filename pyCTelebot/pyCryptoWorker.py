@@ -11,6 +11,8 @@ from time import sleep
 import random
 import sys
 # i18n
+from pyCTelebot.utils.pyPrices import update_price_info
+
 _ = gettext.gettext
 
 # Logs
@@ -35,7 +37,7 @@ def run():
         datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
     try:
         # Do something
-        sleep(50)
+        update_price_info()
     except Exception:
         logger.log(msg='Worker stop/KILLED ID: {0}'.format(seed), level=logging.INFO)
         pyTelegram.message_admins(message='Worker stop/KILLED at {0} with ID: {1}'.format(
