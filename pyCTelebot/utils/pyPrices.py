@@ -144,7 +144,7 @@ def initialize_price(exchange: str = None, symbol: str = None):
         args.append(current_price.get("bid"))
         args.append(current_price.get("bid"))
         args.append(0)
-        query += " last_sell_price, current_sell_price, sell_price_variation_percentage"
+        query += " last_sell_price, current_sell_price, sell_price_variation_percentage, "
         args.append(current_price.get("ask"))
         args.append(current_price.get("ask"))
         args.append(0)
