@@ -4,6 +4,7 @@ from pyCTelebot.config.pyVars import ENV_CONFIG
 import gettext
 import logging
 from pyCTelebot.utils.pyDB import MyDB
+from datetime import datetime, timezone
 
 # i18n
 _ = gettext.gettext
@@ -91,6 +92,8 @@ def update_price_info():
             current_sell_price = current_price.get("ask")
             sell_price_variation_percentage = price_variation_percentage(last_price=last_sell_price,
                                                                          current_price=current_sell_price)
+            last_audit_date = current_price.get("current_audit_date")
+            current_audit_date = datetime.now(timezone.utc)
             query = 'update exchange_prices set '
             args = []
             query += ' last_buy_price = %s , '
@@ -105,6 +108,10 @@ def update_price_info():
             args.append(current_sell_price)
             query += ' sell_price_variation_percentage = %s , '
             args.append(sell_price_variation_percentage)
+            query += ' last_audit_date = %s , '
+            args.append(last_audit_date)
+            query += ' current_audit_date = %s '
+            args.append(current_audit_date)
             query += 'where exchange = %s and symbol = %s '
             args.append(exchange)
             args.append(symbol)
