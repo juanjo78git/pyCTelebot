@@ -66,7 +66,7 @@ def price_variation_percentage(last_price: float, current_price: float):
             level=logging.DEBUG)
         if current_price <= 0:
             return None
-        percent_dif_price = (current_price - last_price) * 100 / current_price
+        percent_dif_price = (float(current_price) - float(last_price)) * 100 / float(current_price)
         return percent_dif_price
     except Exception as err:
         logger.log(msg='price_variation_percentage: {0}'.format(str(err)), level=logging.ERROR)
