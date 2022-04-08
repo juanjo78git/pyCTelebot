@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS active_strategy_steps (
 	-- Fecha de ejecución de la orden
 	order_audit_date TIMESTAMP,
 	PRIMARY KEY (user_id, strategy_id, symbol, step),
-	FOREIGN KEY (user_id, strategy_id)
+	FOREIGN KEY (user_id, strategy_id, symbol)
       REFERENCES active_strategies (user_id, strategy_id, symbol)
 );
 CREATE TABLE IF NOT EXISTS exchange_prices (
