@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from pyCTelebot.utils import pyBuildParser
+from pyCTelebot.utils import pyBuildParser, pyTelegram
 import os
 import sys
 import gettext
 import logging
-from pyCTelebot import pyTelegram, pyCryptoCron, pyCryptoWorker
+from pyCTelebot import pyCryptoCron, pyCryptoWorker
 from pyCTelebot.config.pyVars import ENV_CONFIG
 from pyCTelebot import pyPoC
 

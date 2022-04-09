@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
-import os
 
-from pyCTelebot import pyCrypto, pyTelegram
+from pyCTelebot.utils import pyTelegram
 from datetime import datetime
 import gettext
 import logging
 from pyCTelebot.config.pyVars import ENV_CONFIG
 import pytz
-from time import sleep
 import random
 import sys
 # i18n
-from pyCTelebot.utils.pyPrices import update_price_info
+from pyCTelebot.utils.pyPrices import update_price_info, price_info
 
 _ = gettext.gettext
 
@@ -38,6 +36,8 @@ def run():
     try:
         # Do something
         update_price_info()
+        pyTelegram.message_admins(message='Worker {0} with ID {1} said: {2}'.format(
+            datetime.now(tz=pytz.timezone("Europe/Madrid")), seed, price_info()))
     except Exception:
         logger.log(msg='Worker stop/KILLED ID: {0}'.format(seed), level=logging.INFO)
         pyTelegram.message_admins(message='Worker stop/KILLED at {0} with ID: {1}'.format(
@@ -46,76 +46,3 @@ def run():
         logger.log(msg='Worker stop ID: {0}'.format(seed), level=logging.INFO)
         pyTelegram.message_admins(message='Worker stop at {0} with ID: {1}'.format(
             datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
-
-
-def alert_worker():
-    logger.log(msg='alert_worker doing something!', level=logging.INFO)
-    symbol = os.environ.get('SYMBOL_TEST', 'ETH/USDT')
-    ticker = pyCrypto.price(symbol=symbol)
-    # period
-    sleep(int(os.environ.get('PERIOD_TEST', '520')))
-    ticker2 = pyCrypto.price(symbol=symbol)
-    # Send results
-    # logger.log(msg='Worker - Symbol: {0} --> value: {1}'.format(symbol, ticker), level=logging.INFO)
-    percent = float(os.environ.get('PERCENT_TEST', '1'))
-    # bid: current best buy price // ask: current best sell price
-    price_name_list = ["bid", "ask"]
-    for price_name in price_name_list:
-        old_price = ticker.get(price_name)
-        new_price = ticker2.get(price_name)
-        percent_dif_price = (new_price - old_price) * 100 / new_price
-
-        if percent < abs(percent_dif_price) and percent_dif_price > 0:
-            pyTelegram.message_admins(message='WorkerTelegram: {0} Symbol {1} '
-                                              '{2} PRICE DOWN OVER {3}%!! {4} - {5}'.format(
-                                                datetime.now(tz=pytz.timezone("Europe/Madrid")),
-                                                symbol,
-                                                price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
-                                                percent_dif_price,
-                                                new_price,
-                                                old_price))
-            logger.log(msg='WorkerTelegram: {0} Symbol {1} {2} PRICE UP OVER {3}%!! {4} - {5}'.format(
-                        datetime.now(tz=pytz.timezone("Europe/Madrid")),
-                        symbol,
-                        price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
-                        percent_dif_price,
-                        new_price,
-                        old_price
-                        ), level=logging.INFO)
-        elif percent < abs(percent_dif_price) and percent_dif_price < 0:
-            pyTelegram.message_admins(message='WorkerTelegram: {0} Symbol {1} '
-                                              '{2} PRICE DOWN OVER {3}%!! {4} - {5}'.format(
-                                                datetime.now(tz=pytz.timezone("Europe/Madrid")),
-                                                symbol,
-                                                price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
-                                                percent_dif_price,
-                                                new_price,
-                                                old_price))
-            logger.log(msg='WorkerTelegram: {0} Symbol {1} {2} PRICE DOWN OVER {3}%!! {4} - {5}'.format(
-                        datetime.now(tz=pytz.timezone("Europe/Madrid")),
-                        symbol,
-                        price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
-                        percent_dif_price,
-                        new_price,
-                        old_price
-                        ), level=logging.INFO)
-        else:
-            # pyTelegram.message_admins(message='WorkerTelegram: {0} Symbol {1} '
-            #                                   '{2}  PRICE NOT CHANGE A {3}% only a {4}%!! {5} - {6}'.format(
-            #                                     datetime.now(tz=pytz.timezone("Europe/Madrid")),
-            #                                     symbol,
-            #                                     price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
-            #                                     percent,
-            #                                     percent_dif_price,
-            #                                     new_price,
-            #                                     old_price))
-            logger.log(msg='WorkerTelegram: {0} Symbol {1} '
-                           '{2} PRICE NOT CHANGE A {3}% only a {4}%!! {5} (Last: {6})'.format(
-                            datetime.now(tz=pytz.timezone("Europe/Madrid")),
-                            symbol,
-                            price_name.replace("bid", "BUY").replace("ask", "SELL").upper(),
-                            percent,
-                            percent_dif_price,
-                            new_price,
-                            old_price
-                            ), level=logging.INFO)

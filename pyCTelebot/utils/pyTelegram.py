@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 
 from telegram.ext import Updater, CallbackQueryHandler
 from telegram import Update, Bot
@@ -9,7 +8,7 @@ from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.pyVars import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, ENV_CONFIG, TELEGRAM_ADMIN_GROUP
 from pyCTelebot.utils.pyUsers import user_list, authorization
-from pyCTelebot import pyCrypto
+from pyCTelebot.utils import pyCrypto
 from pyCTelebot import pyPoC
 from pyCTelebot import __version__
 import gettext
@@ -96,9 +95,6 @@ def run(how: str):
     message_admins_by_telegram_handler = CommandHandler('message_admins', message_admins_by_telegram)
     dispatcher.add_handler(message_admins_by_telegram_handler)
 
-    alert_handler = CommandHandler('alert', alert)
-    dispatcher.add_handler(alert_handler)
-
     # Unknown commands
     unknown_handler = MessageHandler(Filters.command, unknown)
     dispatcher.add_handler(unknown_handler)
@@ -177,7 +173,6 @@ def help_command(update: Update, context: CallbackContext):
     sell_limit - Send a new limit sales order
     cancel - Cancel open order
     message_admins - Send message to admins
-    alert - Send message alert with these conditions
     help - Help command
     """
     context.bot.send_message(chat_id=update.effective_chat.id,
@@ -195,7 +190,6 @@ def help_command(update: Update, context: CallbackContext):
                                     "/sell_limit [SYMBOL] [AMOUNT] [PRICE] - Send a new limit sales order \n"
                                     "/cancel [SYMBOL] [ORDER ID] - Cancel open order \n"
                                     "/message_admins [MESSAGE] - Send message to admins \n"
-                                    "/alert [SYMBOL] [PERCENT] [PERIOD] - Send message alert with these conditions\n"
                                     "/help  - This help (version {0})").format(__version__))
 
 
@@ -640,75 +634,6 @@ def private_message(message, user):
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
     except Exception as err:
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-
-
-def alert(update: Update, context: CallbackContext):
-    # Authorization
-    if not authorization(telegram_id=update.effective_user.id, action='alert'):
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("You can't do it!"))
-        return 1
-    # Params
-    if len(context.args) == 3:
-        symbol = context.args[0].upper()
-        if '/' not in symbol:
-            symbol = symbol + '/USDT'
-        percent = context.args[1]
-        period = context.args[2]
-    elif len(context.args) == 2 and "symbol" in context.user_data:
-        symbol = context.user_data["symbol"]
-        percent = context.args[0]
-        period = context.args[1]
-    # Action without params
-    elif len(context.args) == 0:
-        # TODO: Change it!! os.environ out of this file !!
-        symbol = os.environ.get('SYMBOL_TEST', 'NONE')
-        percent = os.environ.get('PERCENT_TEST', 'NONE')
-        period = os.environ.get('PERIOD_TEST', 'NONE')
-        logger.log(msg='/alert list: symbol {0}, percent {1} and period {2} seconds'.format(
-            symbol,
-            percent,
-            period),
-            level=logging.DEBUG)
-        try:
-            context.bot.send_message(chat_id=update.effective_chat.id,
-                                     text=_("Alert list: symbol {0}, percent {1} and period {2} seconds").format(
-                                         symbol,
-                                         percent,
-                                         period))
-        except TelegramError as err:
-            logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-        return 1
-    else:
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Error: invalid parameters"))
-        return 1
-    # Action
-    # TODO: Change it!! os.environ out of this file !!
-    logger.log(msg='/alert symbol: {0}, percent {1}, period {2} seconds'.format(symbol, percent, period),
-               level=logging.DEBUG)
-    try:
-        os.environ['SYMBOL_TEST'] = symbol
-        os.environ['PERCENT_TEST'] = percent
-        os.environ['PERIOD_TEST'] = period
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_(
-                                     "Create alert with "
-                                     "symbol {0}, percent {1} and period {2} seconds").format(
-                                     symbol,
-                                     percent,
-                                     period))
-    except TelegramError as err:
-        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
-    except Exception as err:
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Create alert with "
-                                        "symbol {0}, percent {1} and period {2} seconds --> {3}").format(
-                                         symbol,
-                                         percent,
-                                         period,
-                                         _("ERROR: I can't do it."),
-                                         str(err)))
 
 
 def ps(update: Update, context: CallbackContext):

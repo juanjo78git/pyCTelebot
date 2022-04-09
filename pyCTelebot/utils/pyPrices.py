@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from pyCTelebot import pyCrypto
+from pyCTelebot.utils import pyCrypto
 from pyCTelebot.config.pyVars import ENV_CONFIG
 import gettext
 import logging
