@@ -36,8 +36,7 @@ def run():
     try:
         # Do something
         update_price_info()
-        pyTelegram.message_admins(message='Worker {0} with ID {1} said: {2}'.format(
-            datetime.now(tz=pytz.timezone("Europe/Madrid")), seed, price_info()))
+        pyTelegram.message_admins(message='Worker with ID {0} said: {1}'.format(seed, price_info()))
     except Exception:
         logger.log(msg='Worker stop/KILLED ID: {0}'.format(seed), level=logging.INFO)
         pyTelegram.message_admins(message='Worker stop/KILLED at {0} with ID: {1}'.format(
