@@ -87,7 +87,7 @@ def update_price_info():
             current_buy_price = current_price.get("bid")
             buy_price_variation_percentage = price_variation_percentage(last_price=last_buy_price,
                                                                         current_price=current_buy_price)
-            last_sell_price = last_price.get('last_sell_price')
+            last_sell_price = last_price.get('current_sell_price')
             current_sell_price = current_price.get("ask")
             sell_price_variation_percentage = price_variation_percentage(last_price=last_sell_price,
                                                                          current_price=current_sell_price)
