@@ -21,17 +21,54 @@ else:
     logger.setLevel(logging.DEBUG)
 
 
-def strategies_symbol_list():
+# strategy_symbols table:
+#   strategy_id VARCHAR(50)
+#   exchange VARCHAR(50)
+#   symbol VARCHAR(50)
+#   unit_value NUMERIC
+#   take_profit NUMERIC
+#   buy_in_callback NUMERIC
+def strategy_symbols_list(strategy_id: str = None):
     my_strategy_symbols = []
     try:
-        logger.log(msg='strategies_symbol_list: Start', level=logging.DEBUG)
+        logger.log(msg='strategy_symbols_list: Start {0}'.format(strategy_id), level=logging.DEBUG)
         query = 'select * from strategy_symbols '
         args = []
+        if strategy_id is not None:
+            query += ' where strategy_id = %s '
+            args.append(strategy_id)
         db = MyDB()
         result = db.query(query=query, args=args)
         db.close()
         for strategy_symbols in result:
             my_strategy_symbols.append(dict(strategy_symbols))
     except Exception as err:
-        logger.log(msg='strategies_symbol_list: {0}'.format(str(err)), level=logging.ERROR)
+        logger.log(msg='strategy_symbols_list: {0}'.format(str(err)), level=logging.ERROR)
+    return my_strategy_symbols
+
+
+# strategy_steps table:
+#   strategy_id VARCHAR(50)
+#   exchange VARCHAR(50)
+#   symbol VARCHAR(50)
+#   step INTEGER
+#   step_type VARCHAR(50)
+#   margin NUMERIC
+#   units NUMERIC
+def strategy_steps_list(strategy_id: str = None):
+    my_strategy_symbols = []
+    try:
+        logger.log(msg='strategy_steps_list: Start {0}'.format(strategy_id), level=logging.DEBUG)
+        query = 'select * from strategy_steps '
+        args = []
+        if strategy_id is not None:
+            query += ' where strategy_id = %s '
+            args.append(strategy_id)
+        db = MyDB()
+        result = db.query(query=query, args=args)
+        db.close()
+        for strategy_symbols in result:
+            my_strategy_symbols.append(dict(strategy_symbols))
+    except Exception as err:
+        logger.log(msg='strategy_steps_list: {0}'.format(str(err)), level=logging.ERROR)
     return my_strategy_symbols
