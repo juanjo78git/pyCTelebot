@@ -26,15 +26,14 @@ $ pip install pyCTelebot
 ```
 #### Configure Vars
 
-| Vars                   | Description                                                                                                                                                                                                                                          |
-|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| TOKEN_TELEGRAM         | Token telegram bot                                                                                                                                                                                                                                   |
-| WEBHOOK_URL_TELEGRAM   | URL app in [Heroku](https://www.heroku.com/) or other server                                                                                                                                                                                         |
-| TOKEN_CRYPTO_KEY_RO    | Cryptocurrency exchange apiKey (read only)                                                                                                                                                                                                           |
-| TOKEN_CRYPTO_SECRET_RO | Cryptocurrency exchange secret (read only)                                                                                                                                                                                                           |
-| TELEGRAM_ADMIN_GROUP   | Telegram admin group id list. Format: \[chat_id]                                                                                                                                                                                                     |
-| ENV_CONFIG             | Environment config. log values: DEBUG / INFO / WARNING / ERROR / CRITICAL. env values: TEST / PROD. Default values: {"log": "DEBUG", "env": "TEST"}                                                                                                  |
-| DATABASE_URL           | DB Connection                                                                                                                                                                                                                                        |
+| Vars                 | Description                                                                                                                                         |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| TOKEN_TELEGRAM       | Token telegram bot                                                                                                                                  |
+| WEBHOOK_URL_TELEGRAM | URL app in [Heroku](https://www.heroku.com/) or other server                                                                                        |
+| TELEGRAM_ADMIN_GROUP | Telegram admin group id list. Format: \[chat_id]                                                                                                    |
+| CRON_INTERVAL        | Cron interval seconds                                                                                                                               |
+| ENV_CONFIG           | Environment config. log values: DEBUG / INFO / WARNING / ERROR / CRITICAL. env values: TEST / PROD. Default values: {"log": "DEBUG", "env": "TEST"} |
+| DATABASE_URL         | DB Connection                                                                                                                                       |
 
 
 #### DataBase

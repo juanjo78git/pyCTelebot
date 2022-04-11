@@ -44,7 +44,12 @@ def run():
 
     # Create an instance of scheduler and add function.
     scheduler = BlockingScheduler()
-    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=CRON_INTERVAL)
+    scheduler.add_job(pyCryptoWorker.run,
+                      "interval",
+                      max_instances=1,
+                      coalesce=True,
+                      seconds=CRON_INTERVAL,
+                      id='strategies_jobs')
     try:
         scheduler.start()
     finally:
