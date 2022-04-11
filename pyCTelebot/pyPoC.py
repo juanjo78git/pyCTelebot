@@ -11,7 +11,6 @@ import psutil
 
 # i18n
 from pyCTelebot.utils.pyPrices import initialize_price, price_info
-from pyCTelebot.utils.pyStrategies import strategy_symbols_list, strategy_steps_list
 
 _ = gettext.gettext
 
@@ -73,8 +72,7 @@ def run():
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
-    print(strategy_symbols_list())
-    print(strategy_steps_list())
+
     logger.log(msg='pyPoC run stop ID: {0}'.format(seed), level=logging.INFO)
 
 

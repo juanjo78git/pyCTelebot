@@ -28,15 +28,24 @@ else:
 #   unit_value NUMERIC
 #   take_profit NUMERIC
 #   buy_in_callback NUMERIC
-def strategy_symbols_list(strategy_id: str = None):
+def strategy_symbols_list(strategy_id: str = None,
+                          exchange: str = None,
+                          symbol: str = None):
     my_strategy_symbols = []
     try:
         logger.log(msg='strategy_symbols_list: Start {0}'.format(strategy_id), level=logging.DEBUG)
         query = 'select * from strategy_symbols '
         args = []
+        query += ' where 1=1 '
         if strategy_id is not None:
-            query += ' where strategy_id = %s '
+            query += ' and strategy_id = %s '
             args.append(strategy_id)
+        if exchange is not None:
+            query += ' and exchange = %s '
+            args.append(exchange)
+        if symbol is not None:
+            query += ' and symbol = %s '
+            args.append(symbol)
         db = MyDB()
         result = db.query(query=query, args=args)
         db.close()
@@ -55,15 +64,24 @@ def strategy_symbols_list(strategy_id: str = None):
 #   step_type VARCHAR(50)
 #   margin NUMERIC
 #   units NUMERIC
-def strategy_steps_list(strategy_id: str = None):
+def strategy_steps_list(strategy_id: str = None,
+                        exchange: str = None,
+                        symbol: str = None):
     my_strategy_symbols = []
     try:
         logger.log(msg='strategy_steps_list: Start {0}'.format(strategy_id), level=logging.DEBUG)
         query = 'select * from strategy_steps '
         args = []
+        query += ' where 1=1 '
         if strategy_id is not None:
-            query += ' where strategy_id = %s '
+            query += ' and strategy_id = %s '
             args.append(strategy_id)
+        if exchange is not None:
+            query += ' and exchange = %s '
+            args.append(exchange)
+        if symbol is not None:
+            query += ' and symbol = %s '
+            args.append(symbol)
         db = MyDB()
         result = db.query(query=query, args=args)
         db.close()
