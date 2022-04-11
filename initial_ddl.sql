@@ -1,4 +1,6 @@
 set transaction read write;
+
+-- Info usuarios
 CREATE TABLE IF NOT EXISTS users (
 	user_id VARCHAR(50) PRIMARY KEY,
 	telegram_id VARCHAR(50) UNIQUE NOT NULL,
@@ -10,12 +12,14 @@ CREATE TABLE IF NOT EXISTS users (
 	passphrase VARCHAR
 );
 
-
+-- Catalogo de estrategias
 CREATE TABLE IF NOT EXISTS strategies (
 	strategy_id VARCHAR(50) NOT NULL,
 	description VARCHAR,
   PRIMARY KEY (strategy_id)
 );
+
+-- Estrategia
 CREATE TABLE IF NOT EXISTS strategy_symbols (
 	strategy_id VARCHAR(50) NOT NULL,
 	exchange VARCHAR(50) NOT NULL,
@@ -30,6 +34,8 @@ CREATE TABLE IF NOT EXISTS strategy_symbols (
     FOREIGN KEY (strategy_id)
       REFERENCES strategies (strategy_id)
 );
+
+-- Pasos de la estrategia
 CREATE TABLE IF NOT EXISTS strategy_steps (
 	strategy_id VARCHAR(50) NOT NULL,
 	symbol VARCHAR(50) NOT NULL,
@@ -46,7 +52,7 @@ CREATE TABLE IF NOT EXISTS strategy_steps (
       REFERENCES strategies (strategy_id)
 );
 
-
+-- Estrategias activas
 CREATE TABLE IF NOT EXISTS active_strategies (
 	user_id VARCHAR(50) NOT NULL,
 	strategy_id VARCHAR(50) NOT NULL,
@@ -70,6 +76,8 @@ CREATE TABLE IF NOT EXISTS active_strategies (
 	FOREIGN KEY (strategy_id)
       REFERENCES strategies (strategy_id)
 );
+
+-- Pasos de las estrategias activas
 CREATE TABLE IF NOT EXISTS active_strategy_steps (
 	user_id VARCHAR(50) NOT NULL,
 	strategy_id VARCHAR(50) NOT NULL,
@@ -97,6 +105,8 @@ CREATE TABLE IF NOT EXISTS active_strategy_steps (
 	FOREIGN KEY (user_id, strategy_id, symbol)
       REFERENCES active_strategies (user_id, strategy_id, symbol)
 );
+
+-- Info. de los precios
 CREATE TABLE IF NOT EXISTS exchange_prices (
 	exchange VARCHAR(50) NOT NULL,
 	symbol VARCHAR(50) NOT NULL,

@@ -21,10 +21,6 @@ PORT = int(os.environ.get('PORT', 5000))
 # Database connection
 DATABASE_URL = os.environ.get('DATABASE_URL', "NOT_FOUND")
 
-# API crypto info Read-only
-TOKEN_CRYPTO_KEY_RO = os.environ.get('TOKEN_CRYPTO_KEY_RO', "NOT_FOUND")
-TOKEN_CRYPTO_SECRET_RO = os.environ.get('TOKEN_CRYPTO_SECRET_RO', "NOT_FOUND")
-
 # Environment config
 # log values: DEBUG / INFO / WARNING / ERROR / CRITICAL
 # env values: TEST / PROD
@@ -33,4 +29,5 @@ ENV_CONFIG = json.loads(os.environ.get('ENV_CONFIG', '{"log": "DEBUG", "env": "T
 # Telegram admin group id list
 TELEGRAM_ADMIN_GROUP = json.loads(os.environ.get('TELEGRAM_ADMIN_GROUP', "[]"))
 
-
+# Cron Interval
+CRON_INTERVAL = os.environ.get('CRON_INTERVAL', 0)

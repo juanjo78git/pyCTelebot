@@ -76,7 +76,7 @@ def run():
     logger.log(msg='pyPoC run stop ID: {0}'.format(seed), level=logging.INFO)
 
 
-# Telegram Proof of Concept
+# Telegram Proof of Concept ps
 def ps(update: Update, context: CallbackContext):
     for p in psutil.process_iter():
         try:
@@ -86,8 +86,8 @@ def ps(update: Update, context: CallbackContext):
                                          text='/ps {0} - {1}'.format(
                                              p.pid,
                                              p.cmdline()))
-        except Exception:
-            logger.log(msg='pyPoC run stop/KILLED', level=logging.INFO)
+        except Exception as err:
+            logger.log(msg='pyPoC run stop/KILLED {0}'.format(str(err)), level=logging.INFO)
 
 
 # Telegram Proof of Concept

@@ -9,7 +9,7 @@ import pytz
 import random
 import sys
 # i18n
-from pyCTelebot.utils.pyPrices import update_price_info, price_info
+from pyCTelebot.utils.pyPrices import update_price_info
 
 _ = gettext.gettext
 
@@ -34,11 +34,12 @@ def run():
     pyTelegram.message_admins(message='Worker start at {0} with ID: {1}'.format(
         datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
     try:
-        # Do something
+        # Update price info
         update_price_info()
-        pyTelegram.message_admins(message='Worker with ID {0} said: {1}'.format(seed, price_info()))
-    except Exception:
-        logger.log(msg='Worker stop/KILLED ID: {0}'.format(seed), level=logging.INFO)
+        # TODO: Update strategy info
+
+    except Exception as err:
+        logger.log(msg='Worker stop/KILLED ID: {0} - {1}'.format(seed, str(err)), level=logging.ERROR)
         pyTelegram.message_admins(message='Worker stop/KILLED at {0} with ID: {1}'.format(
             datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
     else:

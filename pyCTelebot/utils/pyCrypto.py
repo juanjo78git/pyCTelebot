@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from ccxt import binance, kucoin
-from pyCTelebot.config.pyVars import TOKEN_CRYPTO_KEY_RO, TOKEN_CRYPTO_SECRET_RO, ENV_CONFIG
-from pyCTelebot.utils.pyUsers import select_user
+from ccxt import binance, kucoin, kraken
+from pyCTelebot.config.pyVars import ENV_CONFIG
+from pyCTelebot.utils.pyUsers import select_user, select_user_readonly
 import gettext
 import logging
 
@@ -36,36 +36,31 @@ def connection(user_id: str = None, telegram_id: str = None, exchange_name: str 
     exchange = None
     try:
         if user_id is None and telegram_id is None:
-            if exchange_name == 'binance':
-                exchange = binance({
-                    'apiKey': TOKEN_CRYPTO_KEY_RO,
-                    'secret': TOKEN_CRYPTO_SECRET_RO
-                })
-            else:
-                raise Exception("Exchange {0} does not exist.".format(exchange_name))
+            u = select_user_readonly(exchange=exchange_name)
         else:
             u = select_user(user_id=user_id, telegram_id=telegram_id)
-            if u is None:
-                raise Exception("User does not exist {0} - {1}".format(user_id, telegram_id))
-            if u['exchange'] == 'binance':
-                exchange = binance({
-                    'apiKey': u['apikey'],
-                    'secret': u['secret']
-                })
-            elif u['exchange'] == 'kucoin':
-                exchange = kucoin({
-                    'apiKey': u['apikey'],
-                    'secret': u['secret'],
-                    'password': u['passphrase']
-                })
+        if u is None:
+            raise Exception("User/exchange does not exist {0} - {1} - {2}".format(user_id, telegram_id, exchange_name))
+        if u['exchange'] == 'binance':
+            exchange = binance({
+                'apiKey': u['apikey'],
+                'secret': u['secret']
+            })
+        elif u['exchange'] == 'kucoin':
+            exchange = kucoin({
+                'apiKey': u['apikey'],
+                'secret': u['secret'],
+                'password': u['passphrase']
+            })
+        elif u['exchange'] == 'kraken':
+            exchange = kraken({
+                'apiKey': u['apikey'],
+                'secret': u['secret']
+            })
         # enable rate limiting
         # exchange.enableRateLimit = True
     except Exception as err:
-        logger.log(
-            msg='connection {0}: status: {1} - {2}'.format(user_id,
-                                                           type(err),
-                                                           str(err)),
-            level=logging.ERROR)
+        logger.log(msg='connection: status: {0} - {1}'.format(type(err), str(err)), level=logging.ERROR)
         raise
     else:
         return exchange

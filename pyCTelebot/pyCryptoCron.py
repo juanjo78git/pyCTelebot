@@ -11,7 +11,7 @@ from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 from pyCTelebot import pyCryptoWorker
 from pyCTelebot.utils import pyTelegram
-from pyCTelebot.config.pyVars import ENV_CONFIG
+from pyCTelebot.config.pyVars import ENV_CONFIG, CRON_INTERVAL
 
 # i18n
 _ = gettext.gettext
@@ -44,7 +44,7 @@ def run():
 
     # Create an instance of scheduler and add function.
     scheduler = BlockingScheduler()
-    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=3)
+    scheduler.add_job(pyCryptoWorker.run, "interval", seconds=CRON_INTERVAL)
     try:
         scheduler.start()
     finally:

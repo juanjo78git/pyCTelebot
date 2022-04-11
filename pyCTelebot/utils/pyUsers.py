@@ -78,6 +78,25 @@ def select_user(user_id: str = None, telegram_id: str = None):
     return None
 
 
+def select_user_readonly(exchange: str):
+    try:
+        logger.log(msg='select_user_readonly - exchange: {0}'.format(exchange),
+                   level=logging.DEBUG)
+        query = "select * from users where "
+        args = []
+        query += " role = 'READ_ONLY'"
+        query += " exchange = %s "
+        args.append(exchange)
+        db = MyDB()
+        result = db.query(query=query, args=args)
+        db.close()
+        if len(result) == 1:
+            return dict(result[0])
+    except Exception as err:
+        logger.log(msg='select_user_readonly: {0}'.format(str(err)), level=logging.ERROR)
+    return None
+
+
 def authorization(user_id: str = None, telegram_id: str = None, action: str = None):
     logger.log(msg='authorization - User: {0} - {1} action: {2}'.format(user_id, telegram_id, action),
                level=logging.DEBUG)
