@@ -30,4 +30,4 @@ ENV_CONFIG = json.loads(os.environ.get('ENV_CONFIG', '{"log": "DEBUG", "env": "T
 TELEGRAM_ADMIN_GROUP = json.loads(os.environ.get('TELEGRAM_ADMIN_GROUP', "[]"))
 
 # Cron Interval in seconds
-CRON_INTERVAL = os.environ.get('CRON_INTERVAL', 5)
+CRON_INTERVAL = int(os.environ.get('CRON_INTERVAL', 5))
