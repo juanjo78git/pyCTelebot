@@ -20,5 +20,3 @@ elif ENV_CONFIG.get('log') == 'INFO':
     logger.setLevel(logging.INFO)
 else:
     logger.setLevel(logging.DEBUG)
-
-
