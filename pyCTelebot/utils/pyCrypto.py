@@ -2,7 +2,7 @@
 
 from ccxt import binance, kucoin, kraken
 from pyCTelebot.config.pyVars import ENV_CONFIG
-from pyCTelebot.utils.pyUsers import select_user, select_user_readonly
+from pyCTelebot.utils.pyUsers import select_user, select_user_readonly, decrypt
 import gettext
 import logging
 
@@ -43,19 +43,19 @@ def connection(user_id: str = None, telegram_id: str = None, exchange_name: str 
             raise Exception("User/exchange does not exist {0} - {1} - {2}".format(user_id, telegram_id, exchange_name))
         if u['exchange'] == 'binance':
             exchange = binance({
-                'apiKey': u['apikey'],
-                'secret': u['secret']
+                'apiKey': decrypt(u['apikey']),
+                'secret': decrypt(u['secret'])
             })
         elif u['exchange'] == 'kucoin':
             exchange = kucoin({
-                'apiKey': u['apikey'],
-                'secret': u['secret'],
-                'password': u['passphrase']
+                'apiKey': decrypt(u['apikey']),
+                'secret': decrypt(u['secret']),
+                'password': decrypt(u['passphrase'])
             })
         elif u['exchange'] == 'kraken':
             exchange = kraken({
-                'apiKey': u['apikey'],
-                'secret': u['secret']
+                'apiKey': decrypt(u['apikey']),
+                'secret': decrypt(u['secret'])
             })
         # enable rate limiting
         # exchange.enableRateLimit = True

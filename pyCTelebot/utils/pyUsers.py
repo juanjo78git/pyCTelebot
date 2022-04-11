@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from pyCTelebot.config.pyVars import ENV_CONFIG
+from pyCTelebot.config.pyVars import ENV_CONFIG, ENCRYPTION_KEY
 import gettext
 import logging
 from pyCTelebot.utils.pyDB import MyDB
+from cryptography.fernet import Fernet
 
 # i18n
 _ = gettext.gettext
@@ -113,3 +114,32 @@ def authorization(user_id: str = None, telegram_id: str = None, action: str = No
     except Exception as err:
         logger.log(msg='authorization: {0}'.format(str(err)), level=logging.ERROR)
     return False
+
+
+def encrypt(token: str, key=None):
+    if key is not None:
+        fernet = Fernet(key)
+        return fernet.encrypt(token.encode())
+    elif ENCRYPTION_KEY is not None:
+        fernet = Fernet(bytes(ENCRYPTION_KEY, 'utf-8'))
+        return fernet.encrypt(token.encode())
+    else:
+        return token
+
+
+def decrypt(token, key=None):
+    if key is not None:
+        fernet = Fernet(key)
+        return fernet.decrypt(token).decode()
+    elif ENCRYPTION_KEY is not None:
+        fernet = Fernet(bytes(ENCRYPTION_KEY, 'utf-8'))
+        return fernet.decrypt(token).decode()
+    else:
+        return token
+
+
+def new_encryption_key(key: str = None):
+    if key is not None:
+        return bytes(key, 'utf-8')
+    else:
+        return Fernet.generate_key()
