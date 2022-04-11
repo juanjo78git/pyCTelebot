@@ -49,8 +49,8 @@ CREATE TABLE IF NOT EXISTS strategy_steps (
 	-- Unidades con las que realizar el paso
 	units NUMERIC,
   PRIMARY KEY (strategy_id, exchange, symbol, step),
-  FOREIGN KEY (strategy_id)
-      REFERENCES strategies (strategy_id)
+  FOREIGN KEY (strategy_id, exchange, symbol)
+      REFERENCES strategy_symbols (strategy_id, exchange, symbol)
 );
 
 -- Estrategias activas

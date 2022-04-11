@@ -3,7 +3,6 @@ from pyCTelebot.config.pyVars import ENV_CONFIG
 import gettext
 import logging
 from pyCTelebot.utils.pyDB import MyDB
-from datetime import datetime, timezone
 
 # i18n
 _ = gettext.gettext
@@ -20,3 +19,19 @@ elif ENV_CONFIG.get('log') == 'INFO':
     logger.setLevel(logging.INFO)
 else:
     logger.setLevel(logging.DEBUG)
+
+
+def strategies_symbol_list():
+    my_strategy_symbols = []
+    try:
+        logger.log(msg='strategies_symbol_list: Start', level=logging.DEBUG)
+        query = 'select * from strategy_symbols '
+        args = []
+        db = MyDB()
+        result = db.query(query=query, args=args)
+        db.close()
+        for strategy_symbols in result:
+            my_strategy_symbols.append(dict(strategy_symbols))
+    except Exception as err:
+        logger.log(msg='strategies_symbol_list: {0}'.format(str(err)), level=logging.ERROR)
+    return my_strategy_symbols

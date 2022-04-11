@@ -34,11 +34,12 @@ $ pip install pyCTelebot
 | CRON_INTERVAL        | Cron interval seconds                                                                                                                               |
 | ENV_CONFIG           | Environment config. log values: DEBUG / INFO / WARNING / ERROR / CRITICAL. env values: TEST / PROD. Default values: {"log": "DEBUG", "env": "TEST"} |
 | DATABASE_URL         | DB Connection                                                                                                                                       |
+| ENCRYPTION_KEY       | Encryption key for APIs                                                                                                                             |
 
 
 #### DataBase
 - [DDL](initial_ddl.sql)
-- DML - None
+- [DML](initial_dml.sql) - For test
 
 #### Activate Webhook in Telegram bot
 Execute: https://api.telegram.org/bot<TOKEN_TELEGRAM>/setWebHook?url=<WEBHOOK_URL_TELEGRAM>
