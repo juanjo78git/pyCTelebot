@@ -70,6 +70,7 @@ $ python -m pyCTelebot.pyCTelebotBase  -poc # Run PoC implemented
 - https://planetachatbot.com/telegram-bot-webhook-heroku/
 - https://planetachatbot.com/crea-e-implementa-bot-telegram-memoria-corto-largo-plazo/
 - http://kaffeine.herokuapp.com/
+- https://github.com/martin-ueding/vigilant-crypto-snatch
 
 ## License
 

@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS strategy_symbols (
 -- Pasos de la estrategia
 CREATE TABLE IF NOT EXISTS strategy_steps (
 	strategy_id VARCHAR(50) NOT NULL,
+	exchange VARCHAR(50) NOT NULL,
 	symbol VARCHAR(50) NOT NULL,
 	-- Número de orden del paso de la estrategia
 	step INTEGER NOT NULL,
@@ -47,15 +48,16 @@ CREATE TABLE IF NOT EXISTS strategy_steps (
 	margin NUMERIC,
 	-- Unidades con las que realizar el paso
 	units NUMERIC,
-  PRIMARY KEY (strategy_id, symbol, step),
+  PRIMARY KEY (strategy_id, exchange, symbol, step),
   FOREIGN KEY (strategy_id)
       REFERENCES strategies (strategy_id)
 );
 
 -- Estrategias activas
-CREATE TABLE IF NOT EXISTS active_strategies (
+CREATE TABLE IF NOT EXISTS active_strategy_symbols (
 	user_id VARCHAR(50) NOT NULL,
 	strategy_id VARCHAR(50) NOT NULL,
+	exchange VARCHAR(50) NOT NULL,
 	symbol VARCHAR(50) NOT NULL,
 	-- Valor de una unidad en USDT
 	unit_value NUMERIC NOT NULL,
@@ -70,7 +72,7 @@ CREATE TABLE IF NOT EXISTS active_strategies (
 	start_audit_date TIMESTAMP,
 	-- Fecha en la que ha acabado la estrategia
 	end_audit_date TIMESTAMP,
-	PRIMARY KEY (user_id, strategy_id, symbol),
+	PRIMARY KEY (user_id, strategy_id, exchange, symbol),
 	FOREIGN KEY (user_id)
       REFERENCES users (user_id),
 	FOREIGN KEY (strategy_id)
@@ -81,6 +83,7 @@ CREATE TABLE IF NOT EXISTS active_strategies (
 CREATE TABLE IF NOT EXISTS active_strategy_steps (
 	user_id VARCHAR(50) NOT NULL,
 	strategy_id VARCHAR(50) NOT NULL,
+	exchange VARCHAR(50) NOT NULL,
 	symbol VARCHAR(50) NOT NULL,
 	-- Número de orden del paso de la estrategia
 	step INTEGER NOT NULL,
@@ -101,9 +104,9 @@ CREATE TABLE IF NOT EXISTS active_strategy_steps (
 	order_id VARCHAR,
 	-- Fecha de ejecución de la orden
 	order_audit_date TIMESTAMP,
-	PRIMARY KEY (user_id, strategy_id, symbol, step),
-	FOREIGN KEY (user_id, strategy_id, symbol)
-      REFERENCES active_strategies (user_id, strategy_id, symbol)
+	PRIMARY KEY (user_id, strategy_id, exchange, symbol, step),
+	FOREIGN KEY (user_id, strategy_id, exchange, symbol)
+      REFERENCES active_strategy_symbols (user_id, strategy_id, exchange, symbol)
 );
 
 -- Info. de los precios

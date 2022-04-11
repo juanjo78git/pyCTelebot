@@ -31,8 +31,8 @@ else:
 def run():
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='Worker start ID: {0}'.format(seed), level=logging.INFO)
-    pyTelegram.message_admins(message='Worker start at {0} with ID: {1}'.format(
-        datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
+    # pyTelegram.message_admins(message='Worker start at {0} with ID: {1}'.format(
+    #     datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
     try:
         # Update price info
         update_price_info()
@@ -44,5 +44,5 @@ def run():
             datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
     else:
         logger.log(msg='Worker stop ID: {0}'.format(seed), level=logging.INFO)
-        pyTelegram.message_admins(message='Worker stop at {0} with ID: {1}'.format(
-            datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
+        # pyTelegram.message_admins(message='Worker stop at {0} with ID: {1}'.format(
+        #     datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
