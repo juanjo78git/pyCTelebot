@@ -84,7 +84,7 @@ def select_user_readonly(exchange: str):
                    level=logging.DEBUG)
         query = "select * from users where "
         args = []
-        query += " role = 'READ_ONLY'"
+        query += " role = 'READ_ONLY' and "
         query += " exchange = %s "
         args.append(exchange)
         db = MyDB()
