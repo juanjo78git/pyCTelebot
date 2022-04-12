@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pyCTelebot.utils import pyBuildParser, pyTelegram
+from pyCTelebot.utils import pyBuildParser, pyTelegram, pyNotices
 import os
 import sys
 import gettext
@@ -69,6 +69,11 @@ def main():
     if options.cron:
         pyCryptoCron.run()
         logger.log(msg='Cron ends', level=logging.INFO)
+        exit()
+
+    if options.notice:
+        pyNotices.run()
+        logger.log(msg='Notice ends', level=logging.INFO)
         exit()
 
     if options.telebot:

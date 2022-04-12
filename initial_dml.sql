@@ -7,9 +7,9 @@ values
 commit;
 
 insert into strategies
-(strategy_id, description)
+(strategy_id, description, strategy_type)
 VALUES
-('STRATEGY_01', 'Test Strategy_01');
+('STRATEGY_01', 'Test Strategy_01', 'COMPUTE');
 commit;
 
 insert into strategy_symbols

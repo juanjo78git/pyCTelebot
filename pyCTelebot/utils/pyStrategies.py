@@ -30,22 +30,28 @@ else:
 #   buy_in_callback NUMERIC
 def strategy_symbols_list(strategy_id: str = None,
                           exchange: str = None,
-                          symbol: str = None):
+                          symbol: str = None,
+                          strategy_type: str = None):
     my_strategy_symbols = []
     try:
         logger.log(msg='strategy_symbols_list: Start {0}'.format(strategy_id), level=logging.DEBUG)
-        query = 'select * from strategy_symbols '
+        query = 'SELECT s.strategy_id, s.strategy_type, ' \
+                ' ss.exchange, ss.symbol, ss.unit_value, ss.take_profit, ss.buy_in_callback ' \
+                ' FROM strategies s, strategy_symbols ss '
         args = []
-        query += ' where 1=1 '
+        query += ' where s.strategy_id = ss.strategy_id '
         if strategy_id is not None:
-            query += ' and strategy_id = %s '
+            query += ' and ss.strategy_id = %s '
             args.append(strategy_id)
         if exchange is not None:
-            query += ' and exchange = %s '
+            query += ' and ss.exchange = %s '
             args.append(exchange)
         if symbol is not None:
-            query += ' and symbol = %s '
+            query += ' and ss.symbol = %s '
             args.append(symbol)
+        if strategy_type is not None:
+            query += ' and s.strategy_type = %s '
+            args.append(strategy_type)
         db = MyDB()
         result = db.query(query=query, args=args)
         db.close()

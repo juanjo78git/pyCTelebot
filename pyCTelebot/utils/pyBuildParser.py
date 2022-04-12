@@ -38,4 +38,8 @@ def build_parser():
                         dest='poc', action='store_true',
                         help='Run Proof of Concept')
 
+    parser.add_argument('-n', '--notices',
+                        dest='notice', action='store_true',
+                        help='Run notices')
+
     return parser

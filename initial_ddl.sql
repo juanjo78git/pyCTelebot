@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS users (
 -- Catalogo de estrategias
 CREATE TABLE IF NOT EXISTS strategies (
 	strategy_id VARCHAR(50) NOT NULL,
+	-- Tipo de estrategia COPY/COMPUTE
+	strategy_type VARCHAR(50) NOT NULL,
 	description VARCHAR,
   PRIMARY KEY (strategy_id)
 );
