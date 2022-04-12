@@ -95,3 +95,10 @@ def ps(update: Update, context: CallbackContext):
 def any_message_poc(update: Update, context: CallbackContext):
     logger.log(msg='pyPoC any_message_poc start', level=logging.INFO)
     # Do something
+    logger.log(msg='any_message_poc telegram_id: {0} name: {1} ({2}) '
+                   'message: {3} args: {4}'.format(update.effective_user.id,
+                                                   update.effective_user.name,
+                                                   update.effective_user.full_name,
+                                                   update.effective_message.text,
+                                                   context.args),
+               level=logging.INFO)
