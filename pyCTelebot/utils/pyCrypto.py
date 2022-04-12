@@ -158,13 +158,13 @@ def mybalance(symbol: str = None, user_id: str = None, telegram_id: str = None):
         exchange = connection(user_id=user_id, telegram_id=telegram_id)
 
     try:
-        dataList = list()
+        data_list = list()
         _balance = exchange.fetch_total_balance(params=params)
         for key, value in _balance.items():
             if value != 0:
                 precio = price(user_id=user_id, symbol=key + '/USDT')['ask']
-                dataList.append([key, value, precio])
-        df = pd.DataFrame(dataList, columns=['Altname', 'Balance', 'Precio'])
+                data_list.append([key, value, precio])
+        df = pd.DataFrame(data_list, columns=['Altname', 'Balance', 'Precio'])
         df['dBalance'] = df['Balance'] * df['Precio']
 
         return df

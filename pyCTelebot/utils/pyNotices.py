@@ -66,7 +66,7 @@ def run():
 
         body += '------------------------------\n'
         body += 'Total ⇉ {0}\n'.format(bal['dBalance'].sum())
-        #logger.log(msg=body, level=logging.DEBUG)
+        logger.log(msg=body, level=logging.DEBUG)
         pyTelegram.message_admins(message=body)
 
     logger.log(msg='Notices stop ID: {0}'.format(seed), level=logging.INFO)
