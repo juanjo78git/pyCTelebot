@@ -7,10 +7,12 @@ import sys
 import pytz
 from datetime import datetime
 
-from pyCTelebot.utils import pyTelegram
+from pyCTelebot.utils import pyTelegram, pyCrypto
 from pyCTelebot.config.pyVars import ENV_CONFIG
 
 # i18n
+from pyCTelebot.utils.pyUsers import user_list
+
 _ = gettext.gettext
 
 # Logs
@@ -32,7 +34,12 @@ def run():
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='Notices start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
-    pyTelegram.message_admins(message='Notices: HELLO!!! at {0} with ID: {1}'.format(
-        datetime.now(tz=pytz.timezone("Europe/Madrid")), seed))
-
+    users = user_list()
+    for user in users:
+        bal = pyCrypto.balance(user_id=user.get('user_id'))
+        pyTelegram.private_message(user=user,
+                                   message=_('Your Balance at {0} is: {1}').format(
+                                       datetime.now(tz=pytz.timezone("Europe/Madrid")),
+                                       bal
+                                   ))
     logger.log(msg='Notices stop ID: {0}'.format(seed), level=logging.INFO)
