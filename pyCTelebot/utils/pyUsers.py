@@ -40,7 +40,8 @@ def user_list(role='ALL'):
                    level=logging.DEBUG)
         query = 'select * from users where '
         args = []
-        query += " 'ALL' = %s or role = %s "
+        query += " role != 'READ_ONLY' AND "
+        query += " ('ALL' = %s or role = %s ) "
         print(query)
         args.append(role)
         args.append(role)

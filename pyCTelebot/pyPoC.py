@@ -11,6 +11,7 @@ import psutil
 
 # i18n
 from pyCTelebot.utils.pyPrices import initialize_price, price_info
+from pyCTelebot.utils.pyUsers import user_list
 
 _ = gettext.gettext
 
@@ -72,6 +73,7 @@ def run():
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
+    print(user_list(role='READ_ONLY'))
     logger.log(msg='pyPoC run stop ID: {0}'.format(seed), level=logging.INFO)
 
 
