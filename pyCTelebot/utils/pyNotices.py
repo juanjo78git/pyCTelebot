@@ -37,9 +37,8 @@ def run():
     users = user_list()
     logger.log(msg='Notices users: {0}'.format(users), level=logging.DEBUG)
     for user in users:
-        logger.log(msg='Notices user: {0}'.format(user), level=logging.DEBUG)
+        logger.log(msg='Notices user: {0}'.format(user.get('user_id')), level=logging.DEBUG)
         bal = pyCrypto.balance(user_id=user.get('user_id'))
-        logger.log(msg='Notices balance: {0}'.format(bal), level=logging.DEBUG)
         pyTelegram.private_message(user=user,
                                    message=_('Your Balance at {0} is: {1}').format(
                                        datetime.now(tz=pytz.timezone("Europe/Madrid")),
