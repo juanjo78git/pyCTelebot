@@ -5,15 +5,16 @@ from pyCTelebot.config.pyVars import ENV_CONFIG
 from pyCTelebot.utils.pyUsers import select_user, select_user_readonly, decrypt
 import gettext
 import logging
+import pandas as pd
 
 # i18n
 _ = gettext.gettext
 
 # TODO: Test Exchange
-if ENV_CONFIG.get('env') != 'TEST':
-    params = {}
-else:
-    params = {'test': True}
+# if ENV_CONFIG.get('env') != 'TEST':
+params = {}
+# else:
+#    params = {'test': True}
 
 # Logs
 logger = logging.getLogger(__name__)
@@ -150,13 +151,41 @@ def closed_orders(symbol: str, user_id: str = None, telegram_id: str = None):
         return orders
 
 
+def mybalance(symbol: str = None, user_id: str = None, telegram_id: str = None):
+    if user_id is None and telegram_id is None:
+        exchange = connection()
+    else:
+        exchange = connection(user_id=user_id, telegram_id=telegram_id)
+
+    try:
+        dataList = list()
+        _balance = exchange.fetch_total_balance(params=params)
+        for key, value in _balance.items():
+            if value != 0:
+                precio = price(user_id=user_id, symbol=key + '/USDT')['ask']
+                dataList.append([key, value, precio])
+        df = pd.DataFrame(dataList, columns=['Altname', 'Balance', 'Precio'])
+        df['dBalance'] = df['Balance'] * df['Precio']
+
+        return df
+    except Exception as err:
+        logger.log(
+            msg='balance {0}: status: {1} - {2}'.format(symbol,
+                                                        type(err),
+                                                        str(err)),
+            level=logging.ERROR)
+        raise
+
+
 def balance(symbol: str = None, user_id: str = None, telegram_id: str = None):
     if user_id is None and telegram_id is None:
         exchange = connection()
     else:
         exchange = connection(user_id=user_id, telegram_id=telegram_id)
     try:
+
         balances = exchange.fetch_total_balance(params=params)
+
         all_balances = {}
         for key in balances:
             if balances[key] != 0:

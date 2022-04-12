@@ -10,7 +10,7 @@ from pyCTelebot.config.pyVars import ENV_CONFIG
 import psutil
 
 # i18n
-from pyCTelebot.utils.pyPrices import initialize_price, price_info
+from pyCTelebot.utils import pyNotices
 from pyCTelebot.utils.pyUsers import user_list
 
 _ = gettext.gettext
@@ -36,27 +36,7 @@ logger.setLevel(logging.DEBUG)
 def run_telegram(update: Update, context: CallbackContext):
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run_telegram start ID: {0}'.format(seed), level=logging.INFO)
-    if len(context.args) == 2:
-        exchange = context.args[0]
-        symbol = context.args[1]
-        logger.log(msg='pyPoC run_telegram: {0} - {1}'.format(exchange, symbol), level=logging.INFO)
-        initialize_price(exchange=exchange, symbol=symbol)
-        logger.log(msg='pyPoC initialize_price end', level=logging.INFO)
-        price = price_info(exchange=exchange, symbol=symbol)
-        logger.log(msg='pyPoC price_info end', level=logging.INFO)
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text='/initialize_price OK: {0}'.format(price))
-    elif len(context.args) == 1:
-        symbol = context.args[0]
-        price = price_info(symbol=symbol)
-        logger.log(msg='pyPoC price_info end', level=logging.INFO)
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text='/price_info: {0}'.format(price))
-    else:
-        price = price_info()
-        logger.log(msg='pyPoC prices_info end', level=logging.INFO)
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text='/prices_info: {0}'.format(price))
+    pyNotices.run()
     logger.log(msg='pyPoC run_telegram stop ID: {0}'.format(seed), level=logging.INFO)
 
 
@@ -74,6 +54,7 @@ def run():
     logger.log(msg='pyPoC run start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
     print(user_list(role='READ_ONLY'))
+    pyNotices.run()
     logger.log(msg='pyPoC run stop ID: {0}'.format(seed), level=logging.INFO)
 
 
