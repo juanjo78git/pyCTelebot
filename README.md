@@ -38,8 +38,10 @@ $ pip install pyCTelebot
 
 
 #### DataBase
-- [DDL](initial_ddl.sql)
-- [DML](initial_dml.sql) - For test
+- [DDL](data/initial_ddl.sql)
+- [DML](data/initial_dml.sql) - For test
+- ER Model
+![ER Model](data/ER_model.png)
 
 #### Activate Webhook in Telegram bot
 Execute: https://api.telegram.org/bot<TOKEN_TELEGRAM>/setWebHook?url=<WEBHOOK_URL_TELEGRAM>

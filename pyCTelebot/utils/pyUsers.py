@@ -27,7 +27,10 @@ else:
 # { "user_id": "username",
 #   "telegram_id": "telegram ID",
 #   "email": "email",
-#   "role": "USER/ADMIN",
+#   "role": "USER/ADMIN"
+# }
+# users table:
+# { "user_id": "username",
 #   "exchange": "Exchange name",
 #   "apiKey": "Cryptocurrency exchange apiKey ",
 #   "secret": "Cryptocurrency exchange secret",

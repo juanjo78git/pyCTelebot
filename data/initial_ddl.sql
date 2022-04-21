@@ -2,14 +2,34 @@ set transaction read write;
 
 -- Info usuarios
 CREATE TABLE IF NOT EXISTS users (
-	user_id VARCHAR(50) PRIMARY KEY,
+	user_id VARCHAR(50) NOT NULL,
 	telegram_id VARCHAR(50) UNIQUE NOT NULL,
 	email VARCHAR(255) UNIQUE NOT NULL,
 	role VARCHAR(50) NOT NULL,
-	exchange VARCHAR(50),
+    PRIMARY KEY (user_id)
+);
+
+-- Catalogo de exchanges
+CREATE TABLE IF NOT EXISTS exchanges (
+	exchange VARCHAR(50) NOT NULL,
 	apiKey VARCHAR,
 	secret VARCHAR,
-	passphrase VARCHAR
+	passphrase VARCHAR,
+    PRIMARY KEY (exchange)
+);
+
+-- Info exchanges de usuario
+CREATE TABLE IF NOT EXISTS user_exchanges (
+	user_id VARCHAR(50) NOT NULL,
+	exchange VARCHAR(50) NOT NULL,
+	apiKey VARCHAR,
+	secret VARCHAR,
+	passphrase VARCHAR,
+    PRIMARY KEY (user_id, exchange),
+    FOREIGN KEY (user_id)
+      REFERENCES users (user_id),
+    FOREIGN KEY (exchange)
+      REFERENCES exchanges (exchange)
 );
 
 -- Catalogo de estrategias
@@ -34,7 +54,9 @@ CREATE TABLE IF NOT EXISTS strategy_symbols (
 	buy_in_callback NUMERIC,
     PRIMARY KEY (strategy_id, exchange, symbol),
     FOREIGN KEY (strategy_id)
-      REFERENCES strategies (strategy_id)
+      REFERENCES strategies (strategy_id),
+    FOREIGN KEY (exchange)
+      REFERENCES exchanges (exchange)
 );
 
 -- Pasos de la estrategia
@@ -75,8 +97,8 @@ CREATE TABLE IF NOT EXISTS active_strategy_symbols (
 	-- Fecha en la que ha acabado la estrategia
 	end_audit_date TIMESTAMP,
 	PRIMARY KEY (user_id, strategy_id, exchange, symbol),
-	FOREIGN KEY (user_id)
-      REFERENCES users (user_id),
+	FOREIGN KEY (user_id, exchange)
+      REFERENCES user_exchanges (user_id, exchange),
 	FOREIGN KEY (strategy_id)
       REFERENCES strategies (strategy_id)
 );
@@ -131,6 +153,8 @@ CREATE TABLE IF NOT EXISTS exchange_prices (
 	last_audit_date TIMESTAMP,
 	-- Fecha de obtención del precio actual
 	current_audit_date TIMESTAMP,
-	PRIMARY KEY (exchange, symbol)
+	PRIMARY KEY (exchange, symbol),
+    FOREIGN KEY (exchange)
+      REFERENCES exchanges (exchange)
 );
 commit;

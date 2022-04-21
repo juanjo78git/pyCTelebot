@@ -1,9 +1,20 @@
 set transaction read write;
 
-insert into users
-(USER_ID, TELEGRAM_ID, EMAIL, ROLE, EXCHANGE, APIKEY, SECRET, PASSPHRASE)
+insert into exchanges
+(exchange, APIKEY, SECRET, PASSPHRASE)
 values
-('binance', '0', 'noreply@pyCTelebot', 'READ_ONLY', 'binance', 'xxxxxxxxxxxxxxxxxxxxxxx', 'xxxxxxxxxxxxxxxxxxxxxxx', null);
+('binance', 'xxxxxxxxxxxxxxxxxxxxxxx', 'xxxxxxxxxxxxxxxxxxxxxxx', null);
+commit;
+
+insert into users
+(USER_ID, TELEGRAM_ID, EMAIL, ROLE)
+values
+('somebody', '0', 'noreply@pyCTelebot', 'ADMIN');
+
+insert into users
+(USER_ID, EXCHANGE, APIKEY, SECRET, PASSPHRASE)
+values
+('somebody',  'binance', 'xxxxxxxxxxxxxxxxxxxxxxx', 'xxxxxxxxxxxxxxxxxxxxxxx', null);
 commit;
 
 insert into strategies
