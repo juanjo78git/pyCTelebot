@@ -29,25 +29,23 @@ else:
 #   "email": "email",
 #   "role": "USER/ADMIN"
 # }
-# users table:
+# user_exchanges table:
 # { "user_id": "username",
 #   "exchange": "Exchange name",
 #   "apiKey": "Cryptocurrency exchange apiKey ",
 #   "secret": "Cryptocurrency exchange secret",
 #   "passphrase": "API Passphrase"
 # }
-def user_list(role='ALL'):
+def user_list(role: str = None):
     my_users = []
     try:
         logger.log(msg='users - role: {0}'.format(role),
                    level=logging.DEBUG)
-        query = 'select * from users where '
+        query = 'select * from users '
         args = []
-        query += " role != 'READ_ONLY' AND "
-        query += " ('ALL' = %s or role = %s ) "
-        print(query)
-        args.append(role)
-        args.append(role)
+        if role is not None:
+            query += ' where role = %s '
+            args.append(role)
         db = MyDB()
         result = db.query(query=query, args=args)
         db.close()
@@ -63,15 +61,13 @@ def select_user(user_id: str = None, telegram_id: str = None):
         logger.log(msg='select_user - user_id: {0} - telegram_id: {1}'.format(user_id, telegram_id),
                    level=logging.DEBUG)
         if user_id is not None or telegram_id is not None:
-            query = 'select * from users where '
+            query = 'select * from users where 1=1 '
             args = []
             if user_id is not None:
-                query += ' user_id = %s '
+                query += 'and user_id = %s '
                 args.append(user_id)
-            if user_id is not None and telegram_id is not None:
-                query += ' and '
             if telegram_id is not None:
-                query += ' telegram_id = %s '
+                query += ' and telegram_id = %s '
                 args.append(str(telegram_id))
             db = MyDB()
             result = db.query(query=query, args=args)
@@ -120,6 +116,7 @@ def authorization(user_id: str = None, telegram_id: str = None, action: str = No
     return False
 
 
+# TODO: Para encriptar una frase
 def encrypt(token: str, key=None):
     if key is not None:
         fernet = Fernet(key)
@@ -131,6 +128,7 @@ def encrypt(token: str, key=None):
         return token
 
 
+# TODO: Para desencriptar una frase
 def decrypt(token, key=None):
     if key is not None:
         fernet = Fernet(key)
@@ -142,6 +140,7 @@ def decrypt(token, key=None):
         return token
 
 
+# TODO: Para obtener una nueva clave de encriptación
 def new_encryption_key(key: str = None):
     if key is not None:
         return bytes(key, 'utf-8')
