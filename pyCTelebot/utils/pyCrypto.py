@@ -2,7 +2,8 @@
 
 from ccxt import binance, kucoin, kraken
 from pyCTelebot.config.pyVars import ENV_CONFIG
-from pyCTelebot.utils.pyUsers import select_user, select_user_readonly, decrypt
+from pyCTelebot.utils.pyExchanges import exchange_connection
+from pyCTelebot.utils.pyUsers import select_user, select_user_exchanges, decrypt
 import gettext
 import logging
 import pandas as pd
@@ -31,15 +32,15 @@ else:
     logger.setLevel(logging.DEBUG)
 
 
-def connection(user_id: str = None, telegram_id: str = None, exchange_name: str = None):
+def connection(exchange_name: str, user_id: str = None, telegram_id: str = None):
     # Binance connection
     logger.log(msg='Exchange connection user: {0}'.format(user_id), level=logging.DEBUG)
     exchange = None
     try:
         if user_id is None and telegram_id is None:
-            u = select_user_readonly(exchange=exchange_name)
+            u = exchange_connection(exchange=exchange_name)
         else:
-            u = select_user(user_id=user_id, telegram_id=telegram_id)
+            u = select_user(user_id=user_id, telegram_id=telegram_id, exchange=exchange_name)
         if u is None:
             raise Exception("User/exchange does not exist {0} - {1} - {2}".format(user_id, telegram_id, exchange_name))
         if u['exchange'] == 'binance':
@@ -67,11 +68,9 @@ def connection(user_id: str = None, telegram_id: str = None, exchange_name: str 
         return exchange
 
 
-def price(symbol: str, user_id: str = None, telegram_id: str = None, exchange_name: str = None):
-    if user_id is None and telegram_id is None:
-        exchange = connection(exchange_name=exchange_name)
-    else:
-        exchange = connection(user_id=user_id, telegram_id=telegram_id)
+def price(exchange_name: str,  symbol: str,
+          user_id: str = None, telegram_id: str = None):
+    exchange = connection(user_id=user_id, telegram_id=telegram_id, exchange_name=exchange_name)
     try:
         """
         NOTE: period is 24h
@@ -113,11 +112,9 @@ def price(symbol: str, user_id: str = None, telegram_id: str = None, exchange_na
         return ticker
 
 
-def open_orders(symbol: str, user_id: str = None, telegram_id: str = None):
-    if user_id is None and telegram_id is None:
-        exchange = connection()
-    else:
-        exchange = connection(user_id=user_id, telegram_id=telegram_id)
+def open_orders(exchange_name: str, symbol: str,
+                user_id: str = None, telegram_id: str = None):
+    exchange = connection(user_id=user_id, telegram_id=telegram_id, exchange_name=exchange_name)
     try:
         orders = exchange.fetch_open_orders(symbol=symbol, params=params)
     except Exception as err:
@@ -132,11 +129,9 @@ def open_orders(symbol: str, user_id: str = None, telegram_id: str = None):
         return orders
 
 
-def closed_orders(symbol: str, user_id: str = None, telegram_id: str = None):
-    if user_id is None and telegram_id is None:
-        exchange = connection()
-    else:
-        exchange = connection(user_id=user_id, telegram_id=telegram_id)
+def closed_orders(exchange_name: str, symbol: str,
+                  user_id: str = None, telegram_id: str = None):
+    exchange = connection(user_id=user_id, telegram_id=telegram_id, exchange_name=exchange_name)
     try:
         orders = exchange.fetch_closed_orders(symbol=symbol, params=params)
     except Exception as err:
@@ -151,19 +146,16 @@ def closed_orders(symbol: str, user_id: str = None, telegram_id: str = None):
         return orders
 
 
-def mybalance(symbol: str = None, user_id: str = None, telegram_id: str = None):
-    if user_id is None and telegram_id is None:
-        exchange = connection()
-    else:
-        exchange = connection(user_id=user_id, telegram_id=telegram_id)
-
+def my_balance(symbol: str = None,
+               user_id: str = None, telegram_id: str = None, exchange_name: str = None):
+    exchange = connection(user_id=user_id, telegram_id=telegram_id, exchange_name=exchange_name)
     try:
         data_list = list()
         _balance = exchange.fetch_total_balance(params=params)
         for key, value in _balance.items():
             if value != 0:
-                precio = price(user_id=user_id, symbol=key + '/USDT')['ask']
-                data_list.append([key, value, precio])
+                ask_price = price(exchange_name=exchange_name, user_id=user_id, symbol=key + '/USDT')['ask']
+                data_list.append([key, value, ask_price])
         df = pd.DataFrame(data_list, columns=['Altname', 'Balance', 'Precio'])
         df['dBalance'] = df['Balance'] * df['Precio']
 
@@ -177,11 +169,9 @@ def mybalance(symbol: str = None, user_id: str = None, telegram_id: str = None):
         raise
 
 
-def balance(symbol: str = None, user_id: str = None, telegram_id: str = None):
-    if user_id is None and telegram_id is None:
-        exchange = connection()
-    else:
-        exchange = connection(user_id=user_id, telegram_id=telegram_id)
+def balance(exchange_name: str, symbol: str = None,
+            user_id: str = None, telegram_id: str = None):
+    exchange = connection(user_id=user_id, telegram_id=telegram_id, exchange_name=exchange_name)
     try:
 
         balances = exchange.fetch_total_balance(params=params)
@@ -206,11 +196,21 @@ def balance(symbol: str = None, user_id: str = None, telegram_id: str = None):
             return balances[symbol]
 
 
-def cancel_order(order_id: str, symbol: str, user_id: str = None, telegram_id: str = None):
-    if user_id is None and telegram_id is None:
-        exchange = connection()
-    else:
-        exchange = connection(user_id=user_id, telegram_id=telegram_id)
+def balance_all_exchanges(symbol: str = None, user_id: str = None, telegram_id: str = None):
+
+    u = select_user(user_id=user_id, telegram_id=telegram_id)
+    if u is None:
+        return {}
+    user_exchanges = select_user_exchanges(user_id=u['user_id'])
+    all_balances = {}
+    for e in user_exchanges:
+        all_balances[e['exchange']] = balance(exchange_name=e['exchange'], user_id=u['user_id'], symbol=symbol)
+    return all_balances
+
+
+def cancel_order(exchange_name: str, order_id: str, symbol: str,
+                 user_id: str = None, telegram_id: str = None):
+    exchange = connection(user_id=user_id, telegram_id=telegram_id, exchange_name=exchange_name)
     try:
         status = exchange.cancel_order(id=order_id, symbol=symbol, params=params)
     except Exception as err:
@@ -227,11 +227,9 @@ def cancel_order(order_id: str, symbol: str, user_id: str = None, telegram_id: s
         return status
 
 
-def buy_order(symbol: str, amount, type_order: str, price_limit=0, user_id: str = None, telegram_id: str = None):
-    if user_id is None and telegram_id is None:
-        exchange = connection()
-    else:
-        exchange = connection(user_id=user_id, telegram_id=telegram_id)
+def buy_order(exchange_name: str, symbol: str, amount, type_order: str, price_limit=0,
+              user_id: str = None, telegram_id: str = None):
+    exchange = connection(user_id=user_id, telegram_id=telegram_id, exchange_name=exchange_name)
     try:
         if type_order == 'market':
             status = exchange.create_market_buy_order(symbol=symbol, amount=amount, params=params)
@@ -259,11 +257,9 @@ def buy_order(symbol: str, amount, type_order: str, price_limit=0, user_id: str 
         return status
 
 
-def sell_order(symbol: str, amount, type_order: str, price_limit=0, user_id: str = None, telegram_id: str = None):
-    if user_id is None and telegram_id is None:
-        exchange = connection()
-    else:
-        exchange = connection(user_id=user_id, telegram_id=telegram_id)
+def sell_order(exchange_name: str, symbol: str, amount, type_order: str, price_limit=0,
+               user_id: str = None, telegram_id: str = None):
+    exchange = connection(user_id=user_id, telegram_id=telegram_id, exchange_name=exchange_name)
     try:
         if type == 'market':
             status = exchange.create_market_sell_order(symbol=symbol, amount=amount, params=params)

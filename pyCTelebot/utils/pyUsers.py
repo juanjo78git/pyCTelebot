@@ -36,6 +36,8 @@ else:
 #   "secret": "Cryptocurrency exchange secret",
 #   "passphrase": "API Passphrase"
 # }
+
+# User list filtering by role in case this is passed as a parameter
 def user_list(role: str = None):
     my_users = []
     try:
@@ -56,46 +58,64 @@ def user_list(role: str = None):
     return my_users
 
 
-def select_user(user_id: str = None, telegram_id: str = None):
+# Information of the indicated user, in case of passing exchange it also returns the info of this
+def select_user(user_id: str = None, telegram_id: str = None, exchange: str = None):
     try:
-        logger.log(msg='select_user - user_id: {0} - telegram_id: {1}'.format(user_id, telegram_id),
+        logger.log(msg='select_user - user_id: {0} - telegram_id: {1} - exchange: {2}'.format(user_id,
+                                                                                              telegram_id,
+                                                                                              exchange),
                    level=logging.DEBUG)
         if user_id is not None or telegram_id is not None:
-            query = 'select * from users where 1=1 '
+            query = 'SELECT u.user_id, u.telegram_id, u.email, u.role, ' \
+                     ' e.exchange, e.apikey, e.secret, e.passphrase ' \
+                    ' FROM users u ' \
+                    ' LEFT JOIN user_exchanges e ' \
+                    ' ON u.user_id = e.user_id ' \
+                    ' WHERE 1=1 '
             args = []
             if user_id is not None:
-                query += 'and user_id = %s '
+                query += 'and u.user_id = %s '
                 args.append(user_id)
             if telegram_id is not None:
-                query += ' and telegram_id = %s '
+                query += ' and u.telegram_id = %s '
                 args.append(str(telegram_id))
+            if exchange is not None:
+                query += 'and e.exchange = %s '
+                args.append(exchange)
             db = MyDB()
             result = db.query(query=query, args=args)
             db.close()
-            if len(result) == 1:
-                return dict(result[0])
+            # if len(result) == 1:
+            return dict(result[0])
     except Exception as err:
         logger.log(msg='select_user: {0}'.format(str(err)), level=logging.ERROR)
     return None
 
 
-def select_user_readonly(exchange: str):
+# Exchanges of the user indicated
+def select_user_exchanges(user_id: str = None, exchange: str = None):
+    my_user_exchanges = []
     try:
-        logger.log(msg='select_user_readonly - exchange: {0}'.format(exchange),
+        logger.log(msg='select_user_exchanges - user_id: {0} - exchange: {1}'.format(user_id, exchange),
                    level=logging.DEBUG)
-        query = "select * from users where "
-        args = []
-        query += " role = 'READ_ONLY' and "
-        query += " exchange = %s "
-        args.append(exchange)
-        db = MyDB()
-        result = db.query(query=query, args=args)
-        db.close()
-        if len(result) == 1:
-            return dict(result[0])
+        if user_id is not None:
+            query = 'SELECT e.exchange, e.apikey, e.secret, e.passphrase ' \
+                    ' FROM user_exchanges e ' \
+                    ' WHERE 1=1 '
+            args = []
+            if user_id is not None:
+                query += 'and e.user_id = %s '
+                args.append(user_id)
+            if exchange is not None:
+                query += 'and e.exchange = %s '
+                args.append(exchange)
+            db = MyDB()
+            result = db.query(query=query, args=args)
+            db.close()
+            my_user_exchanges = db.convert(result)
     except Exception as err:
-        logger.log(msg='select_user_readonly: {0}'.format(str(err)), level=logging.ERROR)
-    return None
+        logger.log(msg='select_user_exchanges: {0}'.format(str(err)), level=logging.ERROR)
+    return my_user_exchanges
 
 
 def authorization(user_id: str = None, telegram_id: str = None, action: str = None):
@@ -116,7 +136,7 @@ def authorization(user_id: str = None, telegram_id: str = None, action: str = No
     return False
 
 
-# TODO: Para encriptar una frase
+# TODO: To encrypt a phrase
 def encrypt(token: str, key=None):
     if key is not None:
         fernet = Fernet(key)
@@ -128,7 +148,7 @@ def encrypt(token: str, key=None):
         return token
 
 
-# TODO: Para desencriptar una frase
+# TODO: To decrypt a phrase
 def decrypt(token, key=None):
     if key is not None:
         fernet = Fernet(key)
@@ -140,7 +160,7 @@ def decrypt(token, key=None):
         return token
 
 
-# TODO: Para obtener una nueva clave de encriptación
+# TODO: To get a new encryption key
 def new_encryption_key(key: str = None):
     if key is not None:
         return bytes(key, 'utf-8')

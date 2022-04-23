@@ -60,3 +60,9 @@ class MyDB:
     def close(self):
         self.cur.close()
         self.conn.close()
+
+    def convert(self, result):
+        my_res = []
+        for r in result:
+            my_res.append(dict(r))
+        return my_res

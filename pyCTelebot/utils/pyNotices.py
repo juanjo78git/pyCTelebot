@@ -38,7 +38,7 @@ def run2():
     logger.log(msg='Notices users: {0}'.format(users), level=logging.DEBUG)
     for user in users:
         logger.log(msg='Notices user: {0}'.format(user.get('user_id')), level=logging.DEBUG)
-        bal = pyCrypto.balance(user_id=user.get('user_id'))
+        bal = pyCrypto.balance_all_exchanges(user_id=user.get('user_id'))
         pyTelegram.private_message(user=user,
                                    message=_('Your Balance at {0} is: {1}').format(
                                        datetime.now(tz=pytz.timezone("Europe/Madrid")),
@@ -56,7 +56,7 @@ def run():
     for user in users:
         logger.log(msg='Notices user: {0}'.format(user.get('user_id')), level=logging.DEBUG)
 
-        bal = pyCrypto.mybalance(user_id=user.get('user_id'))
+        bal = pyCrypto.my_balance(user_id=user.get('user_id'))
         # Los mensajes deberian estar en una plantilla y solo hacer las sustituciones
         body = '{0:<6} {1:<11} {2:>10}\n'.format('Crypto', 'Cantidad', 'Balance')
         body += '------------------------------\n'

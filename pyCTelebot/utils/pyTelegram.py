@@ -59,6 +59,9 @@ def run(how: str):
     balance_handler = CommandHandler('balance', balance)
     dispatcher.add_handler(balance_handler)
 
+    all_balance_handler = CommandHandler('all_balances', all_balances)
+    dispatcher.add_handler(all_balance_handler)
+
     open_orders_handler = CommandHandler('open_orders', open_orders)
     dispatcher.add_handler(open_orders_handler)
 
@@ -124,12 +127,19 @@ def start(update: Update, context: CallbackContext):
                                  text=_("You can't do it!"))
         return 1
     if len(context.args) == 1:
-        symbol = context.args[0].upper()
+        exchange = context.args[0].lower()
+        context.user_data["exchange"] = exchange
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Selected exchange: {0}").format(exchange))
+    if len(context.args) == 2:
+        exchange = context.args[0].lower()
+        context.user_data["exchange"] = exchange
+        symbol = context.args[1].upper()
         if '/' not in symbol:
             symbol = symbol + '/USDT'
         context.user_data["symbol"] = symbol
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("Selected trading pair: {0}").format(symbol))
+                                 text=_("Selected exchange: {0} and trading pair: {1}").format(exchange, symbol))
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Hello!"))
@@ -161,10 +171,11 @@ def any_message(update: Update, context: CallbackContext):
 def help_command(update: Update, context: CallbackContext):
     """
     @BotFather /setcommands
-    start - Select a trading pair to work
+    start - Select an exchange and trading pair to work
     stop - Clean all
     price - Current trading pair price
     balance - Show current balance
+    all_balances - Current balance in all exchanges
     open_orders - Show all open orders for the trading pair
     closed_orders - Show all closed orders for the trading pair
     buy - Send a new purchase order
@@ -178,10 +189,11 @@ def help_command(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=_("You can control me by sending these commands: \n"
                                     "\n"
-                                    "/start [SYMBOL] - Select a trading pair to work \n"
+                                    "/start [EXCHANGE] [SYMBOL] - Select  an exchange and trading pair to work \n"
                                     "/stop - Clean all \n"
                                     "/price [SYMBOL] - Current trading pair price \n"
                                     "/balance [SYMBOL] - Current balance, without params show all balances \n"
+                                    "/all_balances [SYMBOL] - Current balance in all exchanges \n"
                                     "/open_orders [SYMBOL] - Show all open orders for the trading pair \n"
                                     "/closed_orders [SYMBOL] - Show all closed orders for the trading pair \n"
                                     "/buy [SYMBOL] [AMOUNT] - Send a new purchase order \n"
@@ -200,6 +212,11 @@ def price(update: Update, context: CallbackContext):
                                  text=_("You can't do it!"))
         return 1
     # Params
+    if context.user_data.get("exchange", None) is None:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You haven't selected exchange!"))
+        return 1
+    exchange = context.user_data["exchange"]
     if len(context.args) == 1:
         symbol = context.args[0].upper()
         if '/' not in symbol:
@@ -213,7 +230,7 @@ def price(update: Update, context: CallbackContext):
     # Action
     logger.log(msg='/price symbol used: {0}'.format(symbol), level=logging.DEBUG)
     try:
-        last_price = pyCrypto.price(symbol=symbol, telegram_id=update.effective_user.id)
+        last_price = pyCrypto.price(exchange_name=exchange, symbol=symbol, telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} Last price: {1}").format(
                                      symbol,
@@ -235,6 +252,11 @@ def balance(update: Update, context: CallbackContext):
                                  text=_("You can't do it!"))
         return 1
     # Params
+    if context.user_data.get("exchange", None) is None:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You haven't selected exchange!"))
+        return 1
+    exchange = context.user_data["exchange"]
     if len(context.args) == 1:
         symbol = context.args[0].upper()
     elif len(context.args) == 0 and "symbol" in context.user_data:
@@ -242,7 +264,7 @@ def balance(update: Update, context: CallbackContext):
     # Action without params
     else:
         try:
-            balances = pyCrypto.balance(telegram_id=update.effective_user.id)
+            balances = pyCrypto.balance(exchange_name=exchange, telegram_id=update.effective_user.id)
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("All balances: {0}").format(
                                          balances))
@@ -257,7 +279,7 @@ def balance(update: Update, context: CallbackContext):
     # Action with params
     logger.log(msg='/balance symbol used: {0}'.format(symbol), level=logging.DEBUG)
     try:
-        balances = pyCrypto.balance(symbol=symbol, telegram_id=update.effective_user.id)
+        balances = pyCrypto.balance(exchange_name=exchange, symbol=symbol, telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Symbol: {0} Balance: {1}").format(
                                      symbol,
@@ -272,6 +294,28 @@ def balance(update: Update, context: CallbackContext):
                                      str(err)))
 
 
+def all_balances(update: Update, context: CallbackContext):
+    # Authorization
+    if not authorization(telegram_id=update.effective_user.id, action='balance'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
+        return 1
+    # Params
+    try:
+        balances = pyCrypto.balance_all_exchanges(telegram_id=update.effective_user.id)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("All balances: {0}").format(
+                                     balances))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("All balances --> {0} {1}").format(
+                                     _("ERROR: I can't do it."),
+                                     str(err)))
+    return 1
+
+
 def open_orders(update: Update, context: CallbackContext):
     # Authorization
     if not authorization(telegram_id=update.effective_user.id, action='open_orders'):
@@ -279,6 +323,11 @@ def open_orders(update: Update, context: CallbackContext):
                                  text=_("You can't do it!"))
         return 1
     # Params
+    if context.user_data.get("exchange", None) is None:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You haven't selected exchange!"))
+        return 1
+    exchange = context.user_data["exchange"]
     if len(context.args) == 1:
         symbol = context.args[0].upper()
         if '/' not in symbol:
@@ -292,7 +341,7 @@ def open_orders(update: Update, context: CallbackContext):
     # Action
     logger.log(msg='/open_orders symbol used: {0}'.format(symbol), level=logging.DEBUG)
     try:
-        orders = pyCrypto.open_orders(symbol=symbol, telegram_id=update.effective_user.id)
+        orders = pyCrypto.open_orders(exchange_name=exchange, symbol=symbol, telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} open orders: {1}").format(
                                      symbol,
@@ -314,6 +363,11 @@ def closed_orders(update: Update, context: CallbackContext):
                                  text=_("You can't do it!"))
         return 1
     # Params
+    if context.user_data.get("exchange", None) is None:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You haven't selected exchange!"))
+        return 1
+    exchange = context.user_data["exchange"]
     if len(context.args) == 1:
         symbol = update.effective_message.text.split(' ')[1].upper()
         if '/' not in symbol:
@@ -327,7 +381,7 @@ def closed_orders(update: Update, context: CallbackContext):
     # Action
     logger.log(msg='/closed_orders symbol used: {0}'.format(symbol), level=logging.DEBUG)
     try:
-        orders = pyCrypto.closed_orders(symbol=symbol, telegram_id=update.effective_user.id)
+        orders = pyCrypto.closed_orders(exchange_name=exchange, symbol=symbol, telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} closed orders: {1}").format(
                                      symbol,
@@ -349,6 +403,11 @@ def buy(update: Update, context: CallbackContext):
                                  text=_("You can't do it!"))
         return 1
     # Params
+    if context.user_data.get("exchange", None) is None:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You haven't selected exchange!"))
+        return 1
+    exchange = context.user_data["exchange"]
     if len(context.args) == 2:
         symbol = context.args[1].upper()
         if '/' not in symbol:
@@ -364,7 +423,8 @@ def buy(update: Update, context: CallbackContext):
     # Action
     logger.log(msg='/buy symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.DEBUG)
     try:
-        status = pyCrypto.buy_order(symbol=symbol,
+        status = pyCrypto.buy_order(exchange_name=exchange,
+                                    symbol=symbol,
                                     amount=amount,
                                     type_order='market',
                                     telegram_id=update.effective_user.id)
@@ -392,6 +452,11 @@ def buy_limit(update: Update, context: CallbackContext):
                                  text=_("You can't do it!"))
         return 1
     # Params
+    if context.user_data.get("exchange", None) is None:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You haven't selected exchange!"))
+        return 1
+    exchange = context.user_data["exchange"]
     if len(context.args) == 3:
         symbol = context.args[0].upper()
         if '/' not in symbol:
@@ -410,7 +475,8 @@ def buy_limit(update: Update, context: CallbackContext):
     logger.log(msg='/buy_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
                level=logging.DEBUG)
     try:
-        status = pyCrypto.buy_order(symbol=symbol,
+        status = pyCrypto.buy_order(exchange_name=exchange,
+                                    symbol=symbol,
                                     amount=amount,
                                     type_order='limit',
                                     price_limit=price_limit,
@@ -443,6 +509,11 @@ def sell(update: Update, context: CallbackContext):
                                  text=_("You can't do it!"))
         return 1
     # Params
+    if context.user_data.get("exchange", None) is None:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You haven't selected exchange!"))
+        return 1
+    exchange = context.user_data["exchange"]
     if len(context.args) == 2:
         symbol = context.args[0].upper()
         if '/' not in symbol:
@@ -458,7 +529,8 @@ def sell(update: Update, context: CallbackContext):
     # Action
     logger.log(msg='/sell symbol: {0}, amount: {1}'.format(symbol, amount), level=logging.DEBUG)
     try:
-        status = pyCrypto.sell_order(symbol=symbol,
+        status = pyCrypto.sell_order(exchange_name=exchange,
+                                     symbol=symbol,
                                      amount=amount,
                                      type_order='market',
                                      telegram_id=update.effective_user.id)
@@ -487,6 +559,11 @@ def sell_limit(update: Update, context: CallbackContext):
                                  text=_("You can't do it!"))
         return 1
     # Params
+    if context.user_data.get("exchange", None) is None:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You haven't selected exchange!"))
+        return 1
+    exchange = context.user_data["exchange"]
     if len(context.args) == 3:
         symbol = context.args[0].upper()
         if '/' not in symbol:
@@ -505,7 +582,8 @@ def sell_limit(update: Update, context: CallbackContext):
     logger.log(msg='/sell_limit symbol: {0}, amount: {1}, price: {2}'.format(symbol, amount, price_limit),
                level=logging.DEBUG)
     try:
-        status = pyCrypto.sell_order(symbol=symbol,
+        status = pyCrypto.sell_order(exchange_name=exchange,
+                                     symbol=symbol,
                                      amount=amount,
                                      type_order='limit',
                                      price_limit=price_limit,
@@ -538,6 +616,11 @@ def cancel(update: Update, context: CallbackContext):
                                  text=_("You can't do it!"))
         return 1
     # Params
+    if context.user_data.get("exchange", None) is None:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You haven't selected exchange!"))
+        return 1
+    exchange = context.user_data["exchange"]
     if len(context.args) == 2:
         symbol = context.args[0].upper()
         if '/' not in symbol:
@@ -553,7 +636,10 @@ def cancel(update: Update, context: CallbackContext):
     # Action
     logger.log(msg='/cancel symbol: {0}, order_id: {1}'.format(symbol, order_id), level=logging.DEBUG)
     try:
-        status = pyCrypto.cancel_order(order_id=order_id, symbol=symbol, telegram_id=update.effective_user.id)
+        status = pyCrypto.cancel_order(exchange_name=exchange,
+                                       order_id=order_id,
+                                       symbol=symbol,
+                                       telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Canceling order with "
                                         "symbol {0} and id {1} --> {2}").format(

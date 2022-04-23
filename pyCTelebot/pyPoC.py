@@ -11,7 +11,7 @@ import psutil
 
 # i18n
 from pyCTelebot.utils import pyNotices
-from pyCTelebot.utils.pyUsers import user_list
+from pyCTelebot.utils.pyCrypto import balance_all_exchanges
 
 _ = gettext.gettext
 
@@ -53,8 +53,8 @@ def run():
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
-    print(user_list(role='READ_ONLY'))
-    pyNotices.run()
+    a = balance_all_exchanges(user_id='xxx')
+    print(a)
     logger.log(msg='pyPoC run stop ID: {0}'.format(seed), level=logging.INFO)
 
 
