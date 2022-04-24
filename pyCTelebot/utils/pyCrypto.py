@@ -6,7 +6,6 @@ from pyCTelebot.utils.pyExchanges import exchange_connection
 from pyCTelebot.utils.pyUsers import select_user, select_user_exchanges, decrypt
 import gettext
 import logging
-import pandas as pd
 
 # i18n
 _ = gettext.gettext
@@ -68,7 +67,7 @@ def connection(exchange_name: str, user_id: str = None, telegram_id: str = None)
         return exchange
 
 
-def price(exchange_name: str,  symbol: str,
+def price(exchange_name: str, symbol: str,
           user_id: str = None, telegram_id: str = None):
     exchange = connection(user_id=user_id, telegram_id=telegram_id, exchange_name=exchange_name)
     try:
@@ -146,29 +145,6 @@ def closed_orders(exchange_name: str, symbol: str,
         return orders
 
 
-def my_balance(symbol: str = None,
-               user_id: str = None, telegram_id: str = None, exchange_name: str = None):
-    exchange = connection(user_id=user_id, telegram_id=telegram_id, exchange_name=exchange_name)
-    try:
-        data_list = list()
-        _balance = exchange.fetch_total_balance(params=params)
-        for key, value in _balance.items():
-            if value != 0:
-                ask_price = price(exchange_name=exchange_name, user_id=user_id, symbol=key + '/USDT')['ask']
-                data_list.append([key, value, ask_price])
-        df = pd.DataFrame(data_list, columns=['Altname', 'Balance', 'Precio'])
-        df['dBalance'] = df['Balance'] * df['Precio']
-
-        return df
-    except Exception as err:
-        logger.log(
-            msg='balance {0}: status: {1} - {2}'.format(symbol,
-                                                        type(err),
-                                                        str(err)),
-            level=logging.ERROR)
-        raise
-
-
 def balance(exchange_name: str, symbol: str = None,
             user_id: str = None, telegram_id: str = None):
     exchange = connection(user_id=user_id, telegram_id=telegram_id, exchange_name=exchange_name)
@@ -176,10 +152,19 @@ def balance(exchange_name: str, symbol: str = None,
 
         balances = exchange.fetch_total_balance(params=params)
 
-        all_balances = {}
+        all_balances = []
         for key in balances:
             if balances[key] != 0:
-                all_balances[key] = balances[key]
+                if symbol is None or symbol == key:
+                    usdt_price = price(exchange_name=exchange_name, user_id=user_id, symbol=key + '/USDT')['ask']
+                    eur_price = price(exchange_name=exchange_name, user_id=user_id, symbol=key + '/EUR')['ask']
+                    all_balances.append({
+                        'exchange': exchange_name,
+                        'currency': key,
+                        'amount': balances[key],
+                        'usdt': balances[key] * usdt_price,
+                        'eur': balances[key] * eur_price
+                    })
     except Exception as err:
         logger.log(
             msg='balance {0}: status: {1} - {2}'.format(symbol,
@@ -188,23 +173,18 @@ def balance(exchange_name: str, symbol: str = None,
             level=logging.ERROR)
         raise
     else:
-        if symbol is None:
-            logger.log(msg='All balances:  {0}'.format(all_balances), level=logging.DEBUG)
-            return all_balances
-        else:
-            logger.log(msg='Balance: symbol {0} - Value: {1}'.format(symbol, balances[symbol]), level=logging.DEBUG)
-            return balances[symbol]
+        logger.log(msg='All balances:  {0}'.format(all_balances), level=logging.DEBUG)
+        return all_balances
 
 
 def balance_all_exchanges(symbol: str = None, user_id: str = None, telegram_id: str = None):
-
     u = select_user(user_id=user_id, telegram_id=telegram_id)
     if u is None:
         return {}
     user_exchanges = select_user_exchanges(user_id=u['user_id'])
-    all_balances = {}
+    all_balances = []
     for e in user_exchanges:
-        all_balances[e['exchange']] = balance(exchange_name=e['exchange'], user_id=u['user_id'], symbol=symbol)
+        all_balances.extend(balance(exchange_name=e['exchange'], user_id=u['user_id'], symbol=symbol))
     return all_balances
 
 
