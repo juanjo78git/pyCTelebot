@@ -8,7 +8,7 @@ from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.pyVars import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, ENV_CONFIG, TELEGRAM_ADMIN_GROUP
 from pyCTelebot.utils.pyUsers import user_list, authorization
-from pyCTelebot.utils import pyCrypto
+from pyCTelebot.utils import pyCrypto, pyTemplates
 from pyCTelebot import pyPoC
 from pyCTelebot import __version__
 import gettext
@@ -235,7 +235,7 @@ def price(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} Last price: {1}").format(
                                      symbol,
-                                     last_price))
+                                     pyTemplates.templates_json(last_price, 'price')))
     except TelegramError as err:
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
     except Exception as err:
@@ -269,7 +269,7 @@ def balance(update: Update, context: CallbackContext):
             balances = my_crypto.balance()
             context.bot.send_message(chat_id=update.effective_chat.id,
                                      text=_("All balances: {0}").format(
-                                         balances))
+                                         pyTemplates.templates_json(balances, 'all_balances')))
         except TelegramError as err:
             logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
         except Exception as err:
@@ -285,7 +285,7 @@ def balance(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Symbol: {0} Balance: {1}").format(
                                      symbol,
-                                     balances))
+                                     pyTemplates.templates_json(balances, 'balance')))
     except TelegramError as err:
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
     except Exception as err:
@@ -307,7 +307,7 @@ def all_balances(update: Update, context: CallbackContext):
         balances = pyCrypto.balance_all_exchanges(telegram_id=update.effective_user.id)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("All balances: {0}").format(
-                                     balances))
+                                     pyTemplates.templates_json(balances, 'all_balances')))
     except TelegramError as err:
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
     except Exception as err:
@@ -348,7 +348,7 @@ def open_orders(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} open orders: {1}").format(
                                      symbol,
-                                     orders))
+                                     pyTemplates.templates_json(orders, 'open_orders')))
     except TelegramError as err:
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
     except Exception as err:
@@ -389,7 +389,7 @@ def closed_orders(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Trading pair: {0} closed orders: {1}").format(
                                      symbol,
-                                     orders))
+                                     pyTemplates.templates_json(orders, 'closed_orders')))
     except TelegramError as err:
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
     except Exception as err:

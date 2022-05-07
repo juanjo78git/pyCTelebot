@@ -7,7 +7,7 @@ import sys
 import pytz
 from datetime import datetime
 
-from pyCTelebot.utils import pyTelegram, pyCrypto
+from pyCTelebot.utils import pyTelegram, pyCrypto, pyTemplates
 from pyCTelebot.config.pyVars import ENV_CONFIG
 
 # i18n
@@ -42,41 +42,16 @@ def run():
         total_usdt = 0
         total_eur = 0
         for b in bal:
-            total_usdt += b.get('usdt', 0)
-            total_eur += b.get('eur', 0)
+            total_usdt += b.get(pyCrypto.MyCrypto.default_stable_coin, 0)
+            total_eur += b.get(pyCrypto.MyCrypto.default_stable_coin2, 0)
 
         pyTelegram.private_message(user=user,
                                    message=_('Your Balance at {0} is: {1} \n'
-                                             'Total USDT: {2} \n'
-                                             'Total EUR: {3}').format(
+                                             'Total ' + pyCrypto.MyCrypto.default_stable_coin + ': {2} \n'
+                                             'Total ' + pyCrypto.MyCrypto.default_stable_coin2 + ': {3}').format(
                                        datetime.now(tz=pytz.timezone("Europe/Madrid")),
-                                       bal,
+                                       pyTemplates.templates_json(bal, 'all_balances'),
                                        total_usdt,
                                        total_eur
                                    ))
-    logger.log(msg='Notices stop ID: {0}'.format(seed), level=logging.INFO)
-
-
-def run2():
-    seed = random.randint(0, sys.maxsize)
-    logger.log(msg='Notices start ID: {0}'.format(seed), level=logging.INFO)
-    # Do something
-    users = user_list()
-    logger.log(msg='Notices users: {0}'.format(users), level=logging.DEBUG)
-    for user in users:
-        logger.log(msg='Notices user: {0}'.format(user.get('user_id')), level=logging.DEBUG)
-
-        bal = pyCrypto.balance_all_exchanges(user_id=user.get('user_id'))
-        # Los mensajes deberian estar en una plantilla y solo hacer las sustituciones
-        body = '{0:<6} {1:<11} {2:>10}\n'.format('Crypto', 'Cantidad', 'Balance')
-        body += '------------------------------\n'
-        for index, row in bal[['Altname', 'Balance', 'Precio', 'dBalance']].sort_values(by=['dBalance'],
-                                                                                        ascending=False).iterrows():
-            body += '{0:<6} {1:<12} {2:>10}\n'.format(row['Altname'], row['Balance'], row['dBalance'])
-
-        body += '------------------------------\n'
-        body += 'Total ⇉ {0}\n'.format(bal['dBalance'].sum())
-        logger.log(msg=body, level=logging.DEBUG)
-        pyTelegram.message_admins(message=body)
-
     logger.log(msg='Notices stop ID: {0}'.format(seed), level=logging.INFO)
