@@ -11,6 +11,7 @@ import psutil
 
 # i18n
 from pyCTelebot.utils import pyNotices
+from pyCTelebot.utils.pyCrypto import balance_all_exchanges
 
 _ = gettext.gettext
 

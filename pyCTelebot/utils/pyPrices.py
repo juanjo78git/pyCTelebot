@@ -84,7 +84,8 @@ def update_price_info():
             logger.log(msg='update_price_info - for {0}'.format(last_price), level=logging.DEBUG)
             symbol = last_price.get('symbol')
             exchange = last_price.get('exchange')
-            current_price = pyCrypto.price(symbol=last_price.get('symbol'), exchange_name=exchange)
+            my_crypto = pyCrypto.MyCrypto(exchange_name=exchange)
+            current_price = my_crypto.price(symbol=last_price.get('symbol'))
             logger.log(msg='update_price_info - current_price {0}'.format(current_price), level=logging.DEBUG)
 
             last_buy_price = last_price.get('current_buy_price')
@@ -133,7 +134,8 @@ def initialize_price(exchange: str = None, symbol: str = None):
         if exchange is None or symbol is None:
             raise Exception("Error initialize_price {0} - {1}".format(exchange, symbol))
 
-        current_price = pyCrypto.price(symbol=symbol, exchange_name=exchange)
+        my_crypto = pyCrypto.MyCrypto(exchange_name=exchange)
+        current_price = my_crypto.price(symbol=symbol)
         logger.log(msg='initialize_price - current_price {0}'.format(current_price), level=logging.DEBUG)
         query = 'insert into exchange_prices '
         args = []
