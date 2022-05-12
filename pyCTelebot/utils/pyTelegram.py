@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from telegram.ext import Updater, CallbackQueryHandler
-from telegram import Update, Bot
+from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.error import TelegramError
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
@@ -43,6 +43,7 @@ def run(how: str):
     # Events that will trigger this bot
     start_handler = CommandHandler('start', start)
     dispatcher.add_handler(start_handler)
+    dispatcher.add_handler(CallbackQueryHandler(callback_exchange, pattern='^(|kucoin|binance|kraken)$'))
 
     stop_handler = CommandHandler('stop', stop)
     dispatcher.add_handler(stop_handler)
@@ -126,12 +127,20 @@ def start(update: Update, context: CallbackContext):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("You can't do it!"))
         return 1
-    if len(context.args) == 1:
+    if len(context.args) == 0:
+        keyboard_exchange = [
+            [InlineKeyboardButton("Kucoin", callback_data='kucoin'),
+             InlineKeyboardButton("Binance", callback_data='binance'),
+             InlineKeyboardButton("Kraken", callback_data='kraken'), ],
+        ]
+        update.message.reply_text(text=_('Please choose a exchange:'),
+                                  reply_markup=InlineKeyboardMarkup(keyboard_exchange))
+    elif len(context.args) == 1:
         exchange = context.args[0].lower()
         context.user_data["exchange"] = exchange
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Selected exchange: {0}").format(exchange))
-    if len(context.args) == 2:
+    elif len(context.args) == 2:
         exchange = context.args[0].lower()
         context.user_data["exchange"] = exchange
         symbol = context.args[1].upper()
@@ -143,6 +152,15 @@ def start(update: Update, context: CallbackContext):
     else:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=_("Hello!"))
+
+
+def callback_exchange(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+    exchange = query.data
+    context.user_data["exchange"] = exchange
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=_("Selected exchange: {0}").format(exchange))
 
 
 def stop(update: Update, context: CallbackContext):
