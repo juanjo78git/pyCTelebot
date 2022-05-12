@@ -159,8 +159,8 @@ def callback_exchange(update: Update, context: CallbackContext):
     query.answer()
     exchange = query.data
     context.user_data["exchange"] = exchange
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=_("Selected exchange: {0}").format(exchange))
+    query.message.edit_text(text=_("Selected exchange: {0}").format(exchange),
+                            reply_markup=InlineKeyboardMarkup([]))
 
 
 def stop(update: Update, context: CallbackContext):
