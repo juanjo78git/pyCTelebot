@@ -156,13 +156,14 @@ class MyCrypto:
             for key in balances:
                 if balances[key] != 0:
                     if symbol is None or symbol == key:
-                        stable_coin_price = 0
-                        stable_coin2_price = 0
+                        key_conversion_value_stable_coin = 0
+                        key_conversion_value_stable_coin2 = 0
                         try:
                             if key == self.default_stable_coin:
-                                stable_coin_price = balances[key]
+                                key_conversion_value_stable_coin = balances[key]
                             else:
                                 stable_coin_price = self.price(symbol=key + '/' + self.default_stable_coin)['ask']
+                                key_conversion_value_stable_coin = balances[key] * stable_coin_price
                         except Exception as err:
                             logger.log(
                                 msg='balance {0}: status: {1} - {2}'.format(symbol,
@@ -171,9 +172,10 @@ class MyCrypto:
                                 level=logging.ERROR)
                         try:
                             if key == self.default_stable_coin2:
-                                stable_coin2_price = balances[key]
+                                key_conversion_value_stable_coin2 = balances[key]
                             else:
                                 stable_coin2_price = self.price(symbol=key + '/' + self.default_stable_coin2)['ask']
+                                key_conversion_value_stable_coin2 = balances[key] * stable_coin2_price
                         except Exception as err:
                             logger.log(
                                 msg='balance {0}: status: {1} - {2}'.format(symbol,
@@ -184,8 +186,8 @@ class MyCrypto:
                             'exchange': self.exchange.name,
                             'currency': key,
                             'amount': balances[key],
-                            self.default_stable_coin: balances[key] * stable_coin_price,
-                            self.default_stable_coin2: balances[key] * stable_coin2_price
+                            self.default_stable_coin: key_conversion_value_stable_coin,
+                            self.default_stable_coin2: key_conversion_value_stable_coin2
                         })
         except Exception as err:
             logger.log(
