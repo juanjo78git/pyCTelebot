@@ -159,21 +159,49 @@ class MyCrypto:
                         stable_coin_price = 0
                         stable_coin2_price = 0
                         try:
-                            stable_coin_price = self.price(symbol=key + '/' + self.default_stable_coin)['ask']
+                            if key == self.default_stable_coin:
+                                stable_coin_price = balances[key]
+                            else:
+                                stable_coin_price = self.price(symbol=key + '/' + self.default_stable_coin)['ask']
                         except Exception as err:
-                            logger.log(
-                                msg='balance {0}: status: {1} - {2}'.format(symbol,
-                                                                            type(err),
-                                                                            str(err)),
-                                level=logging.ERROR)
+                            if key == self.default_stable_coin2:
+                                try:
+                                    stable_coin_price = self.price(symbol=self.default_stable_coin +
+                                                                   '/' + key)['ask']
+                                except Exception as err:
+                                    logger.log(
+                                        msg='balance {0}: status: {1} - {2}'.format(symbol,
+                                                                                    type(err),
+                                                                                    str(err)),
+                                        level=logging.ERROR)
+                            else:
+                                logger.log(
+                                    msg='balance {0}: status: {1} - {2}'.format(symbol,
+                                                                                type(err),
+                                                                                str(err)),
+                                    level=logging.ERROR)
                         try:
-                            stable_coin2_price = self.price(symbol=key + '/' + self.default_stable_coin2)['ask']
+                            if key == self.default_stable_coin2:
+                                stable_coin2_price = balances[key]
+                            else:
+                                stable_coin2_price = self.price(symbol=key + '/' + self.default_stable_coin2)['ask']
                         except Exception as err:
-                            logger.log(
-                                msg='balance {0}: status: {1} - {2}'.format(symbol,
-                                                                            type(err),
-                                                                            str(err)),
-                                level=logging.ERROR)
+                            if key == self.default_stable_coin:
+                                try:
+                                    stable_coin2_price = self.price(symbol=self.default_stable_coin2 +
+                                                                    '/' + key)['ask']
+                                except Exception as err:
+                                    logger.log(
+                                        msg='balance {0}: status: {1} - {2}'.format(symbol,
+                                                                                    type(err),
+                                                                                    str(err)),
+                                        level=logging.ERROR)
+                            else:
+                                logger.log(
+                                    msg='balance {0}: status: {1} - {2}'.format(symbol,
+                                                                                type(err),
+                                                                                str(err)),
+                                    level=logging.ERROR)
                         all_balances.append({
                             'exchange': self.exchange.name,
                             'currency': key,
