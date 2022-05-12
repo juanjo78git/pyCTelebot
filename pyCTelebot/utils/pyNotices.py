@@ -35,7 +35,6 @@ def run():
     logger.log(msg='Notices start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
     users = user_list()
-    logger.log(msg='Notices users: {0}'.format(users), level=logging.DEBUG)
     for user in users:
         logger.log(msg='Notices user: {0}'.format(user.get('user_id')), level=logging.DEBUG)
         bal = pyCrypto.balance_all_exchanges(user_id=user.get('user_id'))

@@ -49,7 +49,7 @@ class MyCrypto:
 
     def connection(self, exchange_name: str, user=None):
         # Binance connection
-        logger.log(msg='Exchange connection user: {0} {1}'.format(exchange_name, user), level=logging.DEBUG)
+        logger.log(msg='Exchange connection user: {0}'.format(exchange_name), level=logging.DEBUG)
         self.exchange = None
         try:
             if user is None:
@@ -164,44 +164,22 @@ class MyCrypto:
                             else:
                                 stable_coin_price = self.price(symbol=key + '/' + self.default_stable_coin)['ask']
                         except Exception as err:
-                            if key == self.default_stable_coin2:
-                                try:
-                                    stable_coin_price = self.price(symbol=self.default_stable_coin +
-                                                                   '/' + key)['ask']
-                                except Exception as err:
-                                    logger.log(
-                                        msg='balance {0}: status: {1} - {2}'.format(symbol,
-                                                                                    type(err),
-                                                                                    str(err)),
-                                        level=logging.ERROR)
-                            else:
-                                logger.log(
-                                    msg='balance {0}: status: {1} - {2}'.format(symbol,
-                                                                                type(err),
-                                                                                str(err)),
-                                    level=logging.ERROR)
+                            logger.log(
+                                msg='balance {0}: status: {1} - {2}'.format(symbol,
+                                                                            type(err),
+                                                                            str(err)),
+                                level=logging.ERROR)
                         try:
                             if key == self.default_stable_coin2:
                                 stable_coin2_price = balances[key]
                             else:
                                 stable_coin2_price = self.price(symbol=key + '/' + self.default_stable_coin2)['ask']
                         except Exception as err:
-                            if key == self.default_stable_coin:
-                                try:
-                                    stable_coin2_price = self.price(symbol=self.default_stable_coin2 +
-                                                                    '/' + key)['ask']
-                                except Exception as err:
-                                    logger.log(
-                                        msg='balance {0}: status: {1} - {2}'.format(symbol,
-                                                                                    type(err),
-                                                                                    str(err)),
-                                        level=logging.ERROR)
-                            else:
-                                logger.log(
-                                    msg='balance {0}: status: {1} - {2}'.format(symbol,
-                                                                                type(err),
-                                                                                str(err)),
-                                    level=logging.ERROR)
+                            logger.log(
+                                msg='balance {0}: status: {1} - {2}'.format(symbol,
+                                                                            type(err),
+                                                                            str(err)),
+                                level=logging.ERROR)
                         all_balances.append({
                             'exchange': self.exchange.name,
                             'currency': key,
