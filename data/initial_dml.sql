@@ -90,3 +90,76 @@ INSERT INTO strategy_steps
 values
 ('STRATEGY_01', 'binance', 'ETH/USDT', 15, 'BUY', 1, 1);
 commit;
+insert into exchange_prices
+(
+exchange, symbol,
+last_buy_price, current_buy_price, buy_price_variation_percentage,
+last_sell_price, current_sell_price, sell_price_variation_percentage,
+last_audit_date, current_audit_date
+)
+values
+('kucoin', 'BTC/USDT',
+1, 1, 1,
+1, 1, 1,
+current_date, current_date);
+insert into exchange_prices
+(
+exchange, symbol,
+last_buy_price, current_buy_price, buy_price_variation_percentage,
+last_sell_price, current_sell_price, sell_price_variation_percentage,
+last_audit_date, current_audit_date
+)
+values
+('kucoin', 'ETH/USDT',
+1, 1, 1,
+1, 1, 1,
+current_date, current_date);
+insert into exchange_prices
+(
+exchange, symbol,
+last_buy_price, current_buy_price, buy_price_variation_percentage,
+last_sell_price, current_sell_price, sell_price_variation_percentage,
+last_audit_date, current_audit_date
+)
+values
+('kucoin', 'LINK/USDT',
+1, 1, 1,
+1, 1, 1,
+current_date, current_date);
+insert into exchange_prices
+(
+exchange, symbol,
+last_buy_price, current_buy_price, buy_price_variation_percentage,
+last_sell_price, current_sell_price, sell_price_variation_percentage,
+last_audit_date, current_audit_date
+)
+values
+('kucoin', 'CRO/USDT',
+1, 1, 1,
+1, 1, 1,
+current_date, current_date);
+insert into exchange_prices
+(
+exchange, symbol,
+last_buy_price, current_buy_price, buy_price_variation_percentage,
+last_sell_price, current_sell_price, sell_price_variation_percentage,
+last_audit_date, current_audit_date
+)
+values
+('binance', 'BTC/USDT',
+1, 1, 1,
+1, 1, 1,
+current_date, current_date);
+insert into exchange_prices
+(
+exchange, symbol,
+last_buy_price, current_buy_price, buy_price_variation_percentage,
+last_sell_price, current_sell_price, sell_price_variation_percentage,
+last_audit_date, current_audit_date
+)
+values
+('binance', 'ETH/USDT',
+1, 1, 1,
+1, 1, 1,
+current_date, current_date);
+commit;
