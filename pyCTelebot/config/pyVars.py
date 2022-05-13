@@ -29,8 +29,5 @@ ENV_CONFIG = json.loads(os.environ.get('ENV_CONFIG', '{"log": "DEBUG", "env": "T
 # Telegram admin group id list
 TELEGRAM_ADMIN_GROUP = json.loads(os.environ.get('TELEGRAM_ADMIN_GROUP', "[]"))
 
-# Cron Interval in seconds
-CRON_INTERVAL = int(os.environ.get('CRON_INTERVAL', 5))
-
 # Encryption key
 ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', None)

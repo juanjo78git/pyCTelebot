@@ -6,7 +6,7 @@ import sys
 import gettext
 import logging
 from pyCTelebot import pyCryptoCron, pyCryptoWorker
-from pyCTelebot.config.pyVars import ENV_CONFIG, CRON_INTERVAL
+from pyCTelebot.config.pyVars import ENV_CONFIG
 from pyCTelebot import pyPoC
 
 # i18n
@@ -67,7 +67,8 @@ def main():
         exit()
 
     if options.cron:
-        pyCryptoCron.run(seconds=CRON_INTERVAL)
+        print(options.cron)
+        pyCryptoCron.run(seconds=options.cron)
         logger.log(msg='Cron ends', level=logging.INFO)
         exit()
 
