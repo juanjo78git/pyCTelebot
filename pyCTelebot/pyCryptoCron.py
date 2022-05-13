@@ -11,7 +11,7 @@ from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 from pyCTelebot import pyCryptoWorker
 from pyCTelebot.utils import pyTelegram
-from pyCTelebot.config.pyVars import ENV_CONFIG, CRON_INTERVAL
+from pyCTelebot.config.pyVars import ENV_CONFIG
 
 # i18n
 _ = gettext.gettext
@@ -31,7 +31,7 @@ else:
     logger.setLevel(logging.DEBUG)
 
 
-def run():
+def run(seconds: int = 5):
     seed = random.randint(0, sys.maxsize)
 
     logger.log(msg='CryptoCron start ID: {0}'.format(seed), level=logging.INFO)
@@ -48,7 +48,7 @@ def run():
                       "interval",
                       max_instances=1,
                       coalesce=True,
-                      seconds=CRON_INTERVAL,
+                      seconds=seconds,
                       id='strategies_jobs')
     try:
         scheduler.start()
