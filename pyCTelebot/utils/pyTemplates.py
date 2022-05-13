@@ -22,6 +22,7 @@ else:
 
 
 def templates_json(values: json = None, template_type: str = None):
+    """ JSON Prettier """
     if values is None:
         return values
     if template_type == 'all_balances':

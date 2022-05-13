@@ -36,8 +36,8 @@ else:
 #   "current_audit_date": "TIMESTAMP of current prices"
 # }
 
-# Get the price information of an exchange/symbol being monitored
 def price_info(exchange: str = None, symbol: str = None):
+    """ Get the price information of an exchange/symbol being monitored """
     my_prices = []
     try:
         logger.log(msg='price_info - exchange: {0} - symbol: {1}'.format(exchange, symbol),
@@ -60,8 +60,8 @@ def price_info(exchange: str = None, symbol: str = None):
     return my_prices
 
 
-# Calculates the percentage of variation between two prices
 def price_variation_percentage(last_price: float, current_price: float):
+    """ Calculates the percentage of variation between two prices """
     try:
         logger.log(msg='price_variation_percentage - last_price: {0} - current_price: {1}'.format(
             last_price,
@@ -76,8 +76,8 @@ def price_variation_percentage(last_price: float, current_price: float):
     return None
 
 
-# Update the price information of all the exchange / symbol in monitoring
 def update_price_info():
+    """ Update the price information of all the exchange / symbol in monitoring """
     logger.log(msg='update_price_info: Start', level=logging.DEBUG)
     for last_price in price_info():
         try:
@@ -126,8 +126,8 @@ def update_price_info():
             logger.log(msg='update_price_info: {0}'.format(str(err)), level=logging.ERROR)
 
 
-# Insert a new exchange/symbol to monitor its price
 def initialize_price(exchange: str = None, symbol: str = None):
+    """ Insert a new exchange/symbol to monitor its price """
     logger.log(msg='initialize_price - exchange: {0} - symbol: {1}'.format(exchange, symbol),
                level=logging.DEBUG)
     try:
@@ -164,8 +164,8 @@ def initialize_price(exchange: str = None, symbol: str = None):
         logger.log(msg='initialize_price: {0}'.format(str(err)), level=logging.ERROR)
 
 
-# Clear monitoring of exchange/symbol
 def delete_price(exchange: str = None, symbol: str = None):
+    """ Clear monitoring of exchange/symbol """
     logger.log(msg='delete_price - exchange: {0} - symbol: {1}'.format(exchange, symbol),
                level=logging.DEBUG)
     try:

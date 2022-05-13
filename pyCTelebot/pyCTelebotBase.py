@@ -33,6 +33,7 @@ else:
 
 
 def main():
+    """ main function """
     # Get Args
     parser = pyBuildParser.build_parser()
     options = parser.parse_args()
@@ -49,7 +50,7 @@ def main():
     gettext.bindtextdomain('pyCTelebot', './pyCTelebot/locale')
 
     clear_screen()
-    logger.log(msg='Locale: {0}'.format(os.environ['LANG']), level=logging.DEBUG)
+    logger.log(msg='Locale: {0}'.format(os.environ['LANG']), level=logging.INFO)
 
     if options.poc:
         logger.log(msg='PoC start', level=logging.INFO)
@@ -85,8 +86,8 @@ def main():
     exit()
 
 
-# Clear screen function
 def clear_screen():
+    """ Clear screen function """
     osname = os.name
     if osname == 'posix':
         os.system('clear')

@@ -29,6 +29,7 @@ else:
 
 
 def run():
+    """ Worker """
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='Worker start ID: {0}'.format(seed), level=logging.INFO)
     # pyTelegram.message_admins(message='Worker start at {0} with ID: {1}'.format(

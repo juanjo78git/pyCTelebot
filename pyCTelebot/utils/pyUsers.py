@@ -3,7 +3,7 @@
 from pyCTelebot.config.pyVars import ENV_CONFIG, ENCRYPTION_KEY
 import gettext
 import logging
-from pyCTelebot.utils.pyDB import MyDB
+from pyCTelebot.utils.pyDB import MyDB, convert
 from cryptography.fernet import Fernet
 
 # i18n
@@ -37,8 +37,8 @@ else:
 #   "passphrase": "API Passphrase"
 # }
 
-# User list filtering by role in case this is passed as a parameter
 def user_list(role: str = None):
+    """ User list filtering by role in case this is passed as a parameter """
     my_users = []
     try:
         logger.log(msg='users - role: {0}'.format(role),
@@ -58,8 +58,8 @@ def user_list(role: str = None):
     return my_users
 
 
-# Information of the indicated user, in case of passing exchange it also returns the info of this
 def select_user(user_id: str = None, telegram_id: str = None, exchange: str = None):
+    """ Information of the indicated user, in case of passing exchange it also returns the info of this """
     try:
         logger.log(msg='select_user - user_id: {0} - telegram_id: {1} - exchange: {2}'.format(user_id,
                                                                                               telegram_id,
@@ -92,8 +92,8 @@ def select_user(user_id: str = None, telegram_id: str = None, exchange: str = No
     return None
 
 
-# Exchanges of the user indicated
 def select_user_exchanges(user_id: str = None, exchange: str = None):
+    """ Exchanges of the user indicated """
     my_user_exchanges = []
     try:
         logger.log(msg='select_user_exchanges - user_id: {0} - exchange: {1}'.format(user_id, exchange),
@@ -112,13 +112,14 @@ def select_user_exchanges(user_id: str = None, exchange: str = None):
             db = MyDB()
             result = db.query(query=query, args=args)
             db.close()
-            my_user_exchanges = db.convert(result)
+            my_user_exchanges = convert(result)
     except Exception as err:
         logger.log(msg='select_user_exchanges: {0}'.format(str(err)), level=logging.ERROR)
     return my_user_exchanges
 
 
 def authorization(user_id: str = None, telegram_id: str = None, action: str = None):
+    """ Authorization """
     logger.log(msg='authorization - User: {0} - {1} action: {2}'.format(user_id, telegram_id, action),
                level=logging.DEBUG)
     try:
@@ -138,6 +139,7 @@ def authorization(user_id: str = None, telegram_id: str = None, action: str = No
 
 # TODO: To encrypt a phrase
 def encrypt(token: str, key=None):
+    """ Encrypt a phrase """
     if key is not None:
         fernet = Fernet(key)
         return fernet.encrypt(token.encode())
@@ -150,6 +152,7 @@ def encrypt(token: str, key=None):
 
 # TODO: To decrypt a phrase
 def decrypt(token, key=None):
+    """ Decrypt a phrase """
     if key is not None:
         fernet = Fernet(key)
         return fernet.decrypt(token).decode()
@@ -162,6 +165,7 @@ def decrypt(token, key=None):
 
 # TODO: To get a new encryption key
 def new_encryption_key(key: str = None):
+    """ Get a new encryption key """
     if key is not None:
         return bytes(key, 'utf-8')
     else:

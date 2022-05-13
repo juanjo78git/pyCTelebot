@@ -31,6 +31,7 @@ else:
 
 
 def run():
+    """ Send info about exchanges """
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='Notices start ID: {0}'.format(seed), level=logging.INFO)
     # Do something

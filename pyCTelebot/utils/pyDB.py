@@ -20,12 +20,22 @@ else:
     logger.setLevel(logging.DEBUG)
 
 
+def convert(result):
+    """ convert SQL output to dict """
+    my_res = []
+    for r in result:
+        my_res.append(dict(r))
+    return my_res
+
+
 class MyDB:
     def __init__(self):
+        """ Open connection """
         self.conn = psycopg2.connect(DATABASE_URL, sslmode='require')
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     def query(self, query, args):
+        """ Do a query """
         try:
             logger.log(msg='MyDB.query: {0} - args: {1}'.format(query, args),
                        level=logging.DEBUG)
@@ -41,6 +51,7 @@ class MyDB:
             return res
 
     def dml(self, query, args):
+        """ do a update, insert, delete,... """
         try:
             logger.log(msg='MyDB.dml: {0} - args: {1}'.format(query, args),
                        level=logging.DEBUG)
@@ -52,17 +63,14 @@ class MyDB:
                        level=logging.ERROR)
 
     def commit(self):
+        """ commit """
         self.conn.commit()
 
     def rollback(self):
+        """ rollback """
         self.conn.rollback()
 
     def close(self):
+        """ close connection """
         self.cur.close()
         self.conn.close()
-
-    def convert(self, result):
-        my_res = []
-        for r in result:
-            my_res.append(dict(r))
-        return my_res

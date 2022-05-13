@@ -32,6 +32,7 @@ else:
 
 
 def run(seconds: int = 5):
+    """ Cron """
     seed = random.randint(0, sys.maxsize)
 
     logger.log(msg='CryptoCron start ID: {0}'.format(seed), level=logging.INFO)

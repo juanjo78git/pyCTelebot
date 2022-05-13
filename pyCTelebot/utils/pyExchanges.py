@@ -23,6 +23,7 @@ else:
 
 
 def exchange_connection(exchange: str):
+    """ exchange connection """
     try:
         logger.log(msg='exchange_connection - exchange: {0}'.format(exchange),
                    level=logging.DEBUG)

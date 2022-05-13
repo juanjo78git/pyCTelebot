@@ -88,11 +88,6 @@ def run(how: str):
     poc_handler = CommandHandler('poc', poc)
     dispatcher.add_handler(poc_handler)
 
-    ps_handler = CommandHandler('ps', ps)
-    dispatcher.add_handler(ps_handler)
-
-    dispatcher.add_handler(CallbackQueryHandler(poc_button))
-
     message_admins_by_telegram_handler = CommandHandler('message_admins', message_admins_by_telegram)
     dispatcher.add_handler(message_admins_by_telegram_handler)
 
@@ -742,16 +737,6 @@ def private_message(message, user):
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
 
 
-def ps(update: Update, context: CallbackContext):
-    # Authorization
-    if not authorization(telegram_id=update.effective_user.id, action='ps'):
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=_("You can't do it!"))
-        return 1
-    # Action
-    pyPoC.ps(update=update, context=context)
-
-
 def poc(update: Update, context: CallbackContext):
     # Authorization
     if not authorization(telegram_id=update.effective_user.id, action='poc'):
@@ -760,8 +745,3 @@ def poc(update: Update, context: CallbackContext):
         return 1
     # Action
     pyPoC.run_telegram(update=update, context=context)
-
-
-def poc_button(update: Update, context: CallbackContext):
-    # Action
-    pyPoC.poc_button(update=update, context=context)
