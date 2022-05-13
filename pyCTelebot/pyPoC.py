@@ -9,7 +9,7 @@ from telegram.ext import CallbackContext
 from pyCTelebot.config.pyVars import ENV_CONFIG
 
 # i18n
-from pyCTelebot.utils import pyNotices
+from pyCTelebot.utils import pyPrices, pyTemplates
 
 _ = gettext.gettext
 
@@ -43,7 +43,9 @@ def run_telegram(update: Update, context: CallbackContext):
     """ Telegram Proof of Concept """
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run_telegram start ID: {0}'.format(seed), level=logging.INFO)
-    pyNotices.run()
+    prices = pyPrices.price_info()
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=pyTemplates.templates_json(values=prices, template_type='prices'))
     logger.log(msg='pyPoC run_telegram stop ID: {0}'.format(seed), level=logging.INFO)
 
 
