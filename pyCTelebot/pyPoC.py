@@ -44,8 +44,29 @@ def run_telegram(update: Update, context: CallbackContext):
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run_telegram start ID: {0}'.format(seed), level=logging.INFO)
     prices = pyPrices.price_info()
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=pyTemplates.templates_json(values=prices, template_type='prices'))
+    for price in prices:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_('{0} - {1}: \n'
+                                        'Last buy: {2} \n'
+                                        'Current buy: {3} \n'
+                                        '{4} % \n'
+                                        'Last sell: {5} \n'
+                                        'Current sell: {6} \n'
+                                        '{7} % \n'
+                                        'Last date: {8} \n'
+                                        'Current date: {9}').format(
+                                     price.get('exchange'),
+                                     price.get('symbol'),
+                                     price.get('last_buy_price'),
+                                     price.get('current_buy_price'),
+                                     price.get('buy_price_variation_percentage'),
+                                     price.get('last_sell_price'),
+                                     price.get('current_sell_price'),
+                                     price.get('sell_price_variation_percentage'),
+                                     price.get('last_audit_date'),
+                                     price.get('current_audit_date'),
+
+                                 ))
     logger.log(msg='pyPoC run_telegram stop ID: {0}'.format(seed), level=logging.INFO)
 
 

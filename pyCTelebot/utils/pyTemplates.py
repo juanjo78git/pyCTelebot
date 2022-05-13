@@ -27,5 +27,7 @@ def templates_json(values: json = None, template_type: str = None):
         return values
     if template_type == 'all_balances':
         return json.dumps(values, indent=4, sort_keys=True)
+    elif template_type == 'price':
+        return json.dumps(values, indent=4, sort_keys=True)
     else:
         return json.dumps(values, indent=4, sort_keys=True)
