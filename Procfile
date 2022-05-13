@@ -1,4 +1,3 @@
 web: python -m pyCTelebot.pyCTelebotBase
-clock: python -m pyCTelebot.pyCTelebotBase -c
-worker: python -m pyCTelebot.pyCTelebotBase -w
+clock: python -m pyCTelebot.pyCTelebotBase -c 30
 worker: python -m pyCTelebot.pyCTelebotBase -n

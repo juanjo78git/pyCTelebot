@@ -31,7 +31,6 @@ $ pip install pyCTelebot
 | TOKEN_TELEGRAM       | Token telegram bot                                                                                                                                  |
 | WEBHOOK_URL_TELEGRAM | URL app in [Heroku](https://www.heroku.com/) or other server                                                                                        |
 | TELEGRAM_ADMIN_GROUP | Telegram admin group id list. Format: \[chat_id]                                                                                                    |
-| CRON_INTERVAL        | Cron interval seconds                                                                                                                               |
 | ENV_CONFIG           | Environment config. log values: DEBUG / INFO / WARNING / ERROR / CRITICAL. env values: TEST / PROD. Default values: {"log": "DEBUG", "env": "TEST"} |
 | DATABASE_URL         | DB Connection                                                                                                                                       |
 | ENCRYPTION_KEY       | Encryption key for APIs                                                                                                                             |
