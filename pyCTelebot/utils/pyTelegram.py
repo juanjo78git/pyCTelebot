@@ -8,7 +8,7 @@ from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.pyVars import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, ENV_CONFIG, TELEGRAM_ADMIN_GROUP
 from pyCTelebot.utils.pyUsers import user_list, authorization
-from pyCTelebot.utils import pyCrypto, pyTemplates
+from pyCTelebot.utils import pyCrypto, pyTemplates, pyPrices
 from pyCTelebot import pyPoC
 from pyCTelebot import __version__
 import gettext
@@ -83,6 +83,9 @@ def run(how: str):
 
     cancel_order_handler = CommandHandler('cancel', cancel)
     dispatcher.add_handler(cancel_order_handler)
+
+    price_tracking_handler = CommandHandler('price_tracking', price_tracking)
+    dispatcher.add_handler(price_tracking_handler)
 
     # PoC
     poc_handler = CommandHandler('poc', poc)
@@ -669,6 +672,44 @@ def cancel(update: Update, context: CallbackContext):
                                         "symbol {0} and id {1} --> {2} {3}").format(
                                      symbol,
                                      order_id,
+                                     _("ERROR: I can't do it."),
+                                     str(err)))
+
+
+def price_tracking(update: Update, context: CallbackContext):
+    # Authorization
+    if not authorization(telegram_id=update.effective_user.id, action='open_orders'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
+        return 1
+    # Params
+    if context.user_data.get("exchange", None) is None:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You haven't selected exchange!"))
+        return 1
+    exchange = context.user_data["exchange"]
+    if len(context.args) == 1:
+        symbol = context.args[0].upper()
+        if '/' not in symbol:
+            symbol = symbol + '/USDT'
+    elif len(context.args) == 0 and "symbol" in context.user_data:
+        symbol = context.user_data["symbol"]
+    else:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error: invalid parameters"))
+        return 1
+    # Action
+    logger.log(msg='/price_tracking exchange: {0} and symbol: {1}'.format(exchange, symbol), level=logging.DEBUG)
+    try:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Added price tracking: {0} in {1}").format(symbol, exchange))
+        pyPrices.initialize_price(exchange=exchange, symbol=symbol)
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Add price tracking: {0} in {1} --> {2} {3}").format(
+                                     symbol, exchange,
                                      _("ERROR: I can't do it."),
                                      str(err)))
 

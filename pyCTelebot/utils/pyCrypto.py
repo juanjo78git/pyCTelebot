@@ -246,9 +246,9 @@ class MyCrypto:
 
     def sell_order(self, symbol: str, amount, type_order: str, price_limit=0):
         try:
-            if type == 'market':
+            if type_order == 'market':
                 status = self.exchange.create_market_sell_order(symbol=symbol, amount=amount, params=params)
-            elif type == 'limit':
+            elif type_order == 'limit':
                 status = self.exchange.create_limit_sell_order(symbol=symbol, amount=amount, price=price_limit,
                                                                params=params)
             else:
