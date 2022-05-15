@@ -31,3 +31,8 @@ TELEGRAM_ADMIN_GROUP = json.loads(os.environ.get('TELEGRAM_ADMIN_GROUP', "[]"))
 
 # Encryption key
 ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', None)
+
+# PoC
+POC_MAX_PRICE = os.environ.get('POC_MAX_PRICE', 0.0004)
+POC_MIN_PRICE = os.environ.get('POC_MIN_PRICE', 0.00028)
+POC_USER = os.environ.get('POC_USER', None)
