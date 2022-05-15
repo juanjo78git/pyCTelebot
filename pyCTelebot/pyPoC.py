@@ -6,7 +6,8 @@ import random
 import sys
 from telegram import Update
 from telegram.ext import CallbackContext
-from pyCTelebot.config.pyVars import ENV_CONFIG, POC_MAX_PRICE, POC_MIN_PRICE, POC_USER, POC_COIN
+from pyCTelebot.config.pyVars import ENV_CONFIG, POC_MAX_PRICE, POC_MIN_PRICE, POC_USER, POC_COIN, \
+    POC_PROFIT_STABLE_COIN
 
 # i18n
 from pyCTelebot.utils import pyPrices, pyTemplates, pyCrypto, pyTelegram, pyUsers
@@ -41,16 +42,21 @@ def run():
     max_price = POC_MAX_PRICE
     min_price = POC_MIN_PRICE
     my_user_id = POC_USER
+    profit_stable_coin = POC_PROFIT_STABLE_COIN
     if my_user_id is None:
         return 1
     my_user = pyUsers.select_user(user_id=my_user_id)
     exchange = pyCrypto.MyCrypto(exchange_name='kucoin', user_id=my_user_id)
-    price_coin = exchange.price(used_symbol)
+    price_coin_temp = exchange.price(used_symbol)
+    price_coin_message = {
+        'ask': price_coin_temp.get('ask', 'None'),
+        'bid': price_coin_temp.get('bid', 'None'),
+    }
     pyTelegram.private_message(message='PARTY!! {0}\n Max: {1}\n Min: {2}\n'
                                        'Current Price: {3}'.format(used_symbol,
                                                                    max_price,
                                                                    min_price,
-                                                                   pyTemplates.templates_json(price_coin)),
+                                                                   pyTemplates.templates_json(price_coin_message)),
                                user=my_user)
     my_open_order = exchange.open_orders(symbol=used_symbol)
     my_balance = exchange.balance(used_coin)
@@ -62,27 +68,22 @@ def run():
     if len(my_balance_stable) > 0:
         my_balance_stable_coin = my_balance_stable[0].get('amount')
 
-    print(my_open_order[0].get('side'))
-    print(my_balance_stable)
-    # No tengo ordenes abiertas
+    # I don't have open orders
     if len(my_open_order) == 0:
-        # Tengo las crypto compradas
+        # My balance is in crypto
         if my_balance_coin > 0:
-            # ORDEN DE VENTA (LIMIT) A MAXIMO
+            # Sell order limit with max.
             pyTelegram.private_message(message='I have:\n {0} {1}'.format(used_coin, my_balance_coin),
                                        user=my_user)
-
-            print('I have: {0} {1}'.format(used_coin, my_balance_coin))
             try:
                 exchange.sell_order(symbol=used_symbol, amount=my_balance_coin,
                                     type_order='limit', price_limit=max_price)
             except Exception as err:
                 pyTelegram.private_message(message='Error SELL ORDER:\n {0}'.format(err),
                                            user=my_user)
-        # Lo tengo en stable coin (el 1 es por los restos y el 50 )
-        elif 1 < my_balance_stable_coin < 50:
-            # ORDEN DE COMPRA (LIMIT) A MINIMO
-            print('I have: {0} {1}'.format(used_stable_coin, my_balance_stable_coin))
+        # My balance is in stable coin ( More than 1 and stop in 50 profit )
+        elif 1 < my_balance_stable_coin < profit_stable_coin:
+            # Buy order limit with min.
             pyTelegram.private_message(message='I have:\n {0} {1}'.format(used_coin, my_balance_coin),
                                        user=my_user)
             try:
@@ -97,15 +98,25 @@ def run():
                                                                                      used_stable_coin,
                                                                                      my_balance_stable_coin),
                                        user=my_user)
-    # Ya tengo ordenes abiertas y preparadas
+    # I have open orders
     else:
-        # No hago nada
+        # Nothing, only info
+        my_open_order_message = []
+        for order in my_open_order:
+            my_open_order_message.append({
+                'symbol': order.get('symbol', 'None'),
+                'side': order.get('side', 'None'),
+                'type': order.get('type', 'None'),
+                'price': order.get('price', 'None'),
+                'amount': order.get('amount', 'None'),
+                'datetime': order.get('datetime', 'None'),
+            })
         pyTelegram.private_message(message='I have:\n {0} {1} \n {2} {3} \n '
-                                           'Orders: \n {4}'.format(used_coin,
-                                                                   my_balance_coin,
-                                                                   used_stable_coin,
-                                                                   my_balance_stable_coin,
-                                                                   pyTemplates.templates_json(my_open_order)),
+                                           'Orders: {4}'.format(used_coin,
+                                                                my_balance_coin,
+                                                                used_stable_coin,
+                                                                my_balance_stable_coin,
+                                                                pyTemplates.templates_json(my_open_order_message)),
                                    user=my_user)
     logger.log(msg='pyPoC run stop ID: {0}'.format(seed), level=logging.INFO)
 
@@ -145,9 +156,11 @@ def any_message_poc(update: Update, context: CallbackContext):
     """ Telegram Proof of Concept: any message do it! """
     logger.log(msg='pyPoC any_message_poc start', level=logging.INFO)
     # Do something
-    logger.log(msg='any_message_poc telegram_id: {0} name: {1} ({2}) '
-                   'message: {3}'.format(update.effective_user.id,
-                                         update.effective_user.name,
-                                         update.effective_user.full_name,
-                                         update.effective_message.text),
+    logger.log(msg='any_message_poc telegram_id: {0} name: {1} ({2}) \n'
+                   'message: {3}\n'
+                   'bot ID: {4}'.format(update.effective_user.id,
+                                        update.effective_user.name,
+                                        update.effective_user.full_name,
+                                        update.effective_message.text,
+                                        context.bot.id),
                level=logging.INFO)
