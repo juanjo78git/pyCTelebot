@@ -44,9 +44,14 @@ def run():
     if my_user_id is None:
         return 1
     my_user = pyUsers.select_user(user_id=my_user_id)
-    pyTelegram.private_message(message='PARTY!! {0}\n Max: {1}\n Min: {2}'.format(used_symbol, max_price, min_price),
-                               user=my_user)
     exchange = pyCrypto.MyCrypto(exchange_name='kucoin', user_id=my_user_id)
+    price_coin = exchange.price(used_symbol)
+    pyTelegram.private_message(message='PARTY!! {0}\n Max: {1}\n Min: {2}\n'
+                                       'Current Price: {3}'.format(used_symbol,
+                                                                   max_price,
+                                                                   min_price,
+                                                                   pyTemplates.templates_json(price_coin)),
+                               user=my_user)
     my_open_order = exchange.open_orders(symbol=used_symbol)
     my_balance = exchange.balance(used_coin)
     my_balance_coin = 0
