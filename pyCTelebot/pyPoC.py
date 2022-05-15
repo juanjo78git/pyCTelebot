@@ -6,7 +6,7 @@ import random
 import sys
 from telegram import Update
 from telegram.ext import CallbackContext
-from pyCTelebot.config.pyVars import ENV_CONFIG, POC_MAX_PRICE, POC_MIN_PRICE, POC_USER
+from pyCTelebot.config.pyVars import ENV_CONFIG, POC_MAX_PRICE, POC_MIN_PRICE, POC_USER, POC_COIN
 
 # i18n
 from pyCTelebot.utils import pyPrices, pyTemplates, pyCrypto, pyTelegram, pyUsers
@@ -35,7 +35,7 @@ def run():
     seed = random.randint(0, sys.maxsize)
     logger.log(msg='pyPoC run start ID: {0}'.format(seed), level=logging.INFO)
     # Do something
-    used_coin = 'LUNA'
+    used_coin = POC_COIN
     used_stable_coin = 'USDT'
     used_symbol = used_coin + '/' + used_stable_coin
     max_price = POC_MAX_PRICE
