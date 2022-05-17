@@ -70,28 +70,40 @@ def run():
 
     # I don't have open orders
     if len(my_open_order) == 0:
-        # My balance is in crypto
-        if my_balance_coin > 0:
+        # My balance is in crypto (residual crypto 0.001)
+        if my_balance_coin > 0.001:
+            logger.log(msg='pyPoC sell balance coin: {0}'.format(my_balance_coin), level=logging.INFO)
             # Sell order limit with max.
-            pyTelegram.private_message(message='I have:\n {0} {1}'.format(used_coin, my_balance_coin),
-                                       user=my_user)
+            status = None
             try:
-                exchange.sell_order(symbol=used_symbol, amount=my_balance_coin,
-                                    type_order='limit', price_limit=max_price)
+                status = exchange.sell_order(symbol=used_symbol, amount=my_balance_coin,
+                                             type_order='limit', price_limit=max_price)
             except Exception as err:
+                logger.log(msg='ERROR: {0}'.format(err), level=logging.ERROR)
                 pyTelegram.private_message(message='Error SELL ORDER:\n {0}'.format(err),
                                            user=my_user)
+            pyTelegram.private_message(message='I have:\n {0} {1} \n Status: {2}'.format(used_coin,
+                                                                                         my_balance_coin,
+                                                                                         status),
+                                       user=my_user)
         # My balance is in stable coin ( More than 1 and stop in 50 profit )
         elif 1 < my_balance_stable_coin < profit_stable_coin:
+            logger.log(msg='pyPoC buy balance coin: {0}'.format(my_balance_stable_coin), level=logging.INFO)
             # Buy order limit with min.
+            status = None
             pyTelegram.private_message(message='I have:\n {0} {1}'.format(used_coin, my_balance_coin),
                                        user=my_user)
             try:
-                exchange.buy_order(symbol=used_symbol, amount=my_balance_stable_coin, type_order='limit',
-                                   price_limit=min_price)
+                status = exchange.buy_order(symbol=used_symbol, amount=my_balance_stable_coin, type_order='limit',
+                                            price_limit=min_price)
             except Exception as err:
+                logger.log(msg='ERROR: {0}'.format(err), level=logging.ERROR)
                 pyTelegram.private_message(message='Error BUY ORDER:\n {0}'.format(err),
                                            user=my_user)
+            pyTelegram.private_message(message='I have:\n {0} {1} \n Status {2}'.format(used_coin,
+                                                                                        my_balance_coin,
+                                                                                        status),
+                                       user=my_user)
         else:
             pyTelegram.private_message(message='I have:\n {0} {1} \n {2} {3}'.format(used_coin,
                                                                                      my_balance_coin,
@@ -101,6 +113,8 @@ def run():
     # I have open orders
     else:
         # Nothing, only info
+        logger.log(msg='pyPoC Nothing: {0}'.format(my_open_order), level=logging.INFO)
+
         my_open_order_message = []
         for order in my_open_order:
             my_open_order_message.append({
