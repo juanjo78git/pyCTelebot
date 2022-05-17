@@ -51,6 +51,12 @@ def run(how: str):
     help_handler = CommandHandler('help', help_command)
     dispatcher.add_handler(help_handler)
 
+    list_orders_handler = CommandHandler('list_orders', list_orders)
+    dispatcher.add_handler(list_orders_handler)
+    # TODO: Repair pattern
+    dispatcher.add_handler(CallbackQueryHandler(callback_list_orders,
+                                                pattern='^(|list_orders_opened#|list_orders_closed#)*$'))
+
     any_message_handler = MessageHandler(Filters.text & (~Filters.command), any_message)
     dispatcher.add_handler(any_message_handler)
 
@@ -169,6 +175,72 @@ def stop(update: Update, context: CallbackContext):
     context.user_data.clear()
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=_("Bye!!"))
+
+
+def validate_data(order_type: str, update: Update, context: CallbackContext) -> int:
+    error = 0
+    if order_type == 'list_orders':
+        if validate_exchange(update=update, context=context) is False:
+            error = 1
+        elif len(context.args) > 1:
+            error = 2
+        elif len(context.args) == 0 and "symbol" not in context.user_data:
+            error = 2
+
+    if error > 1:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Error: invalid parameters"))
+    return error
+
+
+def validate_exchange(update: Update, context: CallbackContext) -> bool:
+    if context.user_data.get("exchange", None) is None:
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You haven't selected exchange!"))
+        return False
+    else:
+        return True
+
+
+def return_symbol(update: Update, context: CallbackContext) -> str:
+    print(len(context.args))
+    if len(context.args) >= 1:
+        symbol = context.args[0].upper()
+        if '/' not in symbol:
+            symbol = symbol + '/USDT'
+    elif len(context.args) == 0 and "symbol" in context.user_data:
+        symbol = context.user_data["symbol"]
+    else:
+        symbol = None
+    return symbol
+
+
+def list_orders(update: Update, context: CallbackContext):
+    if not authorization(telegram_id=update.effective_user.id, action='list_orders'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
+        return 1
+    # Params
+    if validate_data(order_type="list_orders", update=update, context=context) > 0:
+        return 1
+    symbol = return_symbol(update=update, context=context)
+    keyboard_list_orders = [
+        [InlineKeyboardButton("Opened", callback_data='list_orders_opened#' + symbol),
+         InlineKeyboardButton("Closed", callback_data='list_orders_closed#' + symbol), ],
+    ]
+    update.message.reply_text(text=_('Please choose a type of orders to list:'),
+                              reply_markup=InlineKeyboardMarkup(keyboard_list_orders))
+
+
+def callback_list_orders(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+    order = query.data
+    # TODO: SOMETHING
+    print('entro')
+    exchange = context.user_data["exchange"]
+    query.message.edit_text(text=_("List orders selected : {0}").format(order),
+                            reply_markup=InlineKeyboardMarkup([]))
 
 
 def any_message(update: Update, context: CallbackContext):
