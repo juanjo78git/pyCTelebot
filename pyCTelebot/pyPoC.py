@@ -70,8 +70,8 @@ def run():
 
     # I don't have open orders
     if len(my_open_order) == 0:
-        # My balance is in crypto
-        if my_balance_coin > 0:
+        # My balance is in crypto ( More than 1)
+        if my_balance_coin > 0.1:
             # Sell order limit with max.
             pyTelegram.private_message(message='I have:\n {0} {1}'.format(used_coin, my_balance_coin),
                                        user=my_user)
