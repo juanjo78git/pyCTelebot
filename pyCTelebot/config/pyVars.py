@@ -35,6 +35,6 @@ ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', None)
 # PoC
 POC_COIN = os.environ.get('POC_COIN', 'LUNA')
 POC_MAX_PRICE = os.environ.get('POC_MAX_PRICE', 0.0004)
-POC_MIN_PRICE = os.environ.get('POC_MIN_PRICE', 0.00028)
+POC_MIN_PRICE = os.environ.get('POC_MIN_PRICE', 0.00016)
 POC_PROFIT_STABLE_COIN = os.environ.get('POC_PROFIT_STABLE_COIN', 50)
 POC_USER = os.environ.get('POC_USER', None)

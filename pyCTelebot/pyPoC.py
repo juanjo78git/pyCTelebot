@@ -60,8 +60,8 @@ def run():
                                user=my_user)
     my_open_order = exchange.open_orders(symbol=used_symbol)
     my_balance = exchange.balance(used_coin)
-    my_balance_coin = 0
-    my_balance_stable_coin = 0
+    my_balance_coin = 0.0
+    my_balance_stable_coin = 0.0
     if len(my_balance) > 0:
         my_balance_coin = my_balance[0].get('amount')
     my_balance_stable = exchange.balance(used_stable_coin)
@@ -94,7 +94,16 @@ def run():
             pyTelegram.private_message(message='I have:\n {0} {1}'.format(used_coin, my_balance_coin),
                                        user=my_user)
             try:
-                status = exchange.buy_order(symbol=used_symbol, amount=my_balance_stable_coin, type_order='limit',
+                amount = int(my_balance_stable_coin) / min_price
+                logger.log(msg='pyPoC buy balance: {0} - {1} - {2} - {3}'.format(used_symbol,
+                                                                                 my_balance_stable_coin,
+                                                                                 min_price,
+                                                                                 amount),
+                           level=logging.INFO)
+
+                status = exchange.buy_order(symbol=used_symbol,
+                                            amount=amount,
+                                            type_order='limit',
                                             price_limit=min_price)
             except Exception as err:
                 logger.log(msg='ERROR: {0}'.format(err), level=logging.ERROR)
