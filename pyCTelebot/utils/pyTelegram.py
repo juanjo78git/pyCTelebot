@@ -53,9 +53,8 @@ def run(how: str):
 
     list_orders_handler = CommandHandler('list_orders', list_orders)
     dispatcher.add_handler(list_orders_handler)
-    # TODO: Repair pattern
     dispatcher.add_handler(CallbackQueryHandler(callback_list_orders,
-                                                pattern='^(|list_orders_opened#|list_orders_closed#)*$'))
+                                                pattern='^(|list_orders_opened#|list_orders_closed#)*'))
 
     any_message_handler = MessageHandler(Filters.text & (~Filters.command), any_message)
     dispatcher.add_handler(any_message_handler)
@@ -203,7 +202,6 @@ def validate_exchange(update: Update, context: CallbackContext) -> bool:
 
 
 def return_symbol(update: Update, context: CallbackContext) -> str:
-    print(len(context.args))
     if len(context.args) >= 1:
         symbol = context.args[0].upper()
         if '/' not in symbol:
@@ -235,12 +233,32 @@ def list_orders(update: Update, context: CallbackContext):
 def callback_list_orders(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
-    order = query.data
     # TODO: SOMETHING
-    print('entro')
+    logger.log(msg='callback_list_orders start: {0}'.format(query.data),level=logging.INFO)
     exchange = context.user_data["exchange"]
-    query.message.edit_text(text=_("List orders selected : {0}").format(order),
-                            reply_markup=InlineKeyboardMarkup([]))
+    input_data = query.data.split('#',1)
+    order = input_data[0]
+    symbol = input_data[1]
+    try:
+        my_crypto = pyCrypto.MyCrypto(exchange_name=exchange, telegram_id=update.effective_user.id)
+        if order == 'list_orders_opened':
+            orders = my_crypto.open_orders(symbol=symbol)
+        elif order == 'list_orders_closed':
+            orders = my_crypto.closed_orders(symbol=symbol)
+        else:
+            raise Exception('callback_list_orders: {0}'.format(query.data))
+        query.message.edit_text(text=_("Trading pair: {0} open orders: {1}").format(
+                                     symbol,
+                                     pyTemplates.templates_json(orders, 'open_orders')),
+                                reply_markup=InlineKeyboardMarkup([]))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        query.message.edit_text(text=_("Trading pair: {0} open orders --> {1} {2}").format(
+                                         symbol,
+                                         _("ERROR: I can't do it."),
+                                         str(err)),
+                                reply_markup=InlineKeyboardMarkup([]))
 
 
 def any_message(update: Update, context: CallbackContext):
