@@ -234,9 +234,9 @@ def callback_list_orders(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
     # TODO: SOMETHING
-    logger.log(msg='callback_list_orders start: {0}'.format(query.data),level=logging.INFO)
+    logger.log(msg='callback_list_orders start: {0}'.format(query.data), level=logging.INFO)
     exchange = context.user_data["exchange"]
-    input_data = query.data.split('#',1)
+    input_data = query.data.split('#', 1)
     order = input_data[0]
     symbol = input_data[1]
     try:
