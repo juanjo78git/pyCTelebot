@@ -7,6 +7,7 @@ from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 from pyCTelebot.config.pyVars import TOKEN_TELEGRAM, WEBHOOK_URL_TELEGRAM, PORT, ENV_CONFIG, TELEGRAM_ADMIN_GROUP
+from pyCTelebot.utils.pyPrices import price_info
 from pyCTelebot.utils.pyUsers import user_list, authorization
 from pyCTelebot.utils import pyCrypto, pyTemplates, pyPrices
 from pyCTelebot import pyPoC
@@ -44,6 +45,11 @@ def run(how: str):
     start_handler = CommandHandler('start', start)
     dispatcher.add_handler(start_handler)
     dispatcher.add_handler(CallbackQueryHandler(callback_exchange, pattern='^(|kucoin|binance|kraken)$'))
+
+    symbol_handler = CommandHandler('symbol', select_symbol)
+    dispatcher.add_handler(symbol_handler)
+    dispatcher.add_handler(CallbackQueryHandler(callback_select_symbol,
+                                                pattern='^(|select_symbol#)*'))
 
     stop_handler = CommandHandler('stop', stop)
     dispatcher.add_handler(stop_handler)
@@ -185,6 +191,11 @@ def validate_data(order_type: str, update: Update, context: CallbackContext) -> 
             error = 2
         elif len(context.args) == 0 and "symbol" not in context.user_data:
             error = 2
+    elif order_type == 'select_symbol':
+        if validate_exchange(update=update, context=context) is False:
+            error = 1
+        elif len(context.args) > 1:
+            error = 2
 
     if error > 1:
         context.bot.send_message(chat_id=update.effective_chat.id,
@@ -255,6 +266,52 @@ def callback_list_orders(update: Update, context: CallbackContext):
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
     except Exception as err:
         query.message.edit_text(text=_("Trading pair: {0} open orders --> {1} {2}").format(
+                                         symbol,
+                                         _("ERROR: I can't do it."),
+                                         str(err)),
+                                reply_markup=InlineKeyboardMarkup([]))
+
+
+def select_symbol(update: Update, context: CallbackContext):
+    if not authorization(telegram_id=update.effective_user.id, action='select_symbol'):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("You can't do it!"))
+        return 1
+    # Params
+    if validate_data(order_type="select_symbol", update=update, context=context) > 0:
+        return 1
+    exchange = context.user_data["exchange"]
+    # TODO: If parameter is a symbol
+    # TODO: FIX price_info
+    symbols = price_info(exchange=exchange)
+
+    inline_keyboard_buttons = []
+
+    for symbol in symbols:
+        inline_keyboard_buttons.append(InlineKeyboardButton(symbol.get('symbol'),
+                                                            callback_data='select_symbol#' + symbol))
+    keyboard_list_symbols = [inline_keyboard_buttons, ]
+    update.message.reply_text(text=_('Please choose a symbol:'),
+                              reply_markup=InlineKeyboardMarkup(keyboard_list_symbols))
+
+
+def callback_select_symbol(update: Update, context: CallbackContext):
+    query = update.callback_query
+    query.answer()
+    # TODO: SOMETHING
+    logger.log(msg='callback_select_symbol start: {0}'.format(query.data), level=logging.INFO)
+    exchange = context.user_data["exchange"]
+    input_data = query.data.split('#', 1)
+    symbol = input_data[1]
+    try:
+        context.user_data["symbol"] = symbol
+        query.message.edit_text(text=_("Symbol selected: {0}").format(
+                                     symbol),
+                                reply_markup=InlineKeyboardMarkup([]))
+    except TelegramError as err:
+        logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
+    except Exception as err:
+        query.message.edit_text(text=_("Symbol selected: {0} --> {1} {2}").format(
                                          symbol,
                                          _("ERROR: I can't do it."),
                                          str(err)),
