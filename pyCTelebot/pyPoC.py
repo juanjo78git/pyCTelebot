@@ -94,7 +94,8 @@ def run():
             pyTelegram.private_message(message='I have:\n {0} {1}'.format(used_coin, my_balance_coin),
                                        user=my_user)
             try:
-                amount = int(my_balance_stable_coin) / min_price
+                # Calculate amount (stable coin - 0.1% fee)
+                amount = (my_balance_stable_coin * 0.99) / min_price
                 logger.log(msg='pyPoC buy balance: {0} - {1} - {2} - {3}'.format(used_symbol,
                                                                                  my_balance_stable_coin,
                                                                                  min_price,
