@@ -298,7 +298,7 @@ def select_symbol(update: Update, context: CallbackContext):
                 logger.log(msg='Error insert symbol in Prices: {0} - {1} : {2}'.format(exchange, symbol, err),
                            level=logging.ERROR)
     else:
-        if len(symbols > 0):
+        if len(symbols) > 0:
             inline_keyboard_buttons = []
             keyboard_list_symbols = []
             for symbol in symbols:
