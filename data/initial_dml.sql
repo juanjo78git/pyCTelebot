@@ -163,3 +163,27 @@ values
 1, 1, 1,
 current_date, current_date);
 commit;
+insert into exchange_prices
+(
+exchange, symbol,
+last_buy_price, current_buy_price, buy_price_variation_percentage,
+last_sell_price, current_sell_price, sell_price_variation_percentage,
+last_audit_date, current_audit_date
+)
+values
+('kucoin', 'LUNA/USDT',
+1, 1, 1,
+1, 1, 1,
+current_date, current_date);
+insert into exchange_prices
+(
+exchange, symbol,
+last_buy_price, current_buy_price, buy_price_variation_percentage,
+last_sell_price, current_sell_price, sell_price_variation_percentage,
+last_audit_date, current_audit_date
+)
+values
+('kucoin', 'KCS/USDT',
+1, 1, 1,
+1, 1, 1,
+current_date, current_date);

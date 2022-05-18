@@ -281,18 +281,32 @@ def select_symbol(update: Update, context: CallbackContext):
     if validate_data(order_type="select_symbol", update=update, context=context) > 0:
         return 1
     exchange = context.user_data["exchange"]
-    # TODO: If parameter is a symbol
-    # TODO: FIX price_info
     symbols = price_info(exchange=exchange)
-
-    inline_keyboard_buttons = []
-
-    for symbol in symbols:
-        inline_keyboard_buttons.append(InlineKeyboardButton(symbol.get('symbol'),
-                                                            callback_data='select_symbol#' + symbol))
-    keyboard_list_symbols = [inline_keyboard_buttons, ]
-    update.message.reply_text(text=_('Please choose a symbol:'),
-                              reply_markup=InlineKeyboardMarkup(keyboard_list_symbols))
+    if len(context.args) >= 1:
+        symbol = return_symbol(update=update, context=context)
+        context.user_data["symbol"] = symbol
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=_("Selected symbol: {0}").format(symbol))
+        new_symbol = False
+        for s in symbols:
+            if symbol == s.get('symbol'):
+                new_symbol = True
+        if new_symbol:
+            try:
+                pyPrices.initialize_price(exchange=exchange, symbol=symbol)
+            except Exception as err:
+                logger.log(msg='Error insert symbol in Prices: {0} - {1} : {2}'.format(exchange, symbol, err),
+                           level=logging.ERROR)
+    else:
+        inline_keyboard_buttons = []
+        keyboard_list_symbols = []
+        for symbol in symbols:
+            inline_keyboard_buttons.append(InlineKeyboardButton(symbol.get('symbol'),
+                                                                callback_data='select_symbol#' + symbol.get('symbol')))
+            keyboard_list_symbols.append(inline_keyboard_buttons.copy())
+            inline_keyboard_buttons.clear()
+        update.message.reply_text(text=_('Please choose a symbol:'),
+                                  reply_markup=InlineKeyboardMarkup(keyboard_list_symbols))
 
 
 def callback_select_symbol(update: Update, context: CallbackContext):
