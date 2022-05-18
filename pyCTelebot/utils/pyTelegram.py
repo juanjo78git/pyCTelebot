@@ -298,15 +298,19 @@ def select_symbol(update: Update, context: CallbackContext):
                 logger.log(msg='Error insert symbol in Prices: {0} - {1} : {2}'.format(exchange, symbol, err),
                            level=logging.ERROR)
     else:
-        inline_keyboard_buttons = []
-        keyboard_list_symbols = []
-        for symbol in symbols:
-            inline_keyboard_buttons.append(InlineKeyboardButton(symbol.get('symbol'),
-                                                                callback_data='select_symbol#' + symbol.get('symbol')))
-            keyboard_list_symbols.append(inline_keyboard_buttons.copy())
-            inline_keyboard_buttons.clear()
-        update.message.reply_text(text=_('Please choose a symbol:'),
-                                  reply_markup=InlineKeyboardMarkup(keyboard_list_symbols))
+        if len(symbols > 0):
+            inline_keyboard_buttons = []
+            keyboard_list_symbols = []
+            for symbol in symbols:
+                inline_keyboard_buttons.append(InlineKeyboardButton(symbol.get('symbol'),
+                                                                    callback_data='select_symbol#' + symbol.get('symbol')))
+                keyboard_list_symbols.append(inline_keyboard_buttons.copy())
+                inline_keyboard_buttons.clear()
+            update.message.reply_text(text=_('Please choose a symbol:'),
+                                      reply_markup=InlineKeyboardMarkup(keyboard_list_symbols))
+        else:
+            context.bot.send_message(chat_id=update.effective_chat.id,
+                                     text=_("{0} exchange don't have a symbols").format(exchange))
 
 
 def callback_select_symbol(update: Update, context: CallbackContext):
