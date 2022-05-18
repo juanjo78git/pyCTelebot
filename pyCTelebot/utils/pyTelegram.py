@@ -303,7 +303,8 @@ def select_symbol(update: Update, context: CallbackContext):
             keyboard_list_symbols = []
             for symbol in symbols:
                 inline_keyboard_buttons.append(InlineKeyboardButton(symbol.get('symbol'),
-                                                                    callback_data='select_symbol#' + symbol.get('symbol')))
+                                                                    callback_data='select_symbol#'
+                                                                                  + symbol.get('symbol')))
                 keyboard_list_symbols.append(inline_keyboard_buttons.copy())
                 inline_keyboard_buttons.clear()
             update.message.reply_text(text=_('Please choose a symbol:'),
