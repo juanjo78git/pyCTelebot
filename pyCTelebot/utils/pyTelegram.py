@@ -251,6 +251,8 @@ def callback_list_orders(update: Update, context: CallbackContext):
     input_data = query.data.split('#', 1)
     order = input_data[0]
     symbol = input_data[1]
+    logger.log(msg='callback_list_orders exchange: {0} order: {1} symbol: {2}'.format(exchange, order, symbol),
+               level=logging.DEBUG)
     try:
         my_crypto = pyCrypto.MyCrypto(exchange_name=exchange, telegram_id=update.effective_user.id)
         if order == 'list_orders_opened':
