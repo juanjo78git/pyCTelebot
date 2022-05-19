@@ -60,7 +60,8 @@ def run(how: str):
     list_orders_handler = CommandHandler('list_orders', list_orders)
     dispatcher.add_handler(list_orders_handler)
     dispatcher.add_handler(CallbackQueryHandler(callback_list_orders,
-                                                pattern='^(list_orders_opened#|list_orders_closed#)[A-Za-z0-9]+[\/][A-Za-z0-9]+$'))
+                                                pattern='^(list_orders_opened#|list_orders_closed#)[A-Za-z0-9]+[\/]['
+                                                        'A-Za-z0-9]+$'))
 
     any_message_handler = MessageHandler(Filters.text & (~Filters.command), any_message)
     dispatcher.add_handler(any_message_handler)
