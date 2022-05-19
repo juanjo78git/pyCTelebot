@@ -44,12 +44,12 @@ def run(how: str):
     # Events that will trigger this bot
     start_handler = CommandHandler('start', start)
     dispatcher.add_handler(start_handler)
-    dispatcher.add_handler(CallbackQueryHandler(callback_exchange, pattern='^(|kucoin|binance|kraken)$'))
+    dispatcher.add_handler(CallbackQueryHandler(callback_exchange, pattern='^(kucoin|binance|kraken)$'))
 
     symbol_handler = CommandHandler('symbol', select_symbol)
     dispatcher.add_handler(symbol_handler)
     dispatcher.add_handler(CallbackQueryHandler(callback_select_symbol,
-                                                pattern='^(|select_symbol#)*'))
+                                                pattern='^(select_symbol#)[A-Za-z0-9]+[\/][A-Za-z0-9]+$'))
 
     stop_handler = CommandHandler('stop', stop)
     dispatcher.add_handler(stop_handler)
@@ -60,7 +60,7 @@ def run(how: str):
     list_orders_handler = CommandHandler('list_orders', list_orders)
     dispatcher.add_handler(list_orders_handler)
     dispatcher.add_handler(CallbackQueryHandler(callback_list_orders,
-                                                pattern='^(|list_orders_opened#|list_orders_closed#)*'))
+                                                pattern='^(list_orders_opened#|list_orders_closed#)[A-Za-z0-9]+[\/][A-Za-z0-9]+$'))
 
     any_message_handler = MessageHandler(Filters.text & (~Filters.command), any_message)
     dispatcher.add_handler(any_message_handler)
@@ -259,17 +259,17 @@ def callback_list_orders(update: Update, context: CallbackContext):
         else:
             raise Exception('callback_list_orders: {0}'.format(query.data))
         query.message.edit_text(text=_("Trading pair: {0} open orders: {1}").format(
-                                     symbol,
-                                     pyTemplates.templates_json(orders, 'open_orders')),
-                                reply_markup=InlineKeyboardMarkup([]))
+            symbol,
+            pyTemplates.templates_json(orders, 'open_orders')),
+            reply_markup=InlineKeyboardMarkup([]))
     except TelegramError as err:
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
     except Exception as err:
         query.message.edit_text(text=_("Trading pair: {0} open orders --> {1} {2}").format(
-                                         symbol,
-                                         _("ERROR: I can't do it."),
-                                         str(err)),
-                                reply_markup=InlineKeyboardMarkup([]))
+            symbol,
+            _("ERROR: I can't do it."),
+            str(err)),
+            reply_markup=InlineKeyboardMarkup([]))
 
 
 def select_symbol(update: Update, context: CallbackContext):
@@ -325,16 +325,16 @@ def callback_select_symbol(update: Update, context: CallbackContext):
     try:
         context.user_data["symbol"] = symbol
         query.message.edit_text(text=_("Symbol selected: {0}").format(
-                                     symbol),
-                                reply_markup=InlineKeyboardMarkup([]))
+            symbol),
+            reply_markup=InlineKeyboardMarkup([]))
     except TelegramError as err:
         logger.log(msg='send_message: {0}'.format(str(err)), level=logging.ERROR)
     except Exception as err:
         query.message.edit_text(text=_("Symbol selected: {0} --> {1} {2}").format(
-                                         symbol,
-                                         _("ERROR: I can't do it."),
-                                         str(err)),
-                                reply_markup=InlineKeyboardMarkup([]))
+            symbol,
+            _("ERROR: I can't do it."),
+            str(err)),
+            reply_markup=InlineKeyboardMarkup([]))
 
 
 def any_message(update: Update, context: CallbackContext):
