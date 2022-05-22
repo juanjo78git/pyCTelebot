@@ -173,6 +173,10 @@ def run_telegram(update: Update, context: CallbackContext):
                                      price.get('current_audit_date'),
 
                                  ))
+    # Run PoC Cron 10m minutes
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=_('Execute PoC.run() '))
+    run()
     logger.log(msg='pyPoC run_telegram stop ID: {0}'.format(seed), level=logging.INFO)
 
 
