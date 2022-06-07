@@ -87,8 +87,14 @@ CREATE TABLE IF NOT EXISTS active_strategy_symbols (
 	unit_value NUMERIC NOT NULL,
 	-- Portentaje de beneficio de la estrategia
 	take_profit NUMERIC,
+	-- Porcentaje para comprobar cambio de dirección del precio
+	buy_in_callback NUMERIC,
+	-- Nuevos campos --
+	-- Estado
 	status VARCHAR(50) NOT NULL,
-	-- Inversión actual
+	-- Inversión actual en moneda symbol
+	current_invest_symbol NUMERIC,
+	-- Inversión actual en USDT
 	current_invest NUMERIC,
 	-- Porcentaje de beneficio actual
 	current_profit NUMERIC,
